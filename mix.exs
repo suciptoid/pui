@@ -10,7 +10,8 @@ defmodule Maui.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      package: package()
+      package: package(),
+      docs: docs()
     ]
   end
 
@@ -46,8 +47,21 @@ defmodule Maui.MixProject do
       links: %{"GitHub" => "https://github.com/suciptoid/maui"},
       maintainers: ["Sucipto"],
       files: ~w(
-        assets/js assets/css lib priv mix.exs package.json README.md
+        assets/js assets/css lib priv mix.exs package.json README.md guides
       )
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: [
+        "README.md",
+        "guides/usage.md"
+      ],
+      groups_for_extras: [
+        Guides: ["guides/usage.md"]
+      ]
     ]
   end
 
