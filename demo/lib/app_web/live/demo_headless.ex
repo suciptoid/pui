@@ -199,7 +199,7 @@ defmodule AppWeb.Live.DemoHeadless do
             </div>
 
             <AppWeb.DocComponents.code_block
-              code={~s|<.button variant="unstyled" class="#{@unstyled_button_class}">
+              code={~S|<.button variant="unstyled" class="#{@unstyled_button_class}">
     Custom Styled Button
     </.button>|}
               language="heex"
@@ -264,7 +264,7 @@ defmodule AppWeb.Live.DemoHeadless do
             </div>
 
             <AppWeb.DocComponents.code_block
-              code={~s|<.menu_button
+              code={~S|<.menu_button
     variant="unstyled"
     class="#{@unstyled_button_class}"
     content_class="#{@unstyled_menu_class}"
@@ -350,7 +350,7 @@ defmodule AppWeb.Live.DemoHeadless do
             </div>
 
             <AppWeb.DocComponents.code_block
-              code={~s|<.dialog
+              code={~S|<.dialog
     id="my-dialog"
     variant="unstyled"
     class="#{@unstyled_backdrop_class}"
@@ -426,7 +426,7 @@ defmodule AppWeb.Live.DemoHeadless do
             <div>
               <h4 class="font-semibold mb-2">Level 1: Low-level Hooks</h4>
               <AppWeb.DocComponents.code_block
-                code={~s|<.popover_base phx-hook="Maui.Popover" data-placement="bottom">
+                code={~S|<.popover_base phx-hook="Maui.Popover" data-placement="bottom">
     <button class="your-custom-classes">Trigger</button>
     <:popup class="your-popup-classes">
     Custom content
@@ -439,7 +439,7 @@ defmodule AppWeb.Live.DemoHeadless do
             <div>
               <h4 class="font-semibold mb-2">Level 2: Unstyled Components</h4>
               <AppWeb.DocComponents.code_block
-                code={~s|<.menu_button variant="unstyled" class="btn btn-primary">
+                code={~S|<.menu_button variant="unstyled" class="btn btn-primary">
     Open
     <:item class="dropdown-item">Profile</:item>
     <:item class="dropdown-item">Settings</:item>
@@ -451,7 +451,7 @@ defmodule AppWeb.Live.DemoHeadless do
             <div>
               <h4 class="font-semibold mb-2">Level 3: Styled Components</h4>
               <AppWeb.DocComponents.code_block
-                code={~s|<.button variant="secondary" size="lg">
+                code={~S|<.button variant="secondary" size="lg">
     Click me
     </.button>
 
