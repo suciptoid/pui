@@ -201,7 +201,11 @@ defmodule AppWeb.Live.Demo do
       />
       <.demo_overview :if={@live_action == :index} />
       <.demo_inputs :if={@live_action == :inputs} form={@form} />
-      <.demo_buttons :if={@live_action == :buttons} variant={@playground_variant} size={@playground_size} />
+      <.demo_buttons
+        :if={@live_action == :buttons}
+        variant={@playground_variant}
+        size={@playground_size}
+      />
       <.demo_dropdown :if={@live_action == :dropdown} />
       <.demo_popover :if={@live_action == :popover} />
       <.demo_toast :if={@live_action == :toast} />
@@ -231,8 +235,8 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </AppWeb.DocComponents.example_card>
-
-      <!-- Alert with Title and Description -->
+      
+    <!-- Alert with Title and Description -->
       <AppWeb.DocComponents.example_card
         title="Alert with Title and Description"
         description="Use both title and description slots for more detailed alert messages."
@@ -253,8 +257,8 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </AppWeb.DocComponents.example_card>
-
-      <!-- Destructive Alert Variant -->
+      
+    <!-- Destructive Alert Variant -->
       <AppWeb.DocComponents.example_card
         title="Destructive Alert Variant"
         description="Use the destructive variant for errors, warnings, or destructive actions."
@@ -275,8 +279,8 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </AppWeb.DocComponents.example_card>
-
-      <!-- Alert with Custom Icon -->
+      
+    <!-- Alert with Custom Icon -->
       <AppWeb.DocComponents.example_card
         title="Alert with Custom Icon"
         description="Use any icon or SVG in the icon slot to customize the alert's visual appearance."
@@ -310,18 +314,33 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </AppWeb.DocComponents.example_card>
-
-      <!-- Props Table -->
+      
+    <!-- Props Table -->
       <AppWeb.DocComponents.example_card
         title="Component API"
         description="Available attributes and slots for the alert component."
       >
         <AppWeb.DocComponents.props_table props={[
-          %{name: "variant", type: "string", default: "\"default\"", description: "Alert style variant: default, destructive"},
+          %{
+            name: "variant",
+            type: "string",
+            default: "\"default\"",
+            description: "Alert style variant: default, destructive"
+          },
           %{name: "class", type: "string", default: "\"\"", description: "Additional CSS classes"},
-          %{name: "icon", type: "slot", default: "nil", description: "Optional icon displayed at the start"},
+          %{
+            name: "icon",
+            type: "slot",
+            default: "nil",
+            description: "Optional icon displayed at the start"
+          },
           %{name: "title", type: "slot", default: "nil", description: "Alert title text"},
-          %{name: "description", type: "slot", default: "nil", description: "Detailed description text"}
+          %{
+            name: "description",
+            type: "slot",
+            default: "nil",
+            description: "Detailed description text"
+          }
         ]} />
       </AppWeb.DocComponents.example_card>
     </div>
@@ -375,7 +394,7 @@ defmodule AppWeb.Live.Demo do
               2. Run mix deps.get
             </h4>
             <AppWeb.DocComponents.code_block
-              code={"mix deps.get"}
+              code="mix deps.get"
               language="bash"
             />
           </div>
@@ -389,7 +408,9 @@ defmodule AppWeb.Live.Demo do
       >
         <div class="space-y-4">
           <p class="text-sm text-zinc-600 dark:text-zinc-400">
-            Add <code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">use Maui</code> to your LiveView module
+            Add
+            <code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">use Maui</code>
+            to your LiveView module
             to import all components automatically.
           </p>
           <AppWeb.DocComponents.code_block
@@ -468,6 +489,12 @@ defmodule AppWeb.Live.Demo do
             description="Progress bars and badge components for status indicators."
             icon="hero-bolt"
             patch={~p"/progress-badges"}
+          />
+          <.component_card
+            title="Headless Components"
+            description="Unstyled components with custom CSS framework support."
+            icon="hero-paint-brush"
+            patch={~p"/headless"}
           />
         </div>
       </div>
@@ -720,8 +747,8 @@ defmodule AppWeb.Live.Demo do
           <AppWeb.DocComponents.code_block code={button_code(@variant, @size)} language="heex" />
         </div>
       </div>
-
-      <!-- All Variants -->
+      
+    <!-- All Variants -->
       <div>
         <h2 class="text-lg font-semibold mb-4">Variants</h2>
         <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
@@ -743,8 +770,8 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </div>
-
-      <!-- Sizes -->
+      
+    <!-- Sizes -->
       <div>
         <h2 class="text-lg font-semibold mb-4">Sizes</h2>
         <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
@@ -762,12 +789,14 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </div>
-
-      <!-- Icon Buttons -->
+      
+    <!-- Icon Buttons -->
       <div>
         <h2 class="text-lg font-semibold mb-4">Icon Buttons</h2>
         <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
-          Use the <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">size="icon"</code> attribute for square icon buttons.
+          Use the
+          <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">size="icon"</code>
+          attribute for square icon buttons.
         </p>
         <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 space-y-6">
           <div class="flex flex-wrap gap-3">
@@ -786,8 +815,8 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </div>
-
-      <!-- Buttons with Icons -->
+      
+    <!-- Buttons with Icons -->
       <div>
         <h2 class="text-lg font-semibold mb-4">Buttons with Icons</h2>
         <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
@@ -814,8 +843,8 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </div>
-
-      <!-- Buttons as Links -->
+      
+    <!-- Buttons as Links -->
       <div>
         <h2 class="text-lg font-semibold mb-4">Buttons as Links</h2>
         <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
@@ -841,12 +870,14 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </div>
-
-      <!-- Disabled State -->
+      
+    <!-- Disabled State -->
       <div>
         <h2 class="text-lg font-semibold mb-4">Disabled State</h2>
         <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
-          Use the <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">disabled</code> attribute to disable buttons.
+          Use the
+          <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">disabled</code>
+          attribute to disable buttons.
         </p>
         <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 space-y-6">
           <div class="flex flex-wrap gap-3">
@@ -861,19 +892,39 @@ defmodule AppWeb.Live.Demo do
           />
         </div>
       </div>
-
-      <!-- API Section -->
+      
+    <!-- API Section -->
       <AppWeb.DocComponents.component_api_section
         module="Maui.Button"
         function="button"
         import_statement="use Maui"
         props={[
-          %{name: "variant", type: "string", default: "\"default\"", description: "Button style variant: default, secondary, destructive, outline, ghost, link"},
-          %{name: "size", type: "string", default: "\"default\"", description: "Button size: sm, default, lg, icon"},
+          %{
+            name: "variant",
+            type: "string",
+            default: "\"default\"",
+            description: "Button style variant: default, secondary, destructive, outline, ghost, link"
+          },
+          %{
+            name: "size",
+            type: "string",
+            default: "\"default\"",
+            description: "Button size: sm, default, lg, icon"
+          },
           %{name: "class", type: "string", default: "\"\"", description: "Additional CSS classes"},
           %{name: "disabled", type: "boolean", default: "false", description: "Disable the button"},
-          %{name: "navigate", type: "string", default: "nil", description: "Phoenix LiveView navigate path"},
-          %{name: "patch", type: "string", default: "nil", description: "Phoenix LiveView patch path"},
+          %{
+            name: "navigate",
+            type: "string",
+            default: "nil",
+            description: "Phoenix LiveView navigate path"
+          },
+          %{
+            name: "patch",
+            type: "string",
+            default: "nil",
+            description: "Phoenix LiveView patch path"
+          },
           %{name: "href", type: "string", default: "nil", description: "Standard href link"}
         ]}
       >
@@ -916,16 +967,16 @@ defmodule AppWeb.Live.Demo do
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-52">
-  <.icon name="hero-user" class="size-4" /> Account
-  <:item navigate="/profile">Profile</:item>
-  <:item>Settings</:item>
-  <:item>Help</:item>
-</.menu_button>|}
+    <.icon name="hero-user" class="size-4" /> Account
+    <:item navigate="/profile">Profile</:item>
+    <:item>Settings</:item>
+    <:item>Help</:item>
+    </.menu_button>|}
           language="heex"
         />
       </AppWeb.DocComponents.example_card>
-
-      <!-- Menu with Keyboard Shortcuts -->
+      
+    <!-- Menu with Keyboard Shortcuts -->
       <AppWeb.DocComponents.example_card
         title="Menu with Keyboard Shortcuts"
         description="Display keyboard shortcuts for quick actions. Add the shortcut attribute to items."
@@ -949,17 +1000,17 @@ defmodule AppWeb.Live.Demo do
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-56">
-  Actions
-  <:item shortcut="⌘P">Print</:item>
-  <:item shortcut="⌘S">Save</:item>
-  <:item shortcut="⇧⌘N">New File</:item>
-  <:item shortcut="⌘Q">Quit</:item>
-</.menu_button>|}
+    Actions
+    <:item shortcut="⌘P">Print</:item>
+    <:item shortcut="⌘S">Save</:item>
+    <:item shortcut="⇧⌘N">New File</:item>
+    <:item shortcut="⌘Q">Quit</:item>
+    </.menu_button>|}
           language="heex"
         />
       </AppWeb.DocComponents.example_card>
-
-      <!-- Destructive Action Items -->
+      
+    <!-- Destructive Action Items -->
       <AppWeb.DocComponents.example_card
         title="Destructive Action Items"
         description="Use the destructive variant for actions that delete or remove data. These items appear with warning colors."
@@ -980,19 +1031,19 @@ defmodule AppWeb.Live.Demo do
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-56" variant="outline">
-  Delete Options
-  <:item variant="destructive" shortcut="⌘⌫">
+    Delete Options
+    <:item variant="destructive" shortcut="⌘⌫">
     Delete File
-  </:item>
-  <:item variant="destructive">
+    </:item>
+    <:item variant="destructive">
     Remove Folder
-  </:item>
-</.menu_button>|}
+    </:item>
+    </.menu_button>|}
           language="heex"
         />
       </AppWeb.DocComponents.example_card>
-
-      <!-- Menu Separators -->
+      
+    <!-- Menu Separators -->
       <AppWeb.DocComponents.example_card
         title="Menu Separators"
         description="Group related items with separators using the <:items> slot and menu_separator component."
@@ -1023,8 +1074,8 @@ defmodule AppWeb.Live.Demo do
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-56">
-  More Options
-  <:items>
+    More Options
+    <:items>
     <.menu_item>View Details</.menu_item>
     <.menu_item>Edit</.menu_item>
     <.menu_separator />
@@ -1032,13 +1083,13 @@ defmodule AppWeb.Live.Demo do
     <.menu_item>Copy Link</.menu_item>
     <.menu_separator />
     <.menu_item variant="destructive">Delete</.menu_item>
-  </:items>
-</.menu_button>|}
+    </:items>
+    </.menu_button>|}
           language="heex"
         />
       </AppWeb.DocComponents.example_card>
-
-      <!-- Custom Items Slot with Undo Handler -->
+      
+    <!-- Custom Items Slot with Undo Handler -->
       <AppWeb.DocComponents.example_card
         title="Custom Items with Event Handlers"
         description="Use the <:items> slot for full control over menu items. Supports phx-click handlers like the undo action below."
@@ -1065,8 +1116,8 @@ defmodule AppWeb.Live.Demo do
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-56">
-  Actions
-  <:items>
+    Actions
+    <:items>
     <.menu_item navigate="/settings">
       Settings
     </.menu_item>
@@ -1077,21 +1128,37 @@ defmodule AppWeb.Live.Demo do
     <.menu_item phx-click="undo">
       Undo
     </.menu_item>
-  </:items>
-</.menu_button>|}
+    </:items>
+    </.menu_button>|}
           language="heex"
         />
       </AppWeb.DocComponents.example_card>
-
-      <!-- Component API Section -->
+      
+    <!-- Component API Section -->
       <AppWeb.DocComponents.component_api_section
         module="Maui.Dropdown"
         function="menu_button/1"
         import_statement="use Maui"
         props={[
-          %{name: "variant", type: "string", default: "\"secondary\"", description: "Button variant style (default, secondary, destructive, outline, ghost, link)"},
-          %{name: "class", type: "string", default: "\"\"", description: "Additional CSS classes for the button"},
-          %{name: "content_class", type: "string", default: "\"\"", description: "CSS classes for the dropdown content container"}
+          %{
+            name: "variant",
+            type: "string",
+            default: "\"secondary\"",
+            description:
+              "Button variant style (default, secondary, destructive, outline, ghost, link)"
+          },
+          %{
+            name: "class",
+            type: "string",
+            default: "\"\"",
+            description: "Additional CSS classes for the button"
+          },
+          %{
+            name: "content_class",
+            type: "string",
+            default: "\"\"",
+            description: "CSS classes for the dropdown content container"
+          }
         ]}
       >
         <:description>
@@ -1108,31 +1175,44 @@ defmodule AppWeb.Live.Demo do
           </Maui.Dropdown.menu_button>
         </:example>
       </AppWeb.DocComponents.component_api_section>
-
-      <!-- Usage Guidelines -->
+      
+    <!-- Usage Guidelines -->
       <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 bg-zinc-50 dark:bg-zinc-800/50">
         <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Usage Guidelines</h3>
         <div class="space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
           <div>
-            <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Simple Items vs Custom Items</h4>
+            <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">
+              Simple Items vs Custom Items
+            </h4>
             <p>
-              Use the <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">&lt;:item&gt;</code> slot for quick
-              menu items with automatic rendering. Use <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">&lt;:items&gt;</code>
+              Use the
+              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">&lt;:item&gt;</code>
+              slot for quick
+              menu items with automatic rendering. Use
+              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">&lt;:items&gt;</code>
               when you need separators or more complex layouts with <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">&lt;.menu_item&gt;</code>.
             </p>
           </div>
           <div>
             <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Navigation Options</h4>
             <p>
-              Menu items support <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">navigate</code> (LiveView navigation),
-              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">patch</code> (LiveView patch), and
-              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">href</code> (standard links).
+              Menu items support
+              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">navigate</code>
+              (LiveView navigation),
+              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">patch</code>
+              (LiveView patch), and
+              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">href</code>
+              (standard links).
             </p>
           </div>
           <div>
             <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Destructive Actions</h4>
             <p>
-              Always use <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">variant="destructive"</code> for actions
+              Always use
+              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">
+                variant="destructive"
+              </code>
+              for actions
               that delete, remove, or have significant consequences. This provides visual warning cues to users.
             </p>
           </div>

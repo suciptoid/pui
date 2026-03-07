@@ -29,6 +29,7 @@ defmodule AppWeb.Router do
     live "/select", Live.DemoSelect, :select
     live "/container", Live.DemoContainer, :container
     live "/progress-badges", Live.DemoProgressBadges, :progress_badges
+    live "/headless", Live.DemoHeadless, :headless
     live "/link/:any", Live.Demo, :index
     live "/tab/:tab", Live.DemoTab
     live "/tab", Live.DemoTab, :index
