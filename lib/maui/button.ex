@@ -49,6 +49,14 @@ defmodule Maui.Button do
 
       <.button disabled>Disabled</.button>
 
+  ## Unstyled Variant
+
+  Use `variant="unstyled"` for complete control over styling:
+
+      <.button variant="unstyled" class="px-4 py-2 bg-blue-500 text-white rounded">
+        Custom Button
+      </.button>
+
   ## Attributes
 
   | Attribute | Type | Default | Description |
@@ -70,7 +78,7 @@ defmodule Maui.Button do
   attr :class, :string, default: ""
 
   attr :variant, :string,
-    values: ["default", "destructive", "outline", "secondary", "ghost", "link"],
+    values: ["default", "destructive", "outline", "secondary", "ghost", "link", "unstyled"],
     default: "default"
 
   attr :size, :string, values: ["default", "sm", "lg", "icon"], default: "default"
@@ -79,45 +87,61 @@ defmodule Maui.Button do
   slot :inner_block, required: true
 
   def button(%{rest: rest} = assigns) do
+    is_unstyled = assigns.variant == "unstyled"
+
     variant_class =
-      case assigns.variant do
-        "default" ->
-          "bg-primary text-primary-foreground hover:bg-primary/90"
+      if is_unstyled do
+        ""
+      else
+        case assigns.variant do
+          "default" ->
+            "bg-primary text-primary-foreground hover:bg-primary/90"
 
-        "destructive" ->
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60"
+          "destructive" ->
+            "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60"
 
-        "outline" ->
-          "border border-border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
+          "outline" ->
+            "border border-border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50"
 
-        "secondary" ->
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+          "secondary" ->
+            "bg-secondary text-secondary-foreground hover:bg-secondary/80"
 
-        "ghost" ->
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
+          "ghost" ->
+            "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50"
 
-        "link" ->
-          "text-primary underline-offset-4 hover:underline"
+          "link" ->
+            "text-primary underline-offset-4 hover:underline"
+        end
       end
 
     size_class =
-      case assigns.size do
-        "default" -> "h-9 px-4 py-2 has-[>svg]:px-3"
-        "sm" -> "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
-        "lg" -> "h-10 rounded-md px-6 has-[>svg]:px-4"
-        "icon" -> "size-9"
+      if is_unstyled do
+        ""
+      else
+        case assigns.size do
+          "default" -> "h-9 px-4 py-2 has-[>svg]:px-3"
+          "sm" -> "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5"
+          "lg" -> "h-10 rounded-md px-6 has-[>svg]:px-4"
+          "icon" -> "size-9"
+        end
       end
 
     override_class = Map.get(assigns, :class, "")
 
+    base_classes =
+      if is_unstyled do
+        []
+      else
+        [
+          "inline-flex active:translate-y-px items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+        ]
+      end
+
     assigns =
       assign(assigns,
-        class: [
-          "inline-flex active:translate-y-px items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-          variant_class,
-          size_class,
-          override_class
-        ],
+        class:
+          (base_classes ++ [variant_class, size_class, override_class])
+          |> Enum.filter(&(&1 != "")),
         size_class: size_class,
         variant_class: variant_class
       )

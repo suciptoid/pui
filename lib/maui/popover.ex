@@ -90,6 +90,7 @@ defmodule Maui.Popover do
   use Phoenix.Component
 
   attr :id, :string, required: true
+  attr :variant, :string, default: "default", values: ["default", "unstyled"]
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
   attr :hook, :string, default: "Popover"
 
@@ -144,6 +145,7 @@ defmodule Maui.Popover do
   """
   attr :id, :string
   attr :class, :string, default: ""
+  attr :variant, :string, default: "default", values: ["default", "unstyled"]
   attr :placement, :string, values: ["top", "bottom", "left", "right"], default: "top"
   slot :inner_block
 
@@ -151,8 +153,10 @@ defmodule Maui.Popover do
     attr :class, :string
   end
 
-  def tooltip(assigns) do
+  def tooltip(%{variant: variant} = assigns) do
     assigns = assign_new(assigns, :id, fn -> "tooltip#{System.unique_integer()}" end)
+    is_unstyled = variant == "unstyled"
+    assigns = assign(assigns, :is_unstyled, is_unstyled)
 
     ~H"""
     <div
@@ -169,23 +173,30 @@ defmodule Maui.Popover do
         id={"#{@id}-tooltip"}
         aria-hidden="true"
         data-placement={@placement}
-        class={[
-          "bg-foreground text-background",
-          "duration-100 transition ease-in transform",
-          "data-[placement=top]:translate-y-0 data-[placement=top]:aria-hidden:translate-y-2",
-          "data-[placement=bottom]:translate-y-0 data-[placement=bottom]:aria-hidden:-translate-y-2",
-          "data-[placement=right]:translate-x-0 data-[placement=right]:aria-hidden:-translate-x-2",
-          "data-[placement=left]:translate-x-0 data-[placement=left]:aria-hidden:translate-x-2",
-          "opacity-100 aria-hidden:opacity-0",
-          "aria-hidden:pointer-events-none",
-          "invisible not-aria-hidden:visible",
-          "z-50 w-fit rounded-md px-3 py-1.5 text-sm text-balance",
-          @class
-        ]}
+        class={
+          if @is_unstyled do
+            [@class]
+          else
+            [
+              "bg-foreground text-background",
+              "duration-100 transition ease-in transform",
+              "data-[placement=top]:translate-y-0 data-[placement=top]:aria-hidden:translate-y-2",
+              "data-[placement=bottom]:translate-y-0 data-[placement=bottom]:aria-hidden:-translate-y-2",
+              "data-[placement=right]:translate-x-0 data-[placement=right]:aria-hidden:-translate-x-2",
+              "data-[placement=left]:translate-x-0 data-[placement=left]:aria-hidden:translate-x-2",
+              "opacity-100 aria-hidden:opacity-0",
+              "aria-hidden:pointer-events-none",
+              "invisible not-aria-hidden:visible",
+              "z-50 w-fit rounded-md px-3 py-1.5 text-sm text-balance",
+              @class
+            ]
+          end
+        }
       >
         {render_slot(@tooltip)}
 
         <div
+          :if={not @is_unstyled}
           data-arrow
           class="absolute bg-foreground fill-foreground z-[-1] size-2.5 rotate-45 rounded-[2px]"
         >

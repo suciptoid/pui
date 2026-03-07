@@ -132,15 +132,24 @@ defmodule Maui.Dialog do
 
   attr :class, :string, default: ""
   attr :rest, :global
+  attr :is_unstyled, :boolean, default: false
   slot :inner_block
 
-  def backdrop(assigns) do
+  def backdrop(%{is_unstyled: is_unstyled} = assigns) do
+    assigns = assign(assigns, :is_unstyled, is_unstyled)
+
     ~H"""
     <div
-      class={[
-        "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 fixed inset-0 z-50 bg-black/50",
-        @class
-      ]}
+      class={
+        if @is_unstyled do
+          [@class]
+        else
+          [
+            "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+            @class
+          ]
+        end
+      }
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -151,17 +160,26 @@ defmodule Maui.Dialog do
   attr :id, :string, required: true
   attr :class, :string, default: ""
   attr :rest, :global
+  attr :is_unstyled, :boolean, default: false
   slot :inner_block
 
-  def content(assigns) do
+  def content(%{is_unstyled: is_unstyled} = assigns) do
+    assigns = assign(assigns, :is_unstyled, is_unstyled)
+
     ~H"""
     <div
       id={@id}
-      class={[
-        "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 [hidden]:zoom-out-95 not-[hidden]:zoom-in-95",
-        "bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
-        @class
-      ]}
+      class={
+        if @is_unstyled do
+          [@class]
+        else
+          [
+            "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 [hidden]:zoom-out-95 not-[hidden]:zoom-in-95",
+            "bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+            @class
+          ]
+        end
+      }
       {@rest}
     >
       <.focus_wrap id={"#{@id}-focus"}>
@@ -176,18 +194,26 @@ defmodule Maui.Dialog do
   attr :alert, :boolean, default: false
   attr :show, :boolean, default: false, doc: "Control dialog visibility from server"
   attr :size, :string, values: ["sm", "md", "lg", "xl"], default: "md"
+  attr :variant, :string, default: "default", values: ["default", "unstyled"]
+  attr :class, :string, default: ""
 
   slot :inner_block
   slot :trigger, required: false
   slot :content, required: false, doc: "To override the content container"
 
-  def dialog(assigns) do
+  def dialog(%{variant: variant} = assigns) do
+    is_unstyled = variant == "unstyled"
+
     size_class =
-      case assigns[:size] do
-        "sm" -> "sm:max-w-sm"
-        "md" -> "md:max-w-md"
-        "lg" -> "lg:max-w-lg"
-        "xl" -> "xl:max-w-xl"
+      if is_unstyled do
+        ""
+      else
+        case assigns[:size] do
+          "sm" -> "sm:max-w-sm"
+          "md" -> "md:max-w-md"
+          "lg" -> "lg:max-w-lg"
+          "xl" -> "xl:max-w-xl"
+        end
       end
 
     cancel_action =
@@ -201,6 +227,7 @@ defmodule Maui.Dialog do
       assigns
       |> assign(:size_class, size_class)
       |> assign(:cancel_action, cancel_action)
+      |> assign(:is_unstyled, is_unstyled)
 
     ~H"""
     <div
@@ -216,6 +243,8 @@ defmodule Maui.Dialog do
       <.backdrop
         id={"#{@id}-backdrop"}
         hidden={not @show}
+        class={@class}
+        is_unstyled={@is_unstyled}
         phx-click={if @alert, do: nil, else: JS.exec("data-cancel", to: "##{@id}")}
       />
 
@@ -231,9 +260,10 @@ defmodule Maui.Dialog do
         :if={@content == []}
         role={if @alert, do: "alertdialog", else: "dialog"}
         aria-modal="true"
-        class={@size_class}
+        class={if @is_unstyled, do: @class, else: @size_class}
         id={"#{@id}-content"}
         hidden={not @show}
+        is_unstyled={@is_unstyled}
       >
         {render_slot(@inner_block, %{
           hide: JS.exec("data-cancel", to: "##{@id}"),
