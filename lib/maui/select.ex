@@ -104,6 +104,7 @@ defmodule Maui.Select do
   attr :searchable, :boolean, default: false
   attr :class, :string, default: "w-fit"
   attr :label, :string, default: nil
+  attr :variant, :string, default: "default", values: ["default", "unstyled"]
 
   attr :field, Phoenix.HTML.FormField,
     default: nil,
@@ -139,6 +140,7 @@ defmodule Maui.Select do
       value={@value}
       placeholder={@placeholder}
       searchable={@searchable}
+      variant={@variant}
     >
       <%= for opt <- @options do %>
         <%= case opt do %>
@@ -152,8 +154,10 @@ defmodule Maui.Select do
     """
   end
 
-  def select(assigns) do
+  def select(%{variant: variant} = assigns) do
     assigns = map_field(assigns)
+    is_unstyled = variant == "unstyled"
+    assigns = assign(assigns, :is_unstyled, is_unstyled)
 
     ~H"""
     <div
@@ -166,31 +170,43 @@ defmodule Maui.Select do
       <button
         type="button"
         role="combobox"
-        class={[
-          "border-input data-placeholder:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring [3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-          @class
-        ]}
+        class={
+          if @is_unstyled do
+            [@class]
+          else
+            [
+              "border-input data-placeholder:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring [3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+              @class
+            ]
+          end
+        }
       >
         <span data-maui="selected-label">
           {@placeholder}
         </span>
-        <.select_icon class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        <.select_icon :if={not @is_unstyled} class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </button>
 
       <div
         role="listbox"
         aria-hidden="true"
-        class={[
-          "aria-hidden:hidden block bg-popover text-popover-foreground",
-          "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
-          "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-          "z-50 min-w-52 overflow-x-hidden overflow-y-auto rounded-md border border-border shadow-md",
-          "max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin)"
-        ]}
+        class={
+          if @is_unstyled do
+            [@class]
+          else
+            [
+              "aria-hidden:hidden block bg-popover text-popover-foreground",
+              "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
+              "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+              "z-50 min-w-52 overflow-x-hidden overflow-y-auto rounded-md border border-border shadow-md",
+              "max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin)"
+            ]
+          end
+        }
       >
         {render_slot(@header)}
 
-        <.select_search :if={@searchable} />
+        <.select_search :if={@searchable and not @is_unstyled} />
 
         <div data-maui="menu-items">
           {render_slot(@inner_block)}
@@ -237,20 +253,33 @@ defmodule Maui.Select do
   end
 
   attr :value, :string, required: true
+  attr :class, :string, default: ""
+  attr :variant, :string, default: "default", values: ["default", "unstyled"]
   slot :inner_block
 
-  def select_item(assigns) do
+  def select_item(%{variant: variant} = assigns) do
+    is_unstyled = variant == "unstyled"
+
+    assigns = assign(assigns, :is_unstyled, is_unstyled)
+
     ~H"""
     <div
       role="menuitem"
       data-value={@value}
-      class={[
-        "aria-hidden:hidden",
-        "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground",
-        "data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground",
-        "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
-        "data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-      ]}
+      class={
+        if @is_unstyled do
+          [@class]
+        else
+          [
+            "aria-hidden:hidden",
+            "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground",
+            "data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground",
+            "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
+            "data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+            @class
+          ]
+        end
+      }
     >
       {render_slot(@inner_block)}
     </div>
