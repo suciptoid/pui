@@ -45,8 +45,8 @@ defmodule AppWeb.Live.DemoSelect do
             A dropdown component for selecting items from a list. Supports searching, grouping, icons, and form integration.
           </p>
         </div>
-
-        <!-- Basic Select -->
+        
+    <!-- Basic Select -->
         <DocComponents.example_card
           title="Basic Select"
           description="Select with manually defined items and icons."
@@ -65,18 +65,18 @@ defmodule AppWeb.Live.DemoSelect do
             <DocComponents.code_block
               language="heex"
               code={~S|<.select label="Select Food" id="select-basic" name="select-basic">
-  <.select_item value="makan-value">
+    <.select_item value="makan-value">
     <.icon name="hero-arrow-path" class="size-4" /> Makan
-  </.select_item>
-  <.select_item value="makan-value-2">
+    </.select_item>
+    <.select_item value="makan-value-2">
     <.icon name="hero-check" class="size-4" /> Makan Dua
-  </.select_item>
-</.select>|}
+    </.select_item>
+    </.select>|}
             />
           </div>
         </DocComponents.example_card>
-
-        <!-- Searchable Select -->
+        
+    <!-- Searchable Select -->
         <DocComponents.example_card
           title="Searchable Select"
           description="Enable searching by setting searchable={true}. Users can type to filter options."
@@ -95,18 +95,18 @@ defmodule AppWeb.Live.DemoSelect do
             <DocComponents.code_block
               language="heex"
               code={~S|<.select
-  label="Searchable Select"
-  id="select-searchable"
-  name="select-searchable"
-  placeholder="Search options..."
-  searchable={true}
-  options={["Apple", "Banana", "Cherry", "Date", "Elderberry"]}
-/>|}
+    label="Searchable Select"
+    id="select-searchable"
+    name="select-searchable"
+    placeholder="Search options..."
+    searchable={true}
+    options={["Apple", "Banana", "Cherry", "Date", "Elderberry"]}
+    />|}
             />
           </div>
         </DocComponents.example_card>
-
-        <!-- Select with Default Value -->
+        
+    <!-- Select with Default Value -->
         <DocComponents.example_card
           title="Select with Default Value"
           description="Pre-select an option using the value attribute."
@@ -126,19 +126,19 @@ defmodule AppWeb.Live.DemoSelect do
             <DocComponents.code_block
               language="heex"
               code={~S|<.select
-  label="Select with Default"
-  id="select-default"
-  name="select-default"
-  placeholder="Select an option"
-  searchable={true}
-  value="Option 3"
-  options={["Option 1", "Option 2", "Option 3"]}
-/>|}
+    label="Select with Default"
+    id="select-default"
+    name="select-default"
+    placeholder="Select an option"
+    searchable={true}
+    value="Option 3"
+    options={["Option 1", "Option 2", "Option 3"]}
+    />|}
             />
           </div>
         </DocComponents.example_card>
-
-        <!-- Select from Strings -->
+        
+    <!-- Select from Strings -->
         <DocComponents.example_card
           title="Select from Strings"
           description="Pass a list of strings to the options attribute for simple value/label pairs."
@@ -156,17 +156,17 @@ defmodule AppWeb.Live.DemoSelect do
             <DocComponents.code_block
               language="heex"
               code={~S|<.select
-  label="Select from Strings"
-  id="select-strings"
-  name="select-strings"
-  placeholder="Select an option"
-  options={["Option A", "Option B", "Option C"]}
-/>|}
+    label="Select from Strings"
+    id="select-strings"
+    name="select-strings"
+    placeholder="Select an option"
+    options={["Option A", "Option B", "Option C"]}
+    />|}
             />
           </div>
         </DocComponents.example_card>
-
-        <!-- Select from Tuples -->
+        
+    <!-- Select from Tuples -->
         <DocComponents.example_card
           title="Select from Tuples"
           description="Use tuples {value, label} to separate the form value from the displayed label."
@@ -184,20 +184,20 @@ defmodule AppWeb.Live.DemoSelect do
             <DocComponents.code_block
               language="heex"
               code={~S|<.select
-  label="Select from Tuples"
-  id="select-tuples"
-  name="select-tuples"
-  placeholder="Select an option"
-  options={[
+    label="Select from Tuples"
+    id="select-tuples"
+    name="select-tuples"
+    placeholder="Select an option"
+    options={[
     {"val1", "Value One"},
     {"val2", "Value Two"}
-  ]}
-/>|}
+    ]}
+    />|}
             />
           </div>
         </DocComponents.example_card>
-
-        <!-- Grouped Select -->
+        
+    <!-- Grouped Select -->
         <DocComponents.example_card
           title="Grouped Select"
           description="Organize options into categories using nested tuples. Each group is a tuple {group_name, items}."
@@ -220,25 +220,25 @@ defmodule AppWeb.Live.DemoSelect do
             <DocComponents.code_block
               language="heex"
               code={~S|<.select
-  id="select-grouped"
-  label="Select Grouped"
-  name="select-grouped"
-  placeholder="Select grouped"
-  value="carrot"
-  searchable={true}
-  options={[
+    id="select-grouped"
+    label="Select Grouped"
+    name="select-grouped"
+    placeholder="Select grouped"
+    value="carrot"
+    searchable={true}
+    options={[
     {"Fruits", ["Apple", "Banana"]},
     {"Vegetables", [
       {"carrot", "Carrot"},
       {"lettuce", "Lettuce"}
     ]}
-  ]}
-/>|}
+    ]}
+    />|}
             />
           </div>
         </DocComponents.example_card>
-
-        <!-- Select with Footer -->
+        
+    <!-- Select with Footer -->
         <DocComponents.example_card
           title="Select with Footer"
           description="Add a footer slot for actions like adding new items."
@@ -270,15 +270,15 @@ defmodule AppWeb.Live.DemoSelect do
             <DocComponents.code_block
               language="heex"
               code={~S|<.select
-  label="Select with Footer"
-  id="select-footer"
-  name="select-footer"
-  searchable={true}
->
-  <.select_item value="item-1">Item One</.select_item>
-  <.select_item value="item-2">Item Two</.select_item>
-  <.select_item value="item-3">Item Three</.select_item>
-  <:footer>
+    label="Select with Footer"
+    id="select-footer"
+    name="select-footer"
+    searchable={true}
+    >
+    <.select_item value="item-1">Item One</.select_item>
+    <.select_item value="item-2">Item Two</.select_item>
+    <.select_item value="item-3">Item Three</.select_item>
+    <:footer>
     <div class="border-t border-border p-2">
       <button
         type="button"
@@ -288,13 +288,13 @@ defmodule AppWeb.Live.DemoSelect do
         <.icon name="hero-plus" class="size-4" /> Add New Item
       </button>
     </div>
-  </:footer>
-</.select>|}
+    </:footer>
+    </.select>|}
             />
           </div>
         </DocComponents.example_card>
-
-        <!-- Form Integration -->
+        
+    <!-- Form Integration -->
         <DocComponents.example_card
           title="Form Integration"
           description="Select works seamlessly with Phoenix forms and handles validation state."
@@ -323,49 +323,87 @@ defmodule AppWeb.Live.DemoSelect do
             <DocComponents.code_block
               language="heex"
               code={~S|<.form
-  :let={f}
-  for={@form}
-  phx-change="validate"
-  phx-submit="submit"
->
-  <.select
+    :let={f}
+    for={@form}
+    phx-change="validate"
+    phx-submit="submit"
+    >
+    <.select
     label="Select in Form"
     id="select-form"
     name="select-comp"
     placeholder="Choose an option"
     searchable={true}
     options={["Event", "Meeting", "Reminder"]}
-  />
-  <.input type="text" field={f[:select]} />
-  <.button type="submit">Submit</.button>
-</.form>|}
+    />
+    <.input type="text" field={f[:select]} />
+    <.button type="submit">Submit</.button>
+    </.form>|}
             />
           </div>
         </DocComponents.example_card>
-
-        <!-- Props Table -->
+        
+    <!-- Props Table -->
         <div>
           <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Props</h2>
           <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-            <DocComponents.props_table
-              props={[
-                %{name: "id", type: "string", required: true, description: "Unique identifier for the select"},
-                %{name: "name", type: "string", required: true, description: "Form field name"},
-                %{name: "label", type: "string", default: "nil", description: "Label text displayed above the select"},
-                %{name: "placeholder", type: "string", default: "\"Select...\"", description: "Placeholder text when no option is selected"},
-                %{name: "searchable", type: "boolean", default: "false", description: "Enable search/filter functionality"},
-                %{name: "options", type: "list", default: "[]", description: "List of options (strings, tuples, or grouped)"},
-                %{name: "value", type: "string", default: "nil", description: "Currently selected value"},
-                %{name: "class", type: "string", default: "nil", description: "Additional CSS classes"},
-                %{name: "disabled", type: "boolean", default: "false", description: "Disable the select input"},
-                %{name: "required", type: "boolean", default: "false", description: "Mark the field as required"},
-                %{name: "errors", type: "list", default: "[]", description: "List of validation errors"}
-              ]}
-            />
+            <DocComponents.props_table props={[
+              %{
+                name: "id",
+                type: "string",
+                required: true,
+                description: "Unique identifier for the select"
+              },
+              %{name: "name", type: "string", required: true, description: "Form field name"},
+              %{
+                name: "label",
+                type: "string",
+                default: "nil",
+                description: "Label text displayed above the select"
+              },
+              %{
+                name: "placeholder",
+                type: "string",
+                default: "\"Select...\"",
+                description: "Placeholder text when no option is selected"
+              },
+              %{
+                name: "searchable",
+                type: "boolean",
+                default: "false",
+                description: "Enable search/filter functionality"
+              },
+              %{
+                name: "options",
+                type: "list",
+                default: "[]",
+                description: "List of options (strings, tuples, or grouped)"
+              },
+              %{
+                name: "value",
+                type: "string",
+                default: "nil",
+                description: "Currently selected value"
+              },
+              %{name: "class", type: "string", default: "nil", description: "Additional CSS classes"},
+              %{
+                name: "disabled",
+                type: "boolean",
+                default: "false",
+                description: "Disable the select input"
+              },
+              %{
+                name: "required",
+                type: "boolean",
+                default: "false",
+                description: "Mark the field as required"
+              },
+              %{name: "errors", type: "list", default: "[]", description: "List of validation errors"}
+            ]} />
           </div>
         </div>
-
-        <!-- Form Results -->
+        
+    <!-- Form Results -->
         <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-4 bg-zinc-50 dark:bg-zinc-800/50">
           <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">Form Results</h3>
           <code class="block whitespace-pre-wrap font-mono text-sm text-zinc-600 dark:text-zinc-400">

@@ -27,8 +27,8 @@ defmodule AppWeb.Live.DemoProgressBadges do
             Visual indicators for tasks, loading states, and status descriptors.
           </p>
         </div>
-
-        <!-- Interactive Progress Bar -->
+        
+    <!-- Interactive Progress Bar -->
         <.example_card
           title="Interactive Progress Bar"
           description="Progress bars with interactive slider control. Adjust the value to see the progress update in real-time."
@@ -56,35 +56,45 @@ defmodule AppWeb.Live.DemoProgressBadges do
             </div>
 
             <div class="flex gap-2">
-              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="0">0%</.button>
-              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="25">25%</.button>
-              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="50">50%</.button>
-              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="75">75%</.button>
-              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="100">100%</.button>
+              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="0">
+                0%
+              </.button>
+              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="25">
+                25%
+              </.button>
+              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="50">
+                50%
+              </.button>
+              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="75">
+                75%
+              </.button>
+              <.button size="sm" variant="outline" phx-click="update_progress" phx-value-value="100">
+                100%
+              </.button>
             </div>
           </div>
           <div class="mt-4">
             <.code_block
               language="heex"
               code={~S|<Maui.Components.progress
-  value={@current_value}
-  min={0.0}
-  max={100.0}
-  class="h-2"
-/>
+    value={@current_value}
+    min={0.0}
+    max={100.0}
+    class="h-2"
+    />
 
-<input
-  type="range"
-  min="0"
-  max="100"
-  value={@current_value}
-  phx-change="update_progress"
-/>|}
+    <input
+    type="range"
+    min="0"
+    max="100"
+    value={@current_value}
+    phx-change="update_progress"
+    />|}
             />
           </div>
         </.example_card>
-
-        <!-- Custom Min/Max Progress -->
+        
+    <!-- Custom Min/Max Progress -->
         <.example_card
           title="Custom Min/Max Progress"
           description="Progress bars with custom minimum and maximum values for non-percentage ranges."
@@ -118,23 +128,23 @@ defmodule AppWeb.Live.DemoProgressBadges do
             <.code_block
               language="heex"
               code={~S|<Maui.Components.progress
-  value={75.0}
-  min={50.0}
-  max={200.0}
-  class="h-3"
-/>
+    value={75.0}
+    min={50.0}
+    max={200.0}
+    class="h-3"
+    />
 
-<Maui.Components.progress
-  value={32.0}
-  min={0.0}
-  max={50.0}
-  class="h-3"
-/>|}
+    <Maui.Components.progress
+    value={32.0}
+    min={0.0}
+    max={50.0}
+    class="h-3"
+    />|}
             />
           </div>
         </.example_card>
-
-        <!-- Badge Variants -->
+        
+    <!-- Badge Variants -->
         <.example_card
           title="Badge Variants"
           description="Small status indicators with different semantic meanings."
@@ -149,14 +159,14 @@ defmodule AppWeb.Live.DemoProgressBadges do
             <.code_block
               language="heex"
               code={~S|<Maui.Components.badge variant="default">Default</Maui.Components.badge>
-<Maui.Components.badge variant="secondary">Secondary</Maui.Components.badge>
-<Maui.Components.badge variant="destructive">Destructive</Maui.Components.badge>
-<Maui.Components.badge variant="outline">Outline</Maui.Components.badge>|}
+    <Maui.Components.badge variant="secondary">Secondary</Maui.Components.badge>
+    <Maui.Components.badge variant="destructive">Destructive</Maui.Components.badge>
+    <Maui.Components.badge variant="outline">Outline</Maui.Components.badge>|}
             />
           </div>
         </.example_card>
-
-        <!-- Custom Styled Badges -->
+        
+    <!-- Custom Styled Badges -->
         <.example_card
           title="Custom Styled Badges"
           description="Badges with custom colors using Tailwind classes."
@@ -164,20 +174,16 @@ defmodule AppWeb.Live.DemoProgressBadges do
           <div class="space-y-4">
             <div class="flex flex-wrap gap-3">
               <Maui.Components.badge class="bg-blue-500 hover:bg-blue-600 text-white">
-                <.icon name="hero-check-circle" class="w-3 h-3 mr-1" />
-                Verified
+                <.icon name="hero-check-circle" class="w-3 h-3 mr-1" /> Verified
               </Maui.Components.badge>
               <Maui.Components.badge class="bg-green-500 hover:bg-green-600 text-white">
-                <.icon name="hero-signal" class="w-3 h-3 mr-1" />
-                Online
+                <.icon name="hero-signal" class="w-3 h-3 mr-1" /> Online
               </Maui.Components.badge>
               <Maui.Components.badge class="bg-purple-500 hover:bg-purple-600 text-white">
-                <.icon name="hero-sparkles" class="w-3 h-3 mr-1" />
-                Pro
+                <.icon name="hero-sparkles" class="w-3 h-3 mr-1" /> Pro
               </Maui.Components.badge>
               <Maui.Components.badge class="bg-orange-500 hover:bg-orange-600 text-white">
-                <.icon name="hero-clock" class="w-3 h-3 mr-1" />
-                Pending
+                <.icon name="hero-clock" class="w-3 h-3 mr-1" /> Pending
               </Maui.Components.badge>
             </div>
 
@@ -197,23 +203,23 @@ defmodule AppWeb.Live.DemoProgressBadges do
             <.code_block
               language="heex"
               code={~S|<Maui.Components.badge class="bg-blue-500 hover:bg-blue-600 text-white">
-  <.icon name="hero-check-circle" class="w-3 h-3 mr-1" />
-  Verified
-</Maui.Components.badge>
+    <.icon name="hero-check-circle" class="w-3 h-3 mr-1" />
+    Verified
+    </Maui.Components.badge>
 
-<Maui.Components.badge class="bg-green-500 hover:bg-green-600 text-white">
-  <.icon name="hero-signal" class="w-3 h-3 mr-1" />
-  Online
-</Maui.Components.badge>
+    <Maui.Components.badge class="bg-green-500 hover:bg-green-600 text-white">
+    <.icon name="hero-signal" class="w-3 h-3 mr-1" />
+    Online
+    </Maui.Components.badge>
 
-<Maui.Components.badge class="bg-zinc-100 text-zinc-700 border border-zinc-200">
-  Draft
-</Maui.Components.badge>|}
+    <Maui.Components.badge class="bg-zinc-100 text-zinc-700 border border-zinc-200">
+    Draft
+    </Maui.Components.badge>|}
             />
           </div>
         </.example_card>
-
-        <!-- Badges in Context -->
+        
+    <!-- Badges in Context -->
         <.example_card
           title="Badges in Context"
           description="Real-world usage examples showing badges in different UI contexts."
@@ -262,41 +268,57 @@ defmodule AppWeb.Live.DemoProgressBadges do
             <.code_block
               language="heex"
               code={~S|<div class="flex items-center justify-between p-3 bg-zinc-50 rounded-lg">
-  <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3">
     <.icon name="hero-user" class="w-5 h-5" />
     <span>Sarah Johnson</span>
-  </div>
-  <Maui.Components.badge variant="secondary">Active</Maui.Components.badge>
-</div>|}
+    </div>
+    <Maui.Components.badge variant="secondary">Active</Maui.Components.badge>
+    </div>|}
             />
           </div>
         </.example_card>
-
-        <!-- Progress Props Table -->
+        
+    <!-- Progress Props Table -->
         <div>
           <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Progress Props</h2>
           <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-            <.props_table
-              props={[
-                %{name: "value", type: "float", default: "0.0", description: "Current progress value"},
-                %{name: "min", type: "float", default: "0.0", description: "Minimum value of the range"},
-                %{name: "max", type: "float", default: "100.0", description: "Maximum value of the range"},
-                %{name: "class", type: "string", default: "nil", description: "Additional CSS classes for the container"}
-              ]}
-            />
+            <.props_table props={[
+              %{name: "value", type: "float", default: "0.0", description: "Current progress value"},
+              %{
+                name: "min",
+                type: "float",
+                default: "0.0",
+                description: "Minimum value of the range"
+              },
+              %{
+                name: "max",
+                type: "float",
+                default: "100.0",
+                description: "Maximum value of the range"
+              },
+              %{
+                name: "class",
+                type: "string",
+                default: "nil",
+                description: "Additional CSS classes for the container"
+              }
+            ]} />
           </div>
         </div>
-
-        <!-- Badge Props Table -->
+        
+    <!-- Badge Props Table -->
         <div>
           <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Badge Props</h2>
           <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-            <.props_table
-              props={[
-                %{name: "variant", type: "string", default: "default", description: "Badge style (default, secondary, destructive, outline)"},
-                %{name: "class", type: "string", default: "nil", description: "Additional CSS classes"}
-              ]}
-            />
+            <.props_table props={[
+              %{
+                name: "variant",
+                type: "string",
+                default: "default",
+                description: "Badge style (default, secondary, destructive, outline)"
+              },
+              %{name: "class", type: "string", default: "nil", description: "Additional CSS classes"}
+            ]} />
           </div>
         </div>
       </div>

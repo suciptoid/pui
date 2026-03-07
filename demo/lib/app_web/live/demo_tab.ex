@@ -78,7 +78,13 @@ defmodule AppWeb.Live.DemoTab do
             <div class="border-b border-border">
               <nav class="flex gap-1" aria-label="Tabs">
                 <button
-                  :for={{id, label} <- [{"profile", "Profile"}, {"settings", "Settings"}, {"messages", "Messages"}]}
+                  :for={
+                    {id, label} <- [
+                      {"profile", "Profile"},
+                      {"settings", "Settings"},
+                      {"messages", "Messages"}
+                    ]
+                  }
                   phx-click="switch_tab"
                   phx-value-tab={id}
                   class={[
@@ -127,7 +133,10 @@ defmodule AppWeb.Live.DemoTab do
                   View and manage your conversations.
                 </p>
               </div>
-              <div :if={@active_tab not in ["profile", "account", "settings", "messages"]} class="space-y-2">
+              <div
+                :if={@active_tab not in ["profile", "account", "settings", "messages"]}
+                class="space-y-2"
+              >
                 <h3 class="font-semibold">{String.capitalize(@active_tab)}</h3>
                 <p class="text-sm text-muted-foreground">
                   Content for the {@active_tab} tab goes here.
@@ -149,7 +158,13 @@ defmodule AppWeb.Live.DemoTab do
           <div class="space-y-4">
             <nav class="flex gap-2 p-1 rounded-lg bg-muted w-fit" aria-label="Pill Tabs">
               <button
-                :for={{id, label} <- [{"overview", "Overview"}, {"analytics", "Analytics"}, {"reports", "Reports"}]}
+                :for={
+                  {id, label} <- [
+                    {"overview", "Overview"},
+                    {"analytics", "Analytics"},
+                    {"reports", "Reports"}
+                  ]
+                }
                 phx-click="switch_tab"
                 phx-value-tab={id}
                 class={[
@@ -203,22 +218,29 @@ defmodule AppWeb.Live.DemoTab do
               <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">State Management</h4>
               <p>
                 Use LiveView state (<code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">@active_tab</code>)
-                to track the currently selected tab. Send <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">phx-click</code>
+                to track the currently selected tab. Send
+                <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">phx-click</code>
                 events to switch tabs.
               </p>
             </div>
             <div>
               <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Accessibility</h4>
               <p>
-                Include <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">aria-label="Tabs"</code>
+                Include
+                <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">
+                  aria-label="Tabs"
+                </code>
                 on the navigation container and use proper button elements for keyboard navigation support.
               </p>
             </div>
             <div>
               <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Styling</h4>
               <p>
-                Use Tailwind's conditional classes with the <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">class</code>
-                attribute and the <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">&&</code> operator
+                Use Tailwind's conditional classes with the
+                <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">class</code>
+                attribute and the
+                <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-700 rounded">&&</code>
+                operator
                 for active/inactive states.
               </p>
             </div>

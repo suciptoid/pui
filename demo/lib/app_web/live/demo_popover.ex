@@ -26,8 +26,8 @@ defmodule AppWeb.Live.DemoPopover do
             Popover and tooltip components using Floating UI for precise positioning.
           </p>
         </div>
-
-        <!-- Base Popover -->
+        
+    <!-- Base Popover -->
         <.example_card
           title="Base Popover"
           description="Low-level popover building blocks using Floating UI for positioning."
@@ -58,16 +58,16 @@ defmodule AppWeb.Live.DemoPopover do
             <.code_block
               language="heex"
               code={~S|<.popover_base
-  id="demo-popover-base"
-  class="w-fit"
-  phx-hook="Maui.Popover"
-  data-placement="bottom"
->
-  <.button aria-haspopup="menu">
+    id="demo-popover-base"
+    class="w-fit"
+    phx-hook="Maui.Popover"
+    data-placement="bottom"
+    >
+    <.button aria-haspopup="menu">
     Open Popover
-  </.button>
+    </.button>
 
-  <:popup class="aria-hidden:hidden block min-w-[250px] bg-popover text-popover-foreground rounded-md shadow-md border border-border p-4 z-50">
+    <:popup class="aria-hidden:hidden block min-w-[250px] bg-popover text-popover-foreground rounded-md shadow-md border border-border p-4 z-50">
     <div class="space-y-2">
       <p class="font-medium">Popover Content</p>
       <p class="text-sm opacity-90">This is a popover with custom content.</p>
@@ -75,13 +75,13 @@ defmodule AppWeb.Live.DemoPopover do
         Action Button
       </.button>
     </div>
-  </:popup>
-</.popover_base>|}
+    </:popup>
+    </.popover_base>|}
             />
           </div>
         </.example_card>
-
-        <!-- Tooltip Variants -->
+        
+    <!-- Tooltip Variants -->
         <.example_card
           title="Tooltip Variants"
           description="Tooltips with different placements (top, bottom, left, right) and triggers."
@@ -121,35 +121,35 @@ defmodule AppWeb.Live.DemoPopover do
             <.code_block
               language="heex"
               code={~S|<.tooltip id="tooltip-left" placement="left">
-  <.button variant="outline" size="icon">
+    <.button variant="outline" size="icon">
     <.icon name="hero-arrow-left" class="w-4 h-4" />
-  </.button>
-  <:tooltip>Tooltip on the left</:tooltip>
-</.tooltip>
+    </.button>
+    <:tooltip>Tooltip on the left</:tooltip>
+    </.tooltip>
 
-<.tooltip id="tooltip-top" placement="top">
-  <.button variant="outline">Tooltip Top</.button>
-  <:tooltip>Tooltip appears above the trigger</:tooltip>
-</.tooltip>
+    <.tooltip id="tooltip-top" placement="top">
+    <.button variant="outline">Tooltip Top</.button>
+    <:tooltip>Tooltip appears above the trigger</:tooltip>
+    </.tooltip>
 
-<.tooltip id="tooltip-bottom" placement="bottom">
-  <.button variant="outline" size="icon">
+    <.tooltip id="tooltip-bottom" placement="bottom">
+    <.button variant="outline" size="icon">
     <.icon name="hero-arrow-down" class="w-4 h-4" />
-  </.button>
-  <:tooltip>Tooltip on the bottom</:tooltip>
-</.tooltip>
+    </.button>
+    <:tooltip>Tooltip on the bottom</:tooltip>
+    </.tooltip>
 
-<.tooltip id="tooltip-right" placement="right">
-  <.button variant="outline" size="icon">
+    <.tooltip id="tooltip-right" placement="right">
+    <.button variant="outline" size="icon">
     <.icon name="hero-arrow-right" class="w-4 h-4" />
-  </.button>
-  <:tooltip>Tooltip on the right</:tooltip>
-</.tooltip>|}
+    </.button>
+    <:tooltip>Tooltip on the right</:tooltip>
+    </.tooltip>|}
             />
           </div>
         </.example_card>
-
-        <!-- Tooltip with Icons -->
+        
+    <!-- Tooltip with Icons -->
         <.example_card
           title="Tooltip with Icons"
           description="Tooltips triggered by icon buttons, useful for information hints."
@@ -192,29 +192,29 @@ defmodule AppWeb.Live.DemoPopover do
             <.code_block
               language="heex"
               code={~S|<.tooltip id="tooltip-info" placement="top">
-  <.icon name="hero-information-circle" class="w-5 h-5 text-zinc-500 cursor-help" />
-  <:tooltip>This provides additional context about the feature.</:tooltip>
-</.tooltip>
+    <.icon name="hero-information-circle" class="w-5 h-5 text-zinc-500 cursor-help" />
+    <:tooltip>This provides additional context about the feature.</:tooltip>
+    </.tooltip>
 
-<.tooltip id="tooltip-status" placement="bottom">
-  <span class="flex items-center gap-1.5">
+    <.tooltip id="tooltip-status" placement="bottom">
+    <span class="flex items-center gap-1.5">
     <span class="w-2 h-2 rounded-full bg-green-500"></span>
     <span class="text-sm">Active</span>
-  </span>
-  <:tooltip>System is running normally with all services operational.</:tooltip>
-</.tooltip>
+    </span>
+    <:tooltip>System is running normally with all services operational.</:tooltip>
+    </.tooltip>
 
-<.tooltip id="tooltip-settings" placement="top">
-  <.button variant="ghost" size="icon" class="h-8 w-8">
+    <.tooltip id="tooltip-settings" placement="top">
+    <.button variant="ghost" size="icon" class="h-8 w-8">
     <.icon name="hero-cog-6-tooth" class="w-4 h-4" />
-  </.button>
-  <:tooltip>Configure settings</:tooltip>
-</.tooltip>|}
+    </.button>
+    <:tooltip>Configure settings</:tooltip>
+    </.tooltip>|}
             />
           </div>
         </.example_card>
-
-        <!-- Popover with Actions -->
+        
+    <!-- Popover with Actions -->
         <.example_card
           title="Popover with Actions"
           description="Interactive popover with counter state that persists between interactions."
@@ -251,16 +251,16 @@ defmodule AppWeb.Live.DemoPopover do
             <.code_block
               language="heex"
               code={~S|<.popover_base
-  id="demo-popover-action"
-  class="w-fit"
-  phx-hook="Maui.Popover"
-  data-placement="bottom"
->
-  <.button variant="secondary" aria-haspopup="menu">
+    id="demo-popover-action"
+    class="w-fit"
+    phx-hook="Maui.Popover"
+    data-placement="bottom"
+    >
+    <.button variant="secondary" aria-haspopup="menu">
     Counter: {@counter}
-  </.button>
+    </.button>
 
-  <:popup class="aria-hidden:hidden block min-w-[200px] bg-popover text-popover-foreground rounded-md shadow-md border border-border p-4 z-50">
+    <:popup class="aria-hidden:hidden block min-w-[200px] bg-popover text-popover-foreground rounded-md shadow-md border border-border p-4 z-50">
     <div class="space-y-3">
       <p class="font-medium">Interactive Popover</p>
       <p class="text-sm text-zinc-600 dark:text-zinc-400">
@@ -270,13 +270,13 @@ defmodule AppWeb.Live.DemoPopover do
         Increment
       </.button>
     </div>
-  </:popup>
-</.popover_base>|}
+    </:popup>
+    </.popover_base>|}
             />
           </div>
         </.example_card>
-
-        <!-- Rich Content Tooltip -->
+        
+    <!-- Rich Content Tooltip -->
         <.example_card
           title="Rich Content Tooltip"
           description="Tooltips can contain rich content like images and formatted text."
@@ -305,8 +305,8 @@ defmodule AppWeb.Live.DemoPopover do
             <.code_block
               language="heex"
               code={~S|<.tooltip id="tooltip-rich" placement="bottom" class="p-0! max-w-[200px]">
-  <.button variant="outline">Hover for Preview</.button>
-  <:tooltip>
+    <.button variant="outline">Hover for Preview</.button>
+    <:tooltip>
     <div class="w-[200px]">
       <div class="h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-t-md">
         <!-- Content -->
@@ -318,25 +318,38 @@ defmodule AppWeb.Live.DemoPopover do
         </p>
       </div>
     </div>
-  </:tooltip>
-</.tooltip>|}
+    </:tooltip>
+    </.tooltip>|}
             />
           </div>
         </.example_card>
-
-        <!-- Props Table -->
+        
+    <!-- Props Table -->
         <div>
           <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Props</h2>
           <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-            <.props_table
-              props={[
-                %{name: "id", type: "string", required: true, description: "Unique identifier"},
-                %{name: "placement", type: "string", default: "top", description: "Tooltip position (top, bottom, left, right)"},
-                %{name: "class", type: "string", default: "nil", description: "Additional CSS classes"},
-                %{name: "phx-hook", type: "string", default: "Maui.Popover", description: "Phoenix hook for popover base"},
-                %{name: "data-placement", type: "string", default: "top", description: "Popover placement attribute"}
-              ]}
-            />
+            <.props_table props={[
+              %{name: "id", type: "string", required: true, description: "Unique identifier"},
+              %{
+                name: "placement",
+                type: "string",
+                default: "top",
+                description: "Tooltip position (top, bottom, left, right)"
+              },
+              %{name: "class", type: "string", default: "nil", description: "Additional CSS classes"},
+              %{
+                name: "phx-hook",
+                type: "string",
+                default: "Maui.Popover",
+                description: "Phoenix hook for popover base"
+              },
+              %{
+                name: "data-placement",
+                type: "string",
+                default: "top",
+                description: "Popover placement attribute"
+              }
+            ]} />
           </div>
         </div>
       </div>

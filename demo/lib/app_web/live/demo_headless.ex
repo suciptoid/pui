@@ -19,7 +19,7 @@ defmodule AppWeb.Live.DemoHeadless do
       )
       |> assign(
         :unstyled_menu_class,
-        "w-48 bg-white border border-gray-200 rounded shadow-lg py-1"
+        "aria-hidden:hidden block w-48 bg-white border border-gray-200 rounded shadow-lg py-1"
       )
       |> assign(
         :unstyled_menu_item_class,
@@ -28,7 +28,7 @@ defmodule AppWeb.Live.DemoHeadless do
       |> assign(:unstyled_dialog_class, "bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4")
       |> assign(
         :unstyled_backdrop_class,
-        "fixed inset-0 bg-black/50 flex items-center justify-center"
+        "fixed inset-0 bg-black/50 flex items-center justify-center [hidden]:hidden"
       )
       |> assign(:custom_css_framework, "tailwind")
       |> assign(:show_dialog, false)
@@ -52,7 +52,7 @@ defmodule AppWeb.Live.DemoHeadless do
           )
           |> assign(
             :unstyled_menu_class,
-            "w-48 bg-white border border-gray-200 rounded shadow-lg py-1"
+            "aria-hidden:hidden block w-48 bg-white border border-gray-200 rounded shadow-lg py-1"
           )
           |> assign(
             :unstyled_menu_item_class,
@@ -67,7 +67,7 @@ defmodule AppWeb.Live.DemoHeadless do
           socket
           |> assign(:custom_css_framework, "bootstrap")
           |> assign(:unstyled_button_class, "btn btn-primary")
-          |> assign(:unstyled_menu_class, "dropdown-menu show")
+          |> assign(:unstyled_menu_class, "aria-hidden:hidden dropdown-menu show")
           |> assign(:unstyled_menu_item_class, "dropdown-item d-flex align-items-center gap-2")
           |> assign(:unstyled_dialog_class, "modal-content p-4")
 
@@ -363,6 +363,56 @@ defmodule AppWeb.Live.DemoHeadless do
     </.dialog>|}
               language="heex"
             />
+          </div>
+        </AppWeb.DocComponents.example_card>
+
+        <%!-- Visibility Handling Section --%>
+        <AppWeb.DocComponents.example_card
+          title="Handling Visibility"
+          description="Unstyled components require visibility classes. Popovers use aria-hidden, dialogs use the hidden attribute."
+        >
+          <div class="space-y-6">
+            <div>
+              <h4 class="font-semibold mb-2 text-sm">Popover/Dropdown (aria-hidden)</h4>
+              <p class="text-sm text-muted-foreground mb-3">
+                Popovers toggle <code class="text-xs bg-muted px-1 rounded">aria-hidden</code>
+                attribute.
+                Use <code class="text-xs bg-muted px-1 rounded">aria-hidden:hidden</code>
+                to hide when closed.
+              </p>
+              <AppWeb.DocComponents.code_block
+                code={~S|content_class="aria-hidden:hidden block bg-white border rounded shadow-lg"|}
+                language="heex"
+              />
+            </div>
+
+            <div>
+              <h4 class="font-semibold mb-2 text-sm">Tooltip (aria-hidden + opacity)</h4>
+              <p class="text-sm text-muted-foreground mb-3">
+                Tooltips combine visibility with opacity transitions for smooth animations.
+              </p>
+              <AppWeb.DocComponents.code_block
+                code={~S|class="aria-hidden:opacity-0 not-aria-hidden:opacity-100
+    aria-hidden:pointer-events-none invisible not-aria-hidden:visible"|}
+                language="heex"
+              />
+            </div>
+
+            <div>
+              <h4 class="font-semibold mb-2 text-sm">Dialog (hidden attribute)</h4>
+              <p class="text-sm text-muted-foreground mb-3">
+                Dialogs use the HTML <code class="text-xs bg-muted px-1 rounded">hidden</code>
+                attribute.
+                Use <code class="text-xs bg-muted px-1 rounded">[hidden]:hidden</code>
+                or animation variants.
+              </p>
+              <AppWeb.DocComponents.code_block
+                code={~S|class="fixed inset-0 bg-black/50 [hidden]:hidden"
+    # Or with animations:
+    class="fixed inset-0 bg-black/50 not-[hidden]:animate-in [hidden]:animate-out"|}
+                language="heex"
+              />
+            </div>
           </div>
         </AppWeb.DocComponents.example_card>
 

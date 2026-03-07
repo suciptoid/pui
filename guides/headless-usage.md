@@ -145,6 +145,118 @@ Unstyled components work with any CSS framework:
 </.button>
 ```
 
+## Handling Visibility
+
+Unstyled components require you to provide visibility classes. Here are the patterns used by styled components:
+
+### Popover/Dropdown Visibility
+
+Popovers use `aria-hidden` for visibility control. Your custom classes must include:
+
+```elixir
+<.menu_button 
+  variant="unstyled" 
+  content_class="aria-hidden:hidden block bg-white border rounded shadow"
+>
+  Open
+  <:item class="px-4 py-2 hover:bg-gray-100">Item</:item>
+</.menu_button>
+```
+
+**Required visibility classes:**
+- `aria-hidden:hidden` - Hides content when `aria-hidden="true"`
+- `block` - Makes content visible when shown (or your preferred display)
+
+**With animations:**
+```elixir
+content_class="aria-hidden:hidden block bg-white border rounded shadow
+  not-aria-hidden:animate-in aria-hidden:animate-out
+  not-aria-hidden:fade-in-0 aria-hidden:fade-out-0
+  not-aria-hidden:zoom-in-95 aria-hidden:zoom-out-95"
+```
+
+### Tooltip Visibility
+
+Tooltips also use `aria-hidden` with opacity and visibility transitions:
+
+```elixir
+<.tooltip variant="unstyled" class="bg-gray-900 text-white px-3 py-1.5 rounded text-sm
+  aria-hidden:opacity-0 not-aria-hidden:opacity-100
+  aria-hidden:pointer-events-none
+  invisible not-aria-hidden:visible
+  transition-opacity duration-100"
+>
+  <.button>Hover me</.button>
+  <:tooltip>Tooltip text</:tooltip>
+</.tooltip>
+```
+
+**Required visibility classes:**
+- `aria-hidden:opacity-0` / `not-aria-hidden:opacity-100` - Fade transition
+- `aria-hidden:pointer-events-none` - Prevent interaction when hidden
+- `invisible not-aria-hidden:visible` - Proper visibility toggle
+
+**With directional slide animation:**
+```elixir
+class="bg-gray-900 text-white px-3 py-1.5 rounded
+  aria-hidden:opacity-0 not-aria-hidden:opacity-100
+  aria-hidden:pointer-events-none
+  invisible not-aria-hidden:visible
+  transition-all duration-100
+  data-[placement=top]:aria-hidden:translate-y-2
+  data-[placement=bottom]:aria-hidden:-translate-y-2
+  data-[placement=left]:aria-hidden:translate-x-2
+  data-[placement=right]:aria-hidden:-translate-x-2"
+```
+
+### Dialog Visibility
+
+Dialogs use the `hidden` HTML attribute (not `aria-hidden`). Apply classes with `[hidden]` and `not-[hidden]`:
+
+**Backdrop:**
+```elixir
+<.dialog variant="unstyled" class="fixed inset-0 bg-black/50 flex items-center justify-center
+  not-[hidden]:animate-in [hidden]:animate-out
+  not-[hidden]:fade-in-0 [hidden]:fade-out-0"
+  id="my-dialog" show={@show_dialog}
+>
+  ...
+</.dialog>
+```
+
+**Dialog content:**
+```elixir
+<.dialog variant="unstyled" class="bg-white p-6 rounded-lg shadow-xl max-w-md
+  not-[hidden]:animate-in [hidden]:animate-out
+  not-[hidden]:fade-in-0 [hidden]:fade-out-0
+  not-[hidden]:zoom-in-95 [hidden]:zoom-out-95"
+  id="my-dialog" show={@show_dialog}
+>
+  ...
+</.dialog>
+```
+
+**Simple visibility (no animation):**
+```elixir
+<.dialog variant="unstyled" class="fixed inset-0 bg-black/50 [hidden]:hidden" id="my-dialog">
+  <div class="bg-white p-6 rounded-lg">
+    Content
+  </div>
+</.dialog>
+```
+
+### Select Visibility
+
+Select dropdowns use the same pattern as popovers:
+
+```elixir
+<.select variant="unstyled" class="border rounded px-3 py-2">
+  <.select_item value="a" class="px-4 py-2 hover:bg-gray-100">Option A</.select_item>
+</.select>
+```
+
+The dropdown menu needs visibility classes applied to its container.
+
 ## ARIA and Accessibility
 
 Unstyled components preserve all ARIA attributes:
