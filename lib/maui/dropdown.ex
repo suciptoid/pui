@@ -86,7 +86,8 @@ defmodule Maui.Dropdown do
 
   attr :variant, :string,
     default: "secondary",
-    doc: "see Button variant"
+    values: ["default", "secondary", "outline", "ghost", "destructive", "unstyled"],
+    doc: "see Button variant. Use 'unstyled' for headless mode"
 
   attr :rest, :global
   attr :content_class, :string, default: ""
@@ -103,14 +104,16 @@ defmodule Maui.Dropdown do
   slot :items
   slot :inner_block
 
-  def menu_button(%{rest: rest} = assigns) do
+  def menu_button(%{rest: rest, variant: variant} = assigns) do
     id = rest[:id] || "dropdown-#{System.unique_integer([:positive])}"
+    is_unstyled = variant == "unstyled"
 
-    assigns = assign(assigns, id: id)
+    assigns = assign(assigns, id: id, is_unstyled: is_unstyled)
 
     ~H"""
     <div id={@id} class="w-fit" phx-hook="Maui.Popover">
       <Maui.Button.button
+        :if={not @is_unstyled}
         id={"#{@id}-trigger"}
         variant={@variant}
         aria-haspopup="menu"
@@ -120,7 +123,18 @@ defmodule Maui.Dropdown do
       >
         {render_slot(@inner_block)}
       </Maui.Button.button>
-      <.menu_content id={"#{@id}-listbox"} class={@content_class}>
+      <button
+        :if={@is_unstyled}
+        id={"#{@id}-trigger"}
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded="false"
+        aria-controls={"#{@id}-listbox"}
+        class={@class}
+      >
+        {render_slot(@inner_block)}
+      </button>
+      <.menu_content id={"#{@id}-listbox"} class={@content_class} is_unstyled={@is_unstyled}>
         <.menu_item
           :for={item <- @item}
           shortcut={Map.get(item, :shortcut)}
@@ -128,6 +142,8 @@ defmodule Maui.Dropdown do
           href={Map.get(item, :href)}
           navigate={Map.get(item, :navigate)}
           patch={Map.get(item, :patch)}
+          class={Map.get(item, :class)}
+          is_unstyled={@is_unstyled}
         >
           {render_slot(item)}
         </.menu_item>
@@ -139,22 +155,28 @@ defmodule Maui.Dropdown do
 
   attr :class, :string, default: ""
   attr :rest, :global
+  attr :is_unstyled, :boolean, default: false
   slot :inner_block
 
-  def menu_content(assigns) do
+  def menu_content(%{is_unstyled: is_unstyled} = assigns) do
+    assigns = assign(assigns, :is_unstyled, is_unstyled)
+
     ~H"""
     <div
       aria-hidden="true"
       role="listbox"
       class={
-        [
-          "aria-hidden:hidden block bg-popover text-popover-foreground",
-          "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
-          "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-          "z-50  min-w-32 overflow-x-hidden overflow-y-auto rounded-md border border-border p-1 shadow-md",
-          # "max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin)",
-          @class
-        ]
+        if @is_unstyled do
+          [@class]
+        else
+          [
+            "aria-hidden:hidden block bg-popover text-popover-foreground",
+            "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
+            "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            "z-50  min-w-32 overflow-x-hidden overflow-y-auto rounded-md border border-border p-1 shadow-md",
+            @class
+          ]
+        end
       }
       {@rest}
     >
@@ -166,25 +188,32 @@ defmodule Maui.Dropdown do
   slot :inner_block
   attr :shortcut, :string, default: nil
   attr :variant, :string, default: "default", values: ["default", "destructive"]
-
+  attr :is_unstyled, :boolean, default: false
+  attr :class, :string, default: ""
   attr :rest, :global, include: ~w(href navigate patch method download name value disabled)
 
-  def menu_item(%{rest: rest} = assigns) do
-    class = [
-      "aria-selected:bg-accent aria-selected:text-accent-foreground",
-      "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground",
-      "data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive! [&_svg:not([class*='text-'])]:text-muted-foreground",
-      "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
-      "data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-    ]
+  def menu_item(%{rest: rest, is_unstyled: is_unstyled} = assigns) do
+    base_class =
+      if is_unstyled do
+        []
+      else
+        [
+          "aria-selected:bg-accent aria-selected:text-accent-foreground",
+          "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground",
+          "data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive! [&_svg:not([class*='text-'])]:text-muted-foreground",
+          "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
+          "data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+        ]
+      end
 
-    assigns = assign(assigns, class: class)
+    assigns =
+      assign(assigns, class: (base_class ++ [assigns[:class] || ""]) |> Enum.filter(&(&1 != "")))
 
     if rest[:href] || rest[:navigate] || rest[:patch] do
       ~H"""
       <.link data-variant={@variant} role="menuitem" class={@class} {@rest}>
         {render_slot(@inner_block)}
-        <.menu_shortcut :if={@shortcut != nil}>
+        <.menu_shortcut :if={@shortcut != nil} is_unstyled={@is_unstyled}>
           {@shortcut}
         </.menu_shortcut>
       </.link>
@@ -198,7 +227,7 @@ defmodule Maui.Dropdown do
         {@rest}
       >
         {render_slot(@inner_block)}
-        <.menu_shortcut :if={@shortcut != nil}>
+        <.menu_shortcut :if={@shortcut != nil} is_unstyled={@is_unstyled}>
           {@shortcut}
         </.menu_shortcut>
       </div>
@@ -209,13 +238,21 @@ defmodule Maui.Dropdown do
   slot :inner_block
   attr :rest, :global
   attr :class, :string, default: ""
+  attr :is_unstyled, :boolean, default: false
 
-  def menu_shortcut(assigns) do
+  def menu_shortcut(%{is_unstyled: is_unstyled} = assigns) do
+    base_class =
+      if is_unstyled do
+        []
+      else
+        ["text-muted-foreground ml-auto text-xs tracking-widest"]
+      end
+
+    assigns =
+      assign(assigns, class: (base_class ++ [assigns[:class] || ""]) |> Enum.filter(&(&1 != "")))
+
     ~H"""
-    <span
-      class={["text-muted-foreground ml-auto text-xs tracking-widest", @class]}
-      {@rest}
-    >
+    <span class={@class} {@rest}>
       {render_slot(@inner_block)}
     </span>
     """
