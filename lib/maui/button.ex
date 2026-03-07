@@ -49,6 +49,14 @@ defmodule Maui.Button do
 
       <.button disabled>Disabled</.button>
 
+  ## Unstyled Variant
+
+  Use `variant="unstyled"` for complete control over styling:
+
+      <.button variant="unstyled" class="px-4 py-2 bg-blue-500 text-white rounded">
+        Custom Button
+      </.button>
+
   ## Attributes
 
   | Attribute | Type | Default | Description |
