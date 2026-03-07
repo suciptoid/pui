@@ -27,19 +27,17 @@ import { Hooks as MauiHooks } from "maui";
 
 const CopyCode = {
   mounted() {
-    this.button = this.el.querySelector("button");
-    if (this.button) {
-      this.button.addEventListener("click", () => this.copyCode());
-    }
+    // this.el IS the button element (has phx-hook="CopyCode" and data-code)
+    this.el.addEventListener("click", () => this.copyCode());
   },
   copyCode() {
     const code = this.el.dataset.code;
     navigator.clipboard.writeText(code).then(
       () => {
-        const originalText = this.button.textContent;
-        this.button.textContent = "Copied!";
+        const originalHTML = this.el.innerHTML;
+        this.el.innerHTML = `<span class="text-xs font-medium">Copied!</span>`;
         setTimeout(() => {
-          this.button.textContent = originalText;
+          this.el.innerHTML = originalHTML;
         }, 2000);
       },
       (err) => {

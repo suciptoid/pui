@@ -4,11 +4,27 @@ defmodule AppWeb.Live.Demo do
 
   def mount(_params, _session, socket) do
     form = to_form(%{"name" => "John Doe", "email" => "john@example.com", "text" => "text demo"})
-    {:ok, socket |> assign(form: form) |> assign(:flash_placement, "top-center")}
+
+    socket =
+      socket
+      |> assign(form: form)
+      |> assign(:flash_placement, "top-center")
+      |> assign(:playground_variant, "default")
+      |> assign(:playground_size, "default")
+
+    {:ok, socket}
   end
 
   def handle_params(_params, _uri, socket) do
     {:noreply, socket}
+  end
+
+  def handle_event("select_variant", %{"variant" => variant}, socket) do
+    {:noreply, socket |> assign(:playground_variant, variant)}
+  end
+
+  def handle_event("select_size", %{"size" => size}, socket) do
+    {:noreply, socket |> assign(:playground_size, size)}
   end
 
   def handle_event("btn_click", params, socket) do
@@ -185,7 +201,7 @@ defmodule AppWeb.Live.Demo do
       />
       <.demo_overview :if={@live_action == :index} />
       <.demo_inputs :if={@live_action == :inputs} form={@form} />
-      <.demo_buttons :if={@live_action == :buttons} />
+      <.demo_buttons :if={@live_action == :buttons} variant={@playground_variant} size={@playground_size} />
       <.demo_dropdown :if={@live_action == :dropdown} />
       <.demo_popover :if={@live_action == :popover} />
       <.demo_toast :if={@live_action == :toast} />
@@ -196,125 +212,295 @@ defmodule AppWeb.Live.Demo do
 
   def demo_alert(assigns) do
     ~H"""
-    <div class="space-y-6">
-      <Maui.Alert.alert>
-        <:icon>
-          <%!-- <.icon name="hero-check-circle" class="size-5" /> --%>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="size-5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-            />
-          </svg>
-        </:icon>
+    <div class="space-y-8">
+      <!-- Alert without Description -->
+      <AppWeb.DocComponents.example_card
+        title="Alert without Description"
+        description="A compact alert with just a title and icon. Useful for brief status updates."
+      >
+        <div class="space-y-4">
+          <Maui.Alert.alert>
+            <:icon>
+              <.icon name="hero-check-circle" class="size-5" />
+            </:icon>
+            <:title>Your changes have been saved</:title>
+          </Maui.Alert.alert>
+          <AppWeb.DocComponents.code_block
+            code={"<.alert>\n  <:icon>\n    <.icon name=\"hero-check-circle\" class=\"size-5\" />\n  </:icon>\n  <:title>Your changes have been saved</:title>\n</.alert>"}
+            language="heex"
+          />
+        </div>
+      </AppWeb.DocComponents.example_card>
 
-        <:title>
-          Alert without description
-        </:title>
+      <!-- Alert with Title and Description -->
+      <AppWeb.DocComponents.example_card
+        title="Alert with Title and Description"
+        description="Use both title and description slots for more detailed alert messages."
+      >
+        <div class="space-y-4">
+          <Maui.Alert.alert>
+            <:icon>
+              <.icon name="hero-information-circle" class="size-5" />
+            </:icon>
+            <:title>Update Available</:title>
+            <:description>
+              A new version of the application is available. Update now to get the latest features and improvements.
+            </:description>
+          </Maui.Alert.alert>
+          <AppWeb.DocComponents.code_block
+            code={"<.alert>\n  <:icon>\n    <.icon name=\"hero-information-circle\" class=\"size-5\" />\n  </:icon>\n  <:title>Update Available</:title>\n  <:description>\n    A new version of the application is available.\n  </:description>\n</.alert>"}
+            language="heex"
+          />
+        </div>
+      </AppWeb.DocComponents.example_card>
 
-        <%!-- <:description>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.
-        </:description> --%>
-      </Maui.Alert.alert>
-      <Maui.Alert.alert>
-        <:icon>
-          <.icon name="hero-check-circle" class="size-5" />
-        </:icon>
+      <!-- Destructive Alert Variant -->
+      <AppWeb.DocComponents.example_card
+        title="Destructive Alert Variant"
+        description="Use the destructive variant for errors, warnings, or destructive actions."
+      >
+        <div class="space-y-4">
+          <Maui.Alert.alert variant="destructive">
+            <:icon>
+              <.icon name="hero-exclamation-triangle" class="size-5" />
+            </:icon>
+            <:title>Error</:title>
+            <:description>
+              Unable to process your request. Please check your connection and try again.
+            </:description>
+          </Maui.Alert.alert>
+          <AppWeb.DocComponents.code_block
+            code={"<.alert variant=\"destructive\">\n  <:icon>\n    <.icon name=\"hero-exclamation-triangle\" class=\"size-5\" />\n  </:icon>\n  <:title>Error</:title>\n  <:description>\n    Unable to process your request.\n  </:description>\n</.alert>"}
+            language="heex"
+          />
+        </div>
+      </AppWeb.DocComponents.example_card>
 
-        <:title>
-          Alert Title
-        </:title>
+      <!-- Alert with Custom Icon -->
+      <AppWeb.DocComponents.example_card
+        title="Alert with Custom Icon"
+        description="Use any icon or SVG in the icon slot to customize the alert's visual appearance."
+      >
+        <div class="space-y-4">
+          <Maui.Alert.alert>
+            <:icon>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"
+                />
+              </svg>
+            </:icon>
+            <:title>Tips & Tricks</:title>
+            <:description>
+              Customize your alert icons using Heroicons, Lucide, or any custom SVG.
+            </:description>
+          </Maui.Alert.alert>
+          <AppWeb.DocComponents.code_block
+            code={"<.alert>\n  <:icon>\n    <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-5\" viewBox=\"0 0 24 24\">\n      <!-- Custom SVG icon -->\n    </svg>\n  </:icon>\n  <:title>Tips & Tricks</:title>\n</.alert>"}
+            language="heex"
+          />
+        </div>
+      </AppWeb.DocComponents.example_card>
 
-        <:description>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.
-        </:description>
-      </Maui.Alert.alert>
-      <Maui.Alert.alert variant="destructive">
-        <:icon>
-          <.icon name="hero-exclamation-triangle" class="size-5" />
-        </:icon>
-
-        <:title>
-          Alert Title
-        </:title>
-
-        <:description>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.
-        </:description>
-      </Maui.Alert.alert>
+      <!-- Props Table -->
+      <AppWeb.DocComponents.example_card
+        title="Component API"
+        description="Available attributes and slots for the alert component."
+      >
+        <AppWeb.DocComponents.props_table props={[
+          %{name: "variant", type: "string", default: "\"default\"", description: "Alert style variant: default, destructive"},
+          %{name: "class", type: "string", default: "\"\"", description: "Additional CSS classes"},
+          %{name: "icon", type: "slot", default: "nil", description: "Optional icon displayed at the start"},
+          %{name: "title", type: "slot", default: "nil", description: "Alert title text"},
+          %{name: "description", type: "slot", default: "nil", description: "Detailed description text"}
+        ]} />
+      </AppWeb.DocComponents.example_card>
     </div>
     """
   end
 
   defp demo_overview(assigns) do
     ~H"""
-    <div class="space-y-6">
-      <div>
-        <h2 class="text-3xl font-bold">Welcome to Maui Components</h2>
-        <p class="text-muted-foreground mt-2">
+    <div class="space-y-10">
+      <%!-- Hero Section --%>
+      <div class="text-center py-8">
+        <div class="flex justify-center mb-4">
+          <div class="p-4 rounded-2xl bg-primary/10">
+            <.icon name="hero-swatch" class="size-16 text-primary" />
+          </div>
+        </div>
+        <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl mb-4">
+          Maui UI Components
+        </h1>
+        <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
           A comprehensive collection of Phoenix LiveView components built with Tailwind CSS.
+          Beautiful, accessible, and fully customizable.
         </p>
+        <div class="mt-6 flex justify-center gap-4">
+          <.button patch={~p"/inputs"} size="lg">
+            <.icon name="hero-rocket-launch" class="size-5 mr-2" /> Get Started
+          </.button>
+          <.button variant="outline" size="lg" href="https://github.com">
+            <.icon name="hero-code-bracket" class="size-5 mr-2" /> View on GitHub
+          </.button>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-        <.component_card
-          title="Inputs"
-          description="Text inputs, checkboxes, radio buttons, switches, and more."
-          icon="hero-cursor-arrow-rays"
-          patch={~p"/inputs"}
-        />
-        <.component_card
-          title="Buttons"
-          description="Various button styles, sizes, and variants for your application."
-          icon="hero-cursor-arrow-ripple"
-          patch={~p"/buttons"}
-        />
-        <.component_card
-          title="Dropdown"
-          description="Dropdown menus with items, separators, and shortcuts."
-          icon="hero-chevron-down"
-          patch={~p"/dropdown"}
-        />
-        <.component_card
-          title="Popover"
-          description="Floating UI popovers for contextual information."
-          icon="hero-chat-bubble-left"
-          patch={~p"/popover"}
-        />
-        <.component_card
-          title="Toast"
-          description="Toast notifications with beautiful animations."
-          icon="hero-bell"
-          patch={~p"/toast"}
-        />
-        <.component_card
-          title="Alert"
-          description="Alert components for important messages and warnings."
-          icon="hero-exclamation-triangle"
-          patch={~p"/alert"}
-        />
-        <.component_card
-          title="Progress & Badges"
-          description="Progress bars and badge components for status indicators."
-          icon="hero-bolt"
-          patch={~p"/progress-badges"}
-        />
+      <%!-- Installation Section --%>
+      <AppWeb.DocComponents.example_card
+        title="Installation"
+        description="Add Maui to your Phoenix LiveView project in just a few steps."
+      >
+        <div class="space-y-4">
+          <div>
+            <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
+              1. Add the dependency to your mix.exs
+            </h4>
+            <AppWeb.DocComponents.code_block
+              code={"def deps do\n  [\n    {:maui, github: \"your-org/maui\"}\n  ]\nend"}
+              language="elixir"
+            />
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
+              2. Run mix deps.get
+            </h4>
+            <AppWeb.DocComponents.code_block
+              code={"mix deps.get"}
+              language="bash"
+            />
+          </div>
+        </div>
+      </AppWeb.DocComponents.example_card>
+
+      <%!-- Quick Start Section --%>
+      <AppWeb.DocComponents.example_card
+        title="Quick Start"
+        description="Import all components with a single line of code."
+      >
+        <div class="space-y-4">
+          <p class="text-sm text-zinc-600 dark:text-zinc-400">
+            Add <code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">use Maui</code> to your LiveView module
+            to import all components automatically.
+          </p>
+          <AppWeb.DocComponents.code_block
+            code={"defmodule MyAppWeb.MyLive do\n  use MyAppWeb, :live_view\n  use Maui\n\n  def render(assigns) do\n    ~H\"\"\"\n    <.button>Click me</.button>\n    <.input label=\"Name\" />\n    \"\"\"\n  end\nend"}
+            language="elixir"
+          />
+        </div>
+      </AppWeb.DocComponents.example_card>
+
+      <%!-- Component Cards Grid --%>
+      <div>
+        <h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-6">Components</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <.component_card
+            title="Inputs"
+            description="Text inputs, checkboxes, radio buttons, switches, and more."
+            icon="hero-cursor-arrow-rays"
+            patch={~p"/inputs"}
+          />
+          <.component_card
+            title="Select"
+            description="Single and multi-select dropdowns with search support."
+            icon="hero-chevron-up-down"
+            patch={~p"/select"}
+          />
+          <.component_card
+            title="Buttons"
+            description="Various button styles, sizes, and variants for your application."
+            icon="hero-cursor-arrow-ripple"
+            patch={~p"/buttons"}
+          />
+          <.component_card
+            title="Dropdown"
+            description="Dropdown menus with items, separators, and shortcuts."
+            icon="hero-chevron-down"
+            patch={~p"/dropdown"}
+          />
+          <.component_card
+            title="Dialog"
+            description="Modal dialogs for confirmations and complex interactions."
+            icon="hero-window"
+            patch={~p"/dialog"}
+          />
+          <.component_card
+            title="Popover"
+            description="Floating UI popovers for contextual information."
+            icon="hero-chat-bubble-left"
+            patch={~p"/popover"}
+          />
+          <.component_card
+            title="Alert"
+            description="Alert components for important messages and warnings."
+            icon="hero-exclamation-triangle"
+            patch={~p"/alert"}
+          />
+          <.component_card
+            title="Toast"
+            description="Toast notifications with beautiful animations."
+            icon="hero-bell"
+            patch={~p"/toast"}
+          />
+          <.component_card
+            title="Container"
+            description="Layout containers for structuring your UI."
+            icon="hero-square-2-stack"
+            patch={~p"/container"}
+          />
+          <.component_card
+            title="Tabs"
+            description="Tab navigation for organizing content into sections."
+            icon="hero-rectangle-stack"
+            patch={~p"/tab"}
+          />
+          <.component_card
+            title="Progress & Badges"
+            description="Progress bars and badge components for status indicators."
+            icon="hero-bolt"
+            patch={~p"/progress-badges"}
+          />
+        </div>
       </div>
 
-      <div class="mt-8 p-6 bg-accent/30 rounded-lg border border-border">
-        <h3 class="text-lg font-semibold mb-2">Getting Started</h3>
-        <p class="text-muted-foreground">
-          Use the sidebar navigation to explore different components. Each page includes
-          interactive examples and usage patterns.
-        </p>
+      <%!-- Features Section --%>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-lg border border-border bg-card">
+          <div class="p-2 rounded-md bg-primary/10 w-fit mb-3">
+            <.icon name="hero-bolt" class="size-6 text-primary" />
+          </div>
+          <h3 class="font-semibold text-lg mb-2">Built for LiveView</h3>
+          <p class="text-sm text-muted-foreground">
+            Native Phoenix LiveView components with real-time updates and minimal JavaScript.
+          </p>
+        </div>
+        <div class="p-6 rounded-lg border border-border bg-card">
+          <div class="p-2 rounded-md bg-primary/10 w-fit mb-3">
+            <.icon name="hero-paint-brush" class="size-6 text-primary" />
+          </div>
+          <h3 class="font-semibold text-lg mb-2">Tailwind CSS</h3>
+          <p class="text-sm text-muted-foreground">
+            Styled with Tailwind CSS for easy customization and theming support.
+          </p>
+        </div>
+        <div class="p-6 rounded-lg border border-border bg-card">
+          <div class="p-2 rounded-md bg-primary/10 w-fit mb-3">
+            <.icon name="hero-check-badge" class="size-6 text-primary" />
+          </div>
+          <h3 class="font-semibold text-lg mb-2">Accessible</h3>
+          <p class="text-sm text-muted-foreground">
+            ARIA-compliant components with keyboard navigation and screen reader support.
+          </p>
+        </div>
       </div>
     </div>
     """
@@ -502,91 +688,368 @@ defmodule AppWeb.Live.Demo do
     """
   end
 
+  attr :variant, :string, default: "default"
+  attr :size, :string, default: "default"
+
   defp demo_buttons(assigns) do
     ~H"""
     <div class="space-y-8">
-      <div :for={size <- ["sm", "default", "lg"]}>
-        <h2 class="text-lg font-semibold mb-4 capitalize">Size: {size}</h2>
-        <div class="flex flex-wrap gap-3">
-          <.button
-            :for={variant <- ["default", "secondary", "destructive", "outline", "ghost", "link"]}
-            variant={variant}
-            size={size}
-            phx-click="btn_click"
-          >
-            {String.capitalize(variant)}
-          </.button>
+      <!-- Interactive Playground -->
+      <div>
+        <h2 class="text-lg font-semibold mb-4">Interactive Playground</h2>
+        <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+          Customize the button below and see the generated code update in real-time.
+        </p>
+
+        <AppWeb.DocComponents.playground_controls
+          id="button-playground"
+          variants={["default", "secondary", "destructive", "outline", "ghost", "link"]}
+          sizes={["sm", "default", "lg"]}
+          selected_variant={@variant}
+          selected_size={@size}
+        />
+
+        <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 bg-zinc-50 dark:bg-zinc-800/50">
+            <div class="flex items-center justify-center min-h-[100px]">
+              <.button variant={@variant} size={@size} phx-click="btn_click">
+                Button Preview
+              </.button>
+            </div>
+          </div>
+          <AppWeb.DocComponents.code_block code={button_code(@variant, @size)} language="heex" />
         </div>
       </div>
 
+      <!-- All Variants -->
+      <div>
+        <h2 class="text-lg font-semibold mb-4">Variants</h2>
+        <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+          Buttons come in 6 different variants to suit various use cases.
+        </p>
+        <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 space-y-6">
+          <div class="flex flex-wrap gap-3">
+            <.button
+              :for={variant <- ["default", "secondary", "destructive", "outline", "ghost", "link"]}
+              variant={variant}
+              phx-click="btn_click"
+            >
+              {String.capitalize(variant)}
+            </.button>
+          </div>
+          <AppWeb.DocComponents.code_block
+            code={"<.button variant=\"default\">Default</.button>\n<.button variant=\"secondary\">Secondary</.button>\n<.button variant=\"destructive\">Destructive</.button>\n<.button variant=\"outline\">Outline</.button>\n<.button variant=\"ghost\">Ghost</.button>\n<.button variant=\"link\">Link</.button>"}
+            language="heex"
+          />
+        </div>
+      </div>
+
+      <!-- Sizes -->
+      <div>
+        <h2 class="text-lg font-semibold mb-4">Sizes</h2>
+        <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+          Three sizes are available: small, default, and large.
+        </p>
+        <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 space-y-6">
+          <div class="flex flex-wrap items-center gap-3">
+            <.button size="sm" phx-click="btn_click">Small</.button>
+            <.button size="default" phx-click="btn_click">Default</.button>
+            <.button size="lg" phx-click="btn_click">Large</.button>
+          </div>
+          <AppWeb.DocComponents.code_block
+            code={"<.button size=\"sm\">Small</.button>\n<.button size=\"default\">Default</.button>\n<.button size=\"lg\">Large</.button>"}
+            language="heex"
+          />
+        </div>
+      </div>
+
+      <!-- Icon Buttons -->
       <div>
         <h2 class="text-lg font-semibold mb-4">Icon Buttons</h2>
-        <div class="flex flex-wrap gap-3">
-          <.button
-            :for={variant <- ["default", "secondary", "destructive", "outline", "ghost"]}
-            variant={variant}
-            size="icon"
-          >
-            <.icon name="hero-heart" class="w-4 h-4" />
-          </.button>
+        <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+          Use the <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">size="icon"</code> attribute for square icon buttons.
+        </p>
+        <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 space-y-6">
+          <div class="flex flex-wrap gap-3">
+            <.button
+              :for={variant <- ["default", "secondary", "destructive", "outline", "ghost"]}
+              variant={variant}
+              size="icon"
+              phx-click="btn_click"
+            >
+              <.icon name="hero-heart" class="w-4 h-4" />
+            </.button>
+          </div>
+          <AppWeb.DocComponents.code_block
+            code={"<.button variant=\"default\" size=\"icon\">\n  <.icon name=\"hero-heart\" class=\"w-4 h-4\" />\n</.button>\n\n<.button variant=\"outline\" size=\"icon\">\n  <.icon name=\"hero-cog\" class=\"w-4 h-4\" />\n</.button>"}
+            language="heex"
+          />
         </div>
       </div>
 
+      <!-- Buttons with Icons -->
       <div>
-        <h2 class="text-lg font-semibold mb-4">Buttons with Links</h2>
-        <div class="flex flex-wrap gap-3">
-          <.button variant="link" patch={~p"/link/patch"}>
-            Button With Patch
-          </.button>
-
-          <.button variant="outline" navigate={~p"/link/navigate"}>
-            Button With Navigate
-          </.button>
-
-          <.button variant="secondary" href={~p"/link/href"}>
-            Button With Href
-          </.button>
-
-          <.button variant="secondary" href={~p"/link/href"}>
-            <.icon name="hero-heart" class="w-4 h-4" /> Button With Icon
-          </.button>
+        <h2 class="text-lg font-semibold mb-4">Buttons with Icons</h2>
+        <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+          Add icons alongside text for enhanced visual context.
+        </p>
+        <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 space-y-6">
+          <div class="flex flex-wrap gap-3">
+            <.button phx-click="btn_click">
+              <.icon name="hero-heart" class="w-4 h-4" /> Like
+            </.button>
+            <.button variant="secondary" phx-click="btn_click">
+              <.icon name="hero-arrow-path" class="w-4 h-4" /> Refresh
+            </.button>
+            <.button variant="destructive" phx-click="btn_click">
+              <.icon name="hero-trash" class="w-4 h-4" /> Delete
+            </.button>
+            <.button variant="outline" phx-click="btn_click">
+              <.icon name="hero-arrow-down-tray" class="w-4 h-4" /> Download
+            </.button>
+          </div>
+          <AppWeb.DocComponents.code_block
+            code={"<.button>\n  <.icon name=\"hero-heart\" class=\"w-4 h-4\" /> Like\n</.button>\n\n<.button variant=\"destructive\">\n  <.icon name=\"hero-trash\" class=\"w-4 h-4\" /> Delete\n</.button>"}
+            language="heex"
+          />
         </div>
       </div>
+
+      <!-- Buttons as Links -->
+      <div>
+        <h2 class="text-lg font-semibold mb-4">Buttons as Links</h2>
+        <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+          Buttons can act as links using <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">navigate</code>, <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">patch</code>, or <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">href</code>.
+        </p>
+        <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 space-y-6">
+          <div class="flex flex-wrap gap-3">
+            <.button variant="link" patch={~p"/buttons"}>
+              Patch Navigation
+            </.button>
+
+            <.button variant="outline" navigate={~p"/buttons"}>
+              Navigate Link
+            </.button>
+
+            <.button variant="secondary" href="/lc">
+              Href Link
+            </.button>
+          </div>
+          <AppWeb.DocComponents.code_block
+            code={"<.button variant=\"link\" patch={~p\"/settings\"}>\n  Patch Navigation\n</.button>\n\n<.button variant=\"outline\" navigate={~p\"/profile\"}>\n  Navigate Link\n</.button>\n\n<.button variant=\"secondary\" href=\"/logout\">\n  Href Link\n</.button>"}
+            language="heex"
+          />
+        </div>
+      </div>
+
+      <!-- Disabled State -->
+      <div>
+        <h2 class="text-lg font-semibold mb-4">Disabled State</h2>
+        <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+          Use the <code class="px-1 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">disabled</code> attribute to disable buttons.
+        </p>
+        <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 space-y-6">
+          <div class="flex flex-wrap gap-3">
+            <.button disabled phx-click="btn_click">Disabled</.button>
+            <.button variant="secondary" disabled phx-click="btn_click">Disabled</.button>
+            <.button variant="destructive" disabled phx-click="btn_click">Disabled</.button>
+            <.button variant="outline" disabled phx-click="btn_click">Disabled</.button>
+          </div>
+          <AppWeb.DocComponents.code_block
+            code={"<.button disabled>Disabled</.button>\n<.button variant=\"secondary\" disabled>Disabled</.button>"}
+            language="heex"
+          />
+        </div>
+      </div>
+
+      <!-- API Section -->
+      <AppWeb.DocComponents.component_api_section
+        module="Maui.Button"
+        function="button"
+        import_statement="use Maui"
+        props={[
+          %{name: "variant", type: "string", default: "\"default\"", description: "Button style variant: default, secondary, destructive, outline, ghost, link"},
+          %{name: "size", type: "string", default: "\"default\"", description: "Button size: sm, default, lg, icon"},
+          %{name: "class", type: "string", default: "\"\"", description: "Additional CSS classes"},
+          %{name: "disabled", type: "boolean", default: "false", description: "Disable the button"},
+          %{name: "navigate", type: "string", default: "nil", description: "Phoenix LiveView navigate path"},
+          %{name: "patch", type: "string", default: "nil", description: "Phoenix LiveView patch path"},
+          %{name: "href", type: "string", default: "nil", description: "Standard href link"}
+        ]}
+      >
+        <:description>
+          A versatile button component with multiple variants and sizes. Supports icons,
+          link behavior, and follows Phoenix LiveView conventions.
+        </:description>
+      </AppWeb.DocComponents.component_api_section>
     </div>
     """
+  end
+
+  defp button_code(variant, size) do
+    ~s|<.button variant="#{variant}" size="#{size}">
+  Button
+</.button>|
   end
 
   defp demo_dropdown(assigns) do
     ~H"""
     <div class="space-y-8">
-      <div>
-        <h2 class="text-lg font-semibold mb-4">Menu Button with Items</h2>
-        <div class="flex flex-wrap gap-4">
+      <!-- Menu Button with Items -->
+      <AppWeb.DocComponents.example_card
+        title="Menu Button with Items"
+        description="Basic dropdown with labeled items and icons. Use the <:item> slot for simple menu options."
+      >
+        <div class="flex flex-wrap gap-4 mb-6">
           <Maui.Dropdown.menu_button content_class="w-52">
-            <.icon name="hero-user" class="size-4" /> Update Profile
-            <:item navigate="/select" shortcut="⇧⌘P">
+            <.icon name="hero-user" class="size-4" /> Account
+            <:item navigate="/select">
               <.icon name="hero-user" class="size-4" /> Profile
             </:item>
-            <:item shortcut="⌘S">
+            <:item>
               <.icon name="hero-cog" class="size-4" /> Settings
             </:item>
             <:item>
-              Print Items
-              <Maui.Dropdown.menu_shortcut>
-                ⌘P
-              </Maui.Dropdown.menu_shortcut>
-            </:item>
-            <:item shortcut="⇧⌘P" variant="destructive">
-              <.icon name="hero-trash" class="size-4" /> Delete
+              <.icon name="hero-question-mark-circle" class="size-4" /> Help
             </:item>
           </Maui.Dropdown.menu_button>
+        </div>
+        <AppWeb.DocComponents.code_block
+          code={~s|<.menu_button content_class="w-52">
+  <.icon name="hero-user" class="size-4" /> Account
+  <:item navigate="/profile">Profile</:item>
+  <:item>Settings</:item>
+  <:item>Help</:item>
+</.menu_button>|}
+          language="heex"
+        />
+      </AppWeb.DocComponents.example_card>
 
-          <Maui.Dropdown.menu_button content_class="w-52">
+      <!-- Menu with Keyboard Shortcuts -->
+      <AppWeb.DocComponents.example_card
+        title="Menu with Keyboard Shortcuts"
+        description="Display keyboard shortcuts for quick actions. Add the shortcut attribute to items."
+      >
+        <div class="flex flex-wrap gap-4 mb-6">
+          <Maui.Dropdown.menu_button content_class="w-56">
+            <.icon name="hero-command-line" class="size-4" /> Actions
+            <:item shortcut="⌘P">
+              <.icon name="hero-document" class="size-4" /> Print
+            </:item>
+            <:item shortcut="⌘S">
+              <.icon name="hero-arrow-down-tray" class="size-4" /> Save
+            </:item>
+            <:item shortcut="⇧⌘N">
+              <.icon name="hero-document-plus" class="size-4" /> New File
+            </:item>
+            <:item shortcut="⌘Q">
+              <.icon name="hero-arrow-right-on-rectangle" class="size-4" /> Quit
+            </:item>
+          </Maui.Dropdown.menu_button>
+        </div>
+        <AppWeb.DocComponents.code_block
+          code={~s|<.menu_button content_class="w-56">
+  Actions
+  <:item shortcut="⌘P">Print</:item>
+  <:item shortcut="⌘S">Save</:item>
+  <:item shortcut="⇧⌘N">New File</:item>
+  <:item shortcut="⌘Q">Quit</:item>
+</.menu_button>|}
+          language="heex"
+        />
+      </AppWeb.DocComponents.example_card>
+
+      <!-- Destructive Action Items -->
+      <AppWeb.DocComponents.example_card
+        title="Destructive Action Items"
+        description="Use the destructive variant for actions that delete or remove data. These items appear with warning colors."
+      >
+        <div class="flex flex-wrap gap-4 mb-6">
+          <Maui.Dropdown.menu_button content_class="w-56" variant="outline">
             <.icon name="hero-trash" class="size-4" /> Delete Options
+            <:item variant="destructive" shortcut="⌘⌫">
+              <.icon name="hero-trash" class="size-4" /> Delete File
+            </:item>
+            <:item variant="destructive">
+              <.icon name="hero-folder-minus" class="size-4" /> Remove Folder
+            </:item>
+            <:item variant="destructive">
+              <.icon name="hero-user-minus" class="size-4" /> Remove User
+            </:item>
+          </Maui.Dropdown.menu_button>
+        </div>
+        <AppWeb.DocComponents.code_block
+          code={~s|<.menu_button content_class="w-56" variant="outline">
+  Delete Options
+  <:item variant="destructive" shortcut="⌘⌫">
+    Delete File
+  </:item>
+  <:item variant="destructive">
+    Remove Folder
+  </:item>
+</.menu_button>|}
+          language="heex"
+        />
+      </AppWeb.DocComponents.example_card>
+
+      <!-- Menu Separators -->
+      <AppWeb.DocComponents.example_card
+        title="Menu Separators"
+        description="Group related items with separators using the <:items> slot and menu_separator component."
+      >
+        <div class="flex flex-wrap gap-4 mb-6">
+          <Maui.Dropdown.menu_button content_class="w-56">
+            <.icon name="hero-bars-3" class="size-4" /> More Options
             <:items>
-              <.link navigate="/select" role="menuitem">
-                <.icon name="hero-cog" class="size-4" /> Select (link)
-              </.link>
+              <Maui.Dropdown.menu_item>
+                <.icon name="hero-eye" class="size-4" /> View Details
+              </Maui.Dropdown.menu_item>
+              <Maui.Dropdown.menu_item>
+                <.icon name="hero-pencil" class="size-4" /> Edit
+              </Maui.Dropdown.menu_item>
+              <Maui.Dropdown.menu_separator />
+              <Maui.Dropdown.menu_item>
+                <.icon name="hero-share" class="size-4" /> Share
+              </Maui.Dropdown.menu_item>
+              <Maui.Dropdown.menu_item>
+                <.icon name="hero-link" class="size-4" /> Copy Link
+              </Maui.Dropdown.menu_item>
+              <Maui.Dropdown.menu_separator />
+              <Maui.Dropdown.menu_item variant="destructive">
+                <.icon name="hero-trash" class="size-4" /> Delete
+              </Maui.Dropdown.menu_item>
+            </:items>
+          </Maui.Dropdown.menu_button>
+        </div>
+        <AppWeb.DocComponents.code_block
+          code={~s|<.menu_button content_class="w-56">
+  More Options
+  <:items>
+    <.menu_item>View Details</.menu_item>
+    <.menu_item>Edit</.menu_item>
+    <.menu_separator />
+    <.menu_item>Share</.menu_item>
+    <.menu_item>Copy Link</.menu_item>
+    <.menu_separator />
+    <.menu_item variant="destructive">Delete</.menu_item>
+  </:items>
+</.menu_button>|}
+          language="heex"
+        />
+      </AppWeb.DocComponents.example_card>
+
+      <!-- Custom Items Slot with Undo Handler -->
+      <AppWeb.DocComponents.example_card
+        title="Custom Items with Event Handlers"
+        description="Use the <:items> slot for full control over menu items. Supports phx-click handlers like the undo action below."
+      >
+        <div class="flex flex-wrap gap-4 mb-6">
+          <Maui.Dropdown.menu_button content_class="w-56">
+            <.icon name="hero-ellipsis-vertical" class="size-4" /> Actions
+            <:items>
+              <Maui.Dropdown.menu_item navigate="/select">
+                <.icon name="hero-cog" class="size-4" /> Settings (navigate)
+              </Maui.Dropdown.menu_item>
               <Maui.Dropdown.menu_item variant="destructive">
                 <.icon name="hero-trash" class="size-4" /> Delete User Profile
               </Maui.Dropdown.menu_item>
@@ -595,19 +1058,92 @@ defmodule AppWeb.Live.Demo do
               </Maui.Dropdown.menu_item>
               <Maui.Dropdown.menu_separator />
               <Maui.Dropdown.menu_item variant="default" phx-click="undo">
-                <.icon name="hero-arrow-left" class="size-4" /> Undo
+                <.icon name="hero-arrow-uturn-left" class="size-4" /> Undo
               </Maui.Dropdown.menu_item>
             </:items>
           </Maui.Dropdown.menu_button>
         </div>
-      </div>
+        <AppWeb.DocComponents.code_block
+          code={~s|<.menu_button content_class="w-56">
+  Actions
+  <:items>
+    <.menu_item navigate="/settings">
+      Settings
+    </.menu_item>
+    <.menu_item variant="destructive">
+      Delete Profile
+    </.menu_item>
+    <.menu_separator />
+    <.menu_item phx-click="undo">
+      Undo
+    </.menu_item>
+  </:items>
+</.menu_button>|}
+          language="heex"
+        />
+      </AppWeb.DocComponents.example_card>
 
-      <div class="p-6 bg-accent/30 rounded-lg border border-border">
-        <h3 class="text-sm font-semibold mb-2">Usage</h3>
-        <p class="text-sm text-muted-foreground">
-          Dropdown menus support keyboard shortcuts, separators, and different variants.
-          Use the destructive variant for dangerous actions.
-        </p>
+      <!-- Component API Section -->
+      <AppWeb.DocComponents.component_api_section
+        module="Maui.Dropdown"
+        function="menu_button/1"
+        import_statement="use Maui"
+        props={[
+          %{name: "variant", type: "string", default: "\"secondary\"", description: "Button variant style (default, secondary, destructive, outline, ghost, link)"},
+          %{name: "class", type: "string", default: "\"\"", description: "Additional CSS classes for the button"},
+          %{name: "content_class", type: "string", default: "\"\"", description: "CSS classes for the dropdown content container"}
+        ]}
+      >
+        <:description>
+          A dropdown menu component that displays actions and options when triggered.
+          Supports keyboard shortcuts, separators, destructive actions, and custom content.
+          Built on top of Floating UI for precise positioning and smooth animations.
+        </:description>
+        <:example title="With Navigation">
+          <Maui.Dropdown.menu_button content_class="w-48">
+            Navigate
+            <:item navigate="/profile">View Profile</:item>
+            <:item patch="/settings">Edit Settings</:item>
+            <:item href="/logout">Sign Out</:item>
+          </Maui.Dropdown.menu_button>
+        </:example>
+      </AppWeb.DocComponents.component_api_section>
+
+      <!-- Usage Guidelines -->
+      <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 bg-zinc-50 dark:bg-zinc-800/50">
+        <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Usage Guidelines</h3>
+        <div class="space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
+          <div>
+            <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Simple Items vs Custom Items</h4>
+            <p>
+              Use the <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">&lt;:item&gt;</code> slot for quick
+              menu items with automatic rendering. Use <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">&lt;:items&gt;</code>
+              when you need separators or more complex layouts with <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">&lt;.menu_item&gt;</code>.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Navigation Options</h4>
+            <p>
+              Menu items support <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">navigate</code> (LiveView navigation),
+              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">patch</code> (LiveView patch), and
+              <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">href</code> (standard links).
+            </p>
+          </div>
+          <div>
+            <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Destructive Actions</h4>
+            <p>
+              Always use <code class="px-1 py-0.5 bg-zinc-200 dark:bg-zinc-700 rounded">variant="destructive"</code> for actions
+              that delete, remove, or have significant consequences. This provides visual warning cues to users.
+            </p>
+          </div>
+          <div>
+            <h4 class="font-medium text-zinc-900 dark:text-zinc-100 mb-1">Accessibility</h4>
+            <p>
+              Dropdowns include proper ARIA attributes (role="menuitem", aria-haspopup, aria-expanded) and support
+              keyboard navigation for accessible interaction.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
     """
