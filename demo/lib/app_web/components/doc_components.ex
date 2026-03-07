@@ -79,7 +79,7 @@ defmodule AppWeb.DocComponents do
       <pre class="rounded-lg bg-zinc-900 p-4 overflow-x-auto"><code
           class={"language-#{@language} font-mono text-sm text-zinc-100"}
           phx-no-curly-interpolation
-        >{@code}</code></pre>
+        ><%= @code %></code></pre>
     </div>
     """
   end
@@ -161,7 +161,10 @@ defmodule AppWeb.DocComponents do
   def live_code_preview(assigns) do
     ~H"""
     <div id={@id} class={["grid grid-cols-1 lg:grid-cols-2 gap-4", @class]}>
-      <div class={["rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 bg-zinc-50 dark:bg-zinc-800/50", @preview[:class]]}>
+      <div class={[
+        "rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 bg-zinc-50 dark:bg-zinc-800/50",
+        @preview[:class]
+      ]}>
         <div class="flex items-center justify-center min-h-[100px]">
           {render_slot(@preview)}
         </div>
@@ -178,13 +181,16 @@ defmodule AppWeb.DocComponents do
           [block | _] when is_function(block, 1) ->
             # Get the template source from assigns
             assigns = code_item[:assigns] || %{}
+
             block.(assigns)
             |> Phoenix.HTML.Safe.to_iodata()
             |> IO.iodata_to_binary()
             |> String.trim()
+
           _ ->
             ""
         end
+
       _ ->
         ""
     end
@@ -232,27 +238,49 @@ defmodule AppWeb.DocComponents do
       <!-- Import Statement -->
       <div>
         <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"
+            />
           </svg>
           Import
         </h3>
         <.code_block code={@import_statement} language="elixir" />
       </div>
-
-      <!-- Description -->
+      
+    <!-- Description -->
       <div :if={@description}>
         <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Description</h3>
         <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
           {render_slot(@description)}
         </p>
       </div>
-
-      <!-- Props Table -->
+      
+    <!-- Props Table -->
       <div :if={@props != []}>
         <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"
+            />
           </svg>
           Props
         </h3>
@@ -260,17 +288,31 @@ defmodule AppWeb.DocComponents do
           <.props_table props={@props} />
         </div>
       </div>
-
-      <!-- Examples -->
+      
+    <!-- Examples -->
       <div :if={@example != []}>
         <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-4"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z"
+            />
           </svg>
           Examples
         </h3>
         <div class="space-y-4">
-          <div :for={example <- @example} class="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+          <div
+            :for={example <- @example}
+            class="rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden"
+          >
             <div class="bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2 border-b border-zinc-200 dark:border-zinc-700">
               <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 {example[:title] || "Example"}
@@ -313,7 +355,13 @@ defmodule AppWeb.DocComponents do
 
   def playground_controls(assigns) do
     ~H"""
-    <div id={@id} class={["flex flex-wrap items-center gap-4 p-4 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50", @class]}>
+    <div
+      id={@id}
+      class={[
+        "flex flex-wrap items-center gap-4 p-4 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50",
+        @class
+      ]}
+    >
       <!-- Variant Selector -->
       <div :if={@variants != []} class="flex items-center gap-2">
         <label class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
@@ -329,7 +377,8 @@ defmodule AppWeb.DocComponents do
               "px-3 py-1 text-xs font-medium rounded-md transition-colors",
               if(variant == @selected_variant,
                 do: "bg-primary text-primary-foreground",
-                else: "bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-600 border border-zinc-200 dark:border-zinc-600"
+                else:
+                  "bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-600 border border-zinc-200 dark:border-zinc-600"
               )
             ]}
           >
@@ -337,8 +386,8 @@ defmodule AppWeb.DocComponents do
           </button>
         </div>
       </div>
-
-      <!-- Size Selector -->
+      
+    <!-- Size Selector -->
       <div :if={@sizes != []} class="flex items-center gap-2">
         <label class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
           Size
@@ -353,7 +402,8 @@ defmodule AppWeb.DocComponents do
               "px-3 py-1 text-xs font-medium rounded-md transition-colors",
               if(size == @selected_size,
                 do: "bg-primary text-primary-foreground",
-                else: "bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-600 border border-zinc-200 dark:border-zinc-600"
+                else:
+                  "bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-600 border border-zinc-200 dark:border-zinc-600"
               )
             ]}
           >
@@ -361,8 +411,8 @@ defmodule AppWeb.DocComponents do
           </button>
         </div>
       </div>
-
-      <!-- State Selector -->
+      
+    <!-- State Selector -->
       <div :if={@states != []} class="flex items-center gap-2">
         <label class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
           State
@@ -377,7 +427,8 @@ defmodule AppWeb.DocComponents do
               "px-3 py-1 text-xs font-medium rounded-md transition-colors",
               if(state == @selected_state,
                 do: "bg-primary text-primary-foreground",
-                else: "bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-600 border border-zinc-200 dark:border-zinc-600"
+                else:
+                  "bg-white dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-600 border border-zinc-200 dark:border-zinc-600"
               )
             ]}
           >
