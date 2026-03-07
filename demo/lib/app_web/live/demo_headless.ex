@@ -97,7 +97,7 @@ defmodule AppWeb.Live.DemoHeadless do
   def render(assigns) do
     ~H"""
     <Layouts.docs flash={@flash} live_action={:headless}>
-      <div class="space-y-12">
+      <div id="overview" class="space-y-12">
         <%!-- Hero Section --%>
         <div class="text-center py-8">
           <div class="flex justify-center mb-4">

@@ -1,29 +1,14 @@
 defmodule AppWeb.Layouts do
   @moduledoc """
-  This module holds layouts and related functionality
-  used by your application.
+  This module holds layouts and related functionality used by your application.
   """
   use AppWeb, :html
 
   # Embed all files in layouts/* within this module.
-  # The default root.html.heex file contains the HTML
-  # skeleton of your application, namely HTML headers
-  # and other static content.
   embed_templates "layouts/*"
 
   @doc """
   Renders your app layout.
-
-  This function is typically invoked from every template,
-  and it often contains your application menu, sidebar,
-  or similar.
-
-  ## Examples
-
-      <Layouts.app flash={@flash}>
-        <h1>Content</h1>
-      </Layouts.app>
-
   """
   attr :flash, :map, required: true, doc: "the map of flash messages"
 
@@ -66,17 +51,7 @@ defmodule AppWeb.Layouts do
   end
 
   @doc """
-  Renders docs layout with sidebar navigation.
-
-  This layout is used for component documentation pages with
-  a sidebar for navigation between different component sections.
-
-  ## Examples
-
-      <Layouts.docs flash={@flash} live_action={@live_action}>
-        <h1>Content</h1>
-      </Layouts.docs>
-
+  Renders docs layout with sidebar navigation inspired by Tailwind CSS docs.
   """
   attr :flash, :map, required: true, doc: "the map of flash messages"
   attr :live_action, :atom, required: true, doc: "the current live action"
@@ -89,198 +64,324 @@ defmodule AppWeb.Layouts do
 
   def docs(assigns) do
     ~H"""
-    <div class="flex h-screen">
-      <%!-- Sidebar --%>
-      <aside class="w-64 border-r border-border bg-background">
+    <div class="flex h-screen bg-background">
+      <%!-- Mobile Sidebar Overlay --%>
+      <div
+        id="mobile-sidebar-overlay"
+        class="fixed inset-0 z-40 bg-black/50 lg:hidden hidden"
+        phx-click={JS.hide(to: "#mobile-sidebar") |> JS.hide(to: "#mobile-sidebar-overlay")}
+      />
+
+      <%!-- Sidebar Navigation --%>
+      <aside
+        id="mobile-sidebar"
+        class="fixed inset-y-0 left-0 z-50 w-72 bg-background border-r border-border lg:static lg:block hidden lg:overflow-y-auto"
+      >
         <div class="flex h-full flex-col">
-          <%!-- Logo/Header --%>
-          <div class="flex items-center gap-2 border-b border-border px-6 py-4">
-            <img src={~p"/images/maui-hook-2d.png"} width="40" />
-            <span class="text-lg font-semibold">Maui </span>
+          <%!-- Logo Header --%>
+          <div class="flex items-center justify-between border-b border-border px-6 py-4">
+            <a href="/" class="flex items-center gap-3">
+              <img src={~p"/images/maui-hook-2d.png"} width="36" />
+              <div class="flex flex-col">
+                <span class="text-lg font-bold text-foreground">Maui</span>
+                <span class="text-xs text-muted-foreground">v1.0.0-alpha.10</span>
+              </div>
+            </a>
+            <button
+              class="lg:hidden p-2 rounded-md hover:bg-accent"
+              phx-click={JS.hide(to: "#mobile-sidebar") |> JS.hide(to: "#mobile-sidebar-overlay")}
+            >
+              <.icon name="hero-x-mark" class="size-5" />
+            </button>
+          </div>
+
+          <%!-- Search Bar --%>
+          <div class="px-4 py-3 border-b border-border">
+            <button
+              class="w-full flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground bg-muted/50 hover:bg-muted rounded-md transition-colors"
+              onclick="document.dispatchEvent(new KeyboardEvent('keydown', {key: 'k', metaKey: true}))"
+            >
+              <.icon name="hero-magnifying-glass" class="size-4" />
+              <span>Search documentation...</span>
+              <span class="ml-auto text-xs border border-border rounded px-1.5 py-0.5">⌘K</span>
+            </button>
           </div>
 
           <%!-- Navigation --%>
-          <nav class="flex-1 overflow-y-auto p-4">
-            <div class="space-y-1">
-              <%!-- Getting Started --%>
-              <.sidebar_section first>Getting Started</.sidebar_section>
+          <nav class="flex-1 overflow-y-auto p-4 space-y-6">
+            <%!-- Getting Started --%>
+            <.sidebar_group title="Getting Started" icon="hero-rocket-launch">
               <.sidebar_link
                 patch={~p"/"}
                 active={@live_action == :index}
-                icon="hero-home"
               >
                 Overview
               </.sidebar_link>
-
-              <%!-- Forms --%>
-              <.sidebar_section>Forms</.sidebar_section>
               <.sidebar_link
-                patch={~p"/inputs"}
-                active={@live_action == :inputs}
-                icon="hero-cursor-arrow-rays"
+                patch={~p"/headless"}
+                active={@live_action == :headless}
               >
+                Headless Components
+                <span class="ml-auto text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                  New
+                </span>
+              </.sidebar_link>
+            </.sidebar_group>
+
+            <%!-- Forms --%>
+            <.sidebar_group title="Forms" icon="hero-document-text">
+              <.sidebar_link patch={~p"/inputs"} active={@live_action == :inputs}>
                 Inputs
               </.sidebar_link>
-              <.sidebar_link
-                patch={~p"/select"}
-                active={@live_action == :select}
-                icon="hero-chevron-up-down"
-              >
+              <.sidebar_link patch={~p"/select"} active={@live_action == :select}>
                 Select
               </.sidebar_link>
+            </.sidebar_group>
 
-              <%!-- Actions --%>
-              <.sidebar_section>Actions</.sidebar_section>
-              <.sidebar_link
-                patch={~p"/buttons"}
-                active={@live_action == :buttons}
-                icon="hero-cursor-arrow-ripple"
-              >
+            <%!-- Actions --%>
+            <.sidebar_group title="Actions" icon="hero-cursor-arrow-rays">
+              <.sidebar_link patch={~p"/buttons"} active={@live_action == :buttons}>
                 Buttons
               </.sidebar_link>
-              <.sidebar_link
-                patch={~p"/dropdown"}
-                active={@live_action == :dropdown}
-                icon="hero-chevron-down"
-              >
+              <.sidebar_link patch={~p"/dropdown"} active={@live_action == :dropdown}>
                 Dropdown
               </.sidebar_link>
+            </.sidebar_group>
 
-              <%!-- Overlays --%>
-              <.sidebar_section>Overlays</.sidebar_section>
-              <.sidebar_link
-                patch={~p"/dialog"}
-                active={@live_action == :dialog}
-                icon="hero-window"
-              >
+            <%!-- Overlays --%>
+            <.sidebar_group title="Overlays" icon="hero-squares-2x2">
+              <.sidebar_link patch={~p"/dialog"} active={@live_action == :dialog}>
                 Dialog
               </.sidebar_link>
-              <.sidebar_link
-                patch={~p"/popover"}
-                active={@live_action == :popover}
-                icon="hero-chat-bubble-left"
-              >
+              <.sidebar_link patch={~p"/popover"} active={@live_action == :popover}>
                 Popover
               </.sidebar_link>
+            </.sidebar_group>
 
-              <%!-- Feedback --%>
-              <.sidebar_section>Feedback</.sidebar_section>
-              <.sidebar_link
-                patch={~p"/alert"}
-                active={@live_action == :alert}
-                icon="hero-exclamation-circle"
-              >
+            <%!-- Feedback --%>
+            <.sidebar_group title="Feedback" icon="hero-speaker-wave">
+              <.sidebar_link patch={~p"/alert"} active={@live_action == :alert}>
                 Alert
               </.sidebar_link>
-              <.sidebar_link
-                patch={~p"/toast"}
-                active={@live_action == :toast}
-                icon="hero-bell"
-              >
+              <.sidebar_link patch={~p"/toast"} active={@live_action == :toast}>
                 Toast
               </.sidebar_link>
+            </.sidebar_group>
 
-              <%!-- Layout --%>
-              <.sidebar_section>Layout</.sidebar_section>
-              <.sidebar_link
-                patch={~p"/container"}
-                active={@live_action == :container}
-                icon="hero-square-2-stack"
-              >
+            <%!-- Layout --%>
+            <.sidebar_group title="Layout" icon="hero-view-columns">
+              <.sidebar_link patch={~p"/container"} active={@live_action == :container}>
                 Container
               </.sidebar_link>
-              <.sidebar_link
-                patch={~p"/tab"}
-                active={@live_action == :tab}
-                icon="hero-rectangle-stack"
-              >
-                Tabs Demo
+              <.sidebar_link patch={~p"/tab"} active={@live_action == :tab}>
+                Tabs
               </.sidebar_link>
+            </.sidebar_group>
 
-              <%!-- Data Display --%>
-              <.sidebar_section>Data Display</.sidebar_section>
-              <.sidebar_link
-                patch={~p"/progress-badges"}
-                active={@live_action == :progress_badges}
-                icon="hero-bolt"
-              >
+            <%!-- Data Display --%>
+            <.sidebar_group title="Data Display" icon="hero-chart-bar">
+              <.sidebar_link patch={~p"/progress-badges"} active={@live_action == :progress_badges}>
                 Progress & Badges
               </.sidebar_link>
-            </div>
+            </.sidebar_group>
           </nav>
 
-          <%!-- Theme Toggle at bottom --%>
+          <%!-- Footer Links --%>
           <div class="border-t border-border p-4">
-            <.theme_toggle />
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <a
+                  href="https://github.com"
+                  class="p-2 text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
+                  target="_blank"
+                >
+                  <.icon name="hero-code-bracket" class="size-5" />
+                </a>
+              </div>
+              <.theme_toggle />
+            </div>
           </div>
         </div>
       </aside>
 
-      <%!-- Main Content --%>
-      <div class="flex flex-1 flex-col overflow-hidden">
-        <%!-- Header --%>
-        <header class="border-b border-border px-8 py-4">
-          <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-bold">
-              {page_title(@live_action)}
-            </h1>
-            <div class="flex items-center gap-4">
-              <a
-                href="https://github.com/phoenixframework/phoenix"
-                class="text-muted-foreground hover:text-foreground"
-              >
-                <.icon name="hero-code-bracket" class="size-5" />
+      <%!-- Main Content Area --%>
+      <div class="flex flex-1 flex-col min-w-0 overflow-hidden">
+        <%!-- Top Navigation Bar --%>
+        <header class="flex items-center justify-between border-b border-border px-4 lg:px-8 py-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30">
+          <div class="flex items-center gap-4">
+            <button
+              class="lg:hidden p-2 -ml-2 rounded-md hover:bg-accent"
+              phx-click={JS.show(to: "#mobile-sidebar") |> JS.show(to: "#mobile-sidebar-overlay")}
+            >
+              <.icon name="hero-bars-3" class="size-5" />
+            </button>
+
+            <%!-- Breadcrumbs --%>
+            <nav aria-label="Breadcrumb" class="hidden md:flex items-center gap-2 text-sm">
+              <a href="/" class="text-muted-foreground hover:text-foreground transition-colors">
+                Docs
               </a>
-            </div>
+              <.icon name="hero-chevron-right" class="size-4 text-muted-foreground" />
+              <span class="font-medium text-foreground">{page_title(@live_action)}</span>
+            </nav>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <a
+              href="https://hexdocs.pm/maui"
+              class="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
+              target="_blank"
+            >
+              <.icon name="hero-book-open" class="size-4" /> API
+            </a>
+            <a
+              href="https://github.com"
+              class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-foreground text-background rounded-md hover:bg-foreground/90 transition-colors"
+              target="_blank"
+            >
+              <.icon name="hero-star" class="size-4" />
+              <span class="hidden sm:inline">Star on GitHub</span>
+            </a>
           </div>
         </header>
 
-        <%!-- Content Area --%>
-        <main class="flex-1 overflow-y-auto px-8 py-6">
-          <div class="mx-auto max-w-7xl">
-            {render_slot(@inner_block)}
-          </div>
-        </main>
+        <%!-- Content Scroll Area --%>
+        <div class="flex flex-1 overflow-hidden">
+          <%!-- Main Documentation Content --%>
+          <main class="flex-1 overflow-y-auto">
+            <div class="mx-auto max-w-4xl px-4 lg:px-8 py-8 lg:py-12">
+              <%!-- Page Title --%>
+              <div class="mb-8">
+                <h1 class="text-3xl lg:text-4xl font-bold tracking-tight text-foreground mb-3">
+                  {page_title(@live_action)}
+                </h1>
+                <p class="text-lg text-muted-foreground">
+                  {page_description(@live_action)}
+                </p>
+              </div>
+
+              <%!-- Content --%>
+              <div class="prose prose-zinc dark:prose-invert max-w-none">
+                {render_slot(@inner_block)}
+              </div>
+
+              <%!-- Page Footer --%>
+              <footer class="mt-16 pt-8 border-t border-border">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm text-muted-foreground">
+                    © 2026 Maui Components. Built with <span class="text-red-500">♥</span>
+                    using Phoenix LiveView.
+                  </p>
+                  <a
+                    href="https://github.com"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Edit this page on GitHub
+                  </a>
+                </div>
+              </footer>
+            </div>
+          </main>
+
+          <%!-- Right Sidebar - Table of Contents (On This Page) --%>
+          <aside class="hidden xl:block w-64 overflow-y-auto border-l border-border bg-background px-6 py-8">
+            <div class="sticky top-8">
+              <h5 class="mb-3 text-sm font-semibold text-foreground">On this page</h5>
+              <ul class="space-y-2 text-sm">
+                <li>
+                  <a
+                    href="#"
+                    class="block text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Overview
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="block text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Examples
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="block text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    API Reference
+                  </a>
+                </li>
+              </ul>
+
+              <div class="mt-8 pt-8 border-t border-border">
+                <h5 class="mb-3 text-sm font-semibold text-foreground">Related</h5>
+                <ul class="space-y-2 text-sm">
+                  <li>
+                    <a
+                      href="/guides/headless-usage.md"
+                      class="block text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Headless Usage Guide
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
+    </div>
+    """
+  end
+
+  # Sidebar Components
+
+  attr :title, :string, required: true
+  attr :icon, :string, default: nil
+  slot :inner_block, required: true
+
+  defp sidebar_group(assigns) do
+    ~H"""
+    <div class="sidebar-group">
+      <div class="flex items-center gap-2 px-3 py-2 mb-1">
+        <.icon :if={@icon} name={@icon} class="size-4 text-muted-foreground" />
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {@title}
+        </h3>
+      </div>
+      <ul class="space-y-0.5">
+        {render_slot(@inner_block)}
+      </ul>
     </div>
     """
   end
 
   attr :patch, :string, required: true
   attr :active, :boolean, default: false
-  attr :icon, :string, default: nil
   slot :inner_block, required: true
 
   defp sidebar_link(assigns) do
     ~H"""
-    <.link
-      patch={@patch}
-      class={[
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-        @active && "bg-accent text-accent-foreground",
-        !@active && "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-      ]}
-    >
-      <.icon :if={@icon} name={@icon} class="size-4" />
-      {render_slot(@inner_block)}
-    </.link>
-    """
-  end
-
-  attr :first, :boolean, default: false
-  slot :inner_block, required: true
-
-  defp sidebar_section(assigns) do
-    ~H"""
-    <div class={["px-3 py-2", !@first && "mt-4"]}>
-      <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+    <li>
+      <.link
+        patch={@patch}
+        class={[
+          "flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors",
+          @active && "bg-accent text-accent-foreground font-medium",
+          !@active && "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+        ]}
+      >
         {render_slot(@inner_block)}
-      </span>
-    </div>
+      </.link>
+    </li>
     """
   end
 
-  defp page_title(:index), do: "Component Overview"
+  # Page metadata
+
+  defp page_title(:index), do: "Overview"
+  defp page_title(:headless), do: "Headless Components"
   defp page_title(:inputs), do: "Inputs"
   defp page_title(:buttons), do: "Buttons"
   defp page_title(:dropdown), do: "Dropdown"
@@ -294,16 +395,50 @@ defmodule AppWeb.Layouts do
   defp page_title(:tab), do: "Tabs"
   defp page_title(_), do: "Components"
 
+  defp page_description(:index),
+    do: "A comprehensive collection of Phoenix LiveView components built with Tailwind CSS."
+
+  defp page_description(:headless),
+    do:
+      "Build custom UI components with full control over styling while preserving accessibility and behavior."
+
+  defp page_description(:buttons),
+    do: "Interactive button components with multiple variants, sizes, and states."
+
+  defp page_description(:inputs),
+    do: "Form input components including text fields, checkboxes, radio buttons, and switches."
+
+  defp page_description(:select),
+    do: "Dropdown selection components with search, grouping, and keyboard navigation support."
+
+  defp page_description(:dropdown),
+    do: "Menu dropdowns with items, shortcuts, separators, and destructive actions."
+
+  defp page_description(:dialog),
+    do: "Modal dialogs for confirmations, forms, and complex interactions."
+
+  defp page_description(:popover),
+    do: "Floating popovers using Floating UI for precise positioning."
+
+  defp page_description(:alert),
+    do: "Alert components for displaying important messages and status updates."
+
+  defp page_description(:toast),
+    do: "Toast notifications with beautiful animations and stacking support."
+
+  defp page_description(:container),
+    do: "Layout containers for structuring your application's UI."
+
+  defp page_description(:tab),
+    do: "Tab navigation components for organizing content into sections."
+
+  defp page_description(:progress_badges),
+    do: "Progress bars and badge components for status indicators."
+
+  defp page_description(_), do: ""
+
   @doc """
-  Shows the flash group with standard titles and content.
-
-  ## Examples
-
-
-  @doc \"""
   Provides dark vs light theme toggle based on themes defined in app.css.
-
-  See <head> in root.html.heex which applies the theme before page load.
   """
   def theme_toggle(assigns) do
     ~H"""
