@@ -204,9 +204,9 @@ defmodule AppWeb.DocComponents do
   ## Examples
 
       <.component_api_section
-        module="Maui.Button"
+        module="PUI.Button"
         function="button"
-        import_statement="use Maui"
+        import_statement="use PUI"
         props={[
           %{name: "variant", type: "atom", default: ":default", description: "Button style variant"},
           %{name: "size", type: "atom", default: ":default", description: "Button size"}

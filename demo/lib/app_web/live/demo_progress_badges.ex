@@ -1,6 +1,6 @@
 defmodule AppWeb.Live.DemoProgressBadges do
   use AppWeb, :live_view
-  use Maui
+  use PUI
   import AppWeb.DocComponents
 
   def mount(_params, _session, socket) do
@@ -39,7 +39,7 @@ defmodule AppWeb.Live.DemoProgressBadges do
                 <span class="text-zinc-600 dark:text-zinc-400">Progress</span>
                 <span class="font-medium text-zinc-900 dark:text-zinc-100">{@current_value}%</span>
               </div>
-              <Maui.Components.progress value={@current_value / 1} min={0.0} max={100.0} class="h-2" />
+              <PUI.Components.progress value={@current_value / 1} min={0.0} max={100.0} class="h-2" />
             </div>
 
             <div class="flex items-center gap-4">
@@ -76,7 +76,7 @@ defmodule AppWeb.Live.DemoProgressBadges do
           <div class="mt-4">
             <.code_block
               language="heex"
-              code={~S|<Maui.Components.progress
+              code={~S|<PUI.Components.progress
     value={@current_value}
     min={0.0}
     max={100.0}
@@ -105,7 +105,7 @@ defmodule AppWeb.Live.DemoProgressBadges do
                 <span class="text-zinc-600 dark:text-zinc-400">Storage Used (50-200 GB)</span>
                 <span class="font-medium text-zinc-900 dark:text-zinc-100">75 GB</span>
               </div>
-              <Maui.Components.progress value={75.0} min={50.0} max={200.0} class="h-3" />
+              <PUI.Components.progress value={75.0} min={50.0} max={200.0} class="h-3" />
             </div>
 
             <div class="space-y-2">
@@ -113,7 +113,7 @@ defmodule AppWeb.Live.DemoProgressBadges do
                 <span class="text-zinc-600 dark:text-zinc-400">Download Progress (0-50 MB)</span>
                 <span class="font-medium text-zinc-900 dark:text-zinc-100">32 MB</span>
               </div>
-              <Maui.Components.progress value={32.0} min={0.0} max={50.0} class="h-3" />
+              <PUI.Components.progress value={32.0} min={0.0} max={50.0} class="h-3" />
             </div>
 
             <div class="space-y-2">
@@ -121,20 +121,20 @@ defmodule AppWeb.Live.DemoProgressBadges do
                 <span class="text-zinc-600 dark:text-zinc-400">Temperature (0-100°C)</span>
                 <span class="font-medium text-zinc-900 dark:text-zinc-100">68°C</span>
               </div>
-              <Maui.Components.progress value={68.0} min={0.0} max={100.0} class="h-3" />
+              <PUI.Components.progress value={68.0} min={0.0} max={100.0} class="h-3" />
             </div>
           </div>
           <div class="mt-4">
             <.code_block
               language="heex"
-              code={~S|<Maui.Components.progress
+              code={~S|<PUI.Components.progress
     value={75.0}
     min={50.0}
     max={200.0}
     class="h-3"
     />
 
-    <Maui.Components.progress
+    <PUI.Components.progress
     value={32.0}
     min={0.0}
     max={50.0}
@@ -150,18 +150,18 @@ defmodule AppWeb.Live.DemoProgressBadges do
           description="Small status indicators with different semantic meanings."
         >
           <div class="flex flex-wrap gap-3">
-            <Maui.Components.badge variant="default">Default</Maui.Components.badge>
-            <Maui.Components.badge variant="secondary">Secondary</Maui.Components.badge>
-            <Maui.Components.badge variant="destructive">Destructive</Maui.Components.badge>
-            <Maui.Components.badge variant="outline">Outline</Maui.Components.badge>
+            <PUI.Components.badge variant="default">Default</PUI.Components.badge>
+            <PUI.Components.badge variant="secondary">Secondary</PUI.Components.badge>
+            <PUI.Components.badge variant="destructive">Destructive</PUI.Components.badge>
+            <PUI.Components.badge variant="outline">Outline</PUI.Components.badge>
           </div>
           <div class="mt-4">
             <.code_block
               language="heex"
-              code={~S|<Maui.Components.badge variant="default">Default</Maui.Components.badge>
-    <Maui.Components.badge variant="secondary">Secondary</Maui.Components.badge>
-    <Maui.Components.badge variant="destructive">Destructive</Maui.Components.badge>
-    <Maui.Components.badge variant="outline">Outline</Maui.Components.badge>|}
+              code={~S|<PUI.Components.badge variant="default">Default</PUI.Components.badge>
+    <PUI.Components.badge variant="secondary">Secondary</PUI.Components.badge>
+    <PUI.Components.badge variant="destructive">Destructive</PUI.Components.badge>
+    <PUI.Components.badge variant="outline">Outline</PUI.Components.badge>|}
             />
           </div>
         </.example_card>
@@ -173,48 +173,48 @@ defmodule AppWeb.Live.DemoProgressBadges do
         >
           <div class="space-y-4">
             <div class="flex flex-wrap gap-3">
-              <Maui.Components.badge class="bg-blue-500 hover:bg-blue-600 text-white">
+              <PUI.Components.badge class="bg-blue-500 hover:bg-blue-600 text-white">
                 <.icon name="hero-check-circle" class="w-3 h-3 mr-1" /> Verified
-              </Maui.Components.badge>
-              <Maui.Components.badge class="bg-green-500 hover:bg-green-600 text-white">
+              </PUI.Components.badge>
+              <PUI.Components.badge class="bg-green-500 hover:bg-green-600 text-white">
                 <.icon name="hero-signal" class="w-3 h-3 mr-1" /> Online
-              </Maui.Components.badge>
-              <Maui.Components.badge class="bg-purple-500 hover:bg-purple-600 text-white">
+              </PUI.Components.badge>
+              <PUI.Components.badge class="bg-purple-500 hover:bg-purple-600 text-white">
                 <.icon name="hero-sparkles" class="w-3 h-3 mr-1" /> Pro
-              </Maui.Components.badge>
-              <Maui.Components.badge class="bg-orange-500 hover:bg-orange-600 text-white">
+              </PUI.Components.badge>
+              <PUI.Components.badge class="bg-orange-500 hover:bg-orange-600 text-white">
                 <.icon name="hero-clock" class="w-3 h-3 mr-1" /> Pending
-              </Maui.Components.badge>
+              </PUI.Components.badge>
             </div>
 
             <div class="flex flex-wrap gap-3">
-              <Maui.Components.badge class="bg-zinc-100 text-zinc-700 border border-zinc-200">
+              <PUI.Components.badge class="bg-zinc-100 text-zinc-700 border border-zinc-200">
                 Draft
-              </Maui.Components.badge>
-              <Maui.Components.badge class="bg-yellow-100 text-yellow-800 border border-yellow-200">
+              </PUI.Components.badge>
+              <PUI.Components.badge class="bg-yellow-100 text-yellow-800 border border-yellow-200">
                 Warning
-              </Maui.Components.badge>
-              <Maui.Components.badge class="bg-red-100 text-red-800 border border-red-200">
+              </PUI.Components.badge>
+              <PUI.Components.badge class="bg-red-100 text-red-800 border border-red-200">
                 Error
-              </Maui.Components.badge>
+              </PUI.Components.badge>
             </div>
           </div>
           <div class="mt-4">
             <.code_block
               language="heex"
-              code={~S|<Maui.Components.badge class="bg-blue-500 hover:bg-blue-600 text-white">
+              code={~S|<PUI.Components.badge class="bg-blue-500 hover:bg-blue-600 text-white">
     <.icon name="hero-check-circle" class="w-3 h-3 mr-1" />
     Verified
-    </Maui.Components.badge>
+    </PUI.Components.badge>
 
-    <Maui.Components.badge class="bg-green-500 hover:bg-green-600 text-white">
+    <PUI.Components.badge class="bg-green-500 hover:bg-green-600 text-white">
     <.icon name="hero-signal" class="w-3 h-3 mr-1" />
     Online
-    </Maui.Components.badge>
+    </PUI.Components.badge>
 
-    <Maui.Components.badge class="bg-zinc-100 text-zinc-700 border border-zinc-200">
+    <PUI.Components.badge class="bg-zinc-100 text-zinc-700 border border-zinc-200">
     Draft
-    </Maui.Components.badge>|}
+    </PUI.Components.badge>|}
             />
           </div>
         </.example_card>
@@ -235,7 +235,7 @@ defmodule AppWeb.Live.DemoProgressBadges do
                   <p class="text-sm text-zinc-500">sarah@example.com</p>
                 </div>
               </div>
-              <Maui.Components.badge variant="secondary">Active</Maui.Components.badge>
+              <PUI.Components.badge variant="secondary">Active</PUI.Components.badge>
             </div>
 
             <div class="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
@@ -248,7 +248,7 @@ defmodule AppWeb.Live.DemoProgressBadges do
                   <p class="text-sm text-zinc-500">192.168.1.100</p>
                 </div>
               </div>
-              <Maui.Components.badge class="bg-green-500 text-white">Healthy</Maui.Components.badge>
+              <PUI.Components.badge class="bg-green-500 text-white">Healthy</PUI.Components.badge>
             </div>
 
             <div class="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
@@ -261,7 +261,7 @@ defmodule AppWeb.Live.DemoProgressBadges do
                   <p class="text-sm text-zinc-500">2.4 MB · Uploaded yesterday</p>
                 </div>
               </div>
-              <Maui.Components.badge variant="outline">Pending Review</Maui.Components.badge>
+              <PUI.Components.badge variant="outline">Pending Review</PUI.Components.badge>
             </div>
           </div>
           <div class="mt-4">
@@ -272,7 +272,7 @@ defmodule AppWeb.Live.DemoProgressBadges do
     <.icon name="hero-user" class="w-5 h-5" />
     <span>Sarah Johnson</span>
     </div>
-    <Maui.Components.badge variant="secondary">Active</Maui.Components.badge>
+    <PUI.Components.badge variant="secondary">Active</PUI.Components.badge>
     </div>|}
             />
           </div>

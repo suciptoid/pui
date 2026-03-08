@@ -83,7 +83,7 @@ defmodule AppWeb.Layouts do
             <a href="/" class="flex items-center gap-3">
               <img src={~p"/images/maui-hook-2d.png"} width="36" />
               <div class="flex flex-col">
-                <span class="text-lg font-bold text-foreground">Maui</span>
+                <span class="text-lg font-bold text-foreground">PUI</span>
                 <span class="text-xs text-muted-foreground">v1.0.0-alpha.10</span>
               </div>
             </a>
@@ -228,7 +228,7 @@ defmodule AppWeb.Layouts do
 
           <div class="flex items-center gap-2">
             <a
-              href="https://hexdocs.pm/maui"
+              href="https://hexdocs.pm/pui"
               class="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
               target="_blank"
             >
@@ -269,7 +269,7 @@ defmodule AppWeb.Layouts do
               <footer class="mt-16 pt-8 border-t border-border">
                 <div class="flex items-center justify-between">
                   <p class="text-sm text-muted-foreground">
-                    © 2026 Maui Components. Built with <span class="text-red-500">♥</span>
+                    © 2026 PUI Components. Built with <span class="text-red-500">♥</span>
                     using Phoenix LiveView.
                   </p>
                   <a

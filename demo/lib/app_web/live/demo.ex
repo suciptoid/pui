@@ -1,6 +1,6 @@
 defmodule AppWeb.Live.Demo do
   use AppWeb, :live_view
-  use Maui
+  use PUI
 
   def mount(_params, _session, socket) do
     form = to_form(%{"name" => "John Doe", "email" => "john@example.com", "text" => "text demo"})
@@ -33,10 +33,10 @@ defmodule AppWeb.Live.Demo do
   end
 
   def handle_event("send_flash", _params, socket) do
-    Maui.Flash.send_flash("Hi, I'm a flash message from #{socket.id}")
+    PUI.Flash.send_flash("Hi, I'm a flash message from #{socket.id}")
     assigns = %{}
 
-    Maui.Flash.send_flash(~H"""
+    PUI.Flash.send_flash(~H"""
     <div class="flex flex-col">
       <span>Hello world</span>
       <.button size="sm">click me</.button>
@@ -72,7 +72,7 @@ defmodule AppWeb.Live.Demo do
     </div>
     """
 
-    Maui.Flash.send_flash(%Maui.Flash.Message{
+    PUI.Flash.send_flash(%PUI.Flash.Message{
       type: :info,
       message: message,
       duration: 8,
@@ -107,7 +107,7 @@ defmodule AppWeb.Live.Demo do
     </div>
     """
 
-    Maui.Flash.send_flash(%Maui.Flash.Message{
+    PUI.Flash.send_flash(%PUI.Flash.Message{
       id: "update-me",
       type: :info,
       message: message,
@@ -181,7 +181,7 @@ defmodule AppWeb.Live.Demo do
     </div>
     """
 
-    Maui.Flash.send_flash(%Maui.Flash.Message{
+    PUI.Flash.send_flash(%PUI.Flash.Message{
       id: "update-me",
       type: :info,
       duration: 5,
@@ -194,7 +194,7 @@ defmodule AppWeb.Live.Demo do
   def render(assigns) do
     ~H"""
     <Layouts.docs flash={@flash} live_action={@live_action}>
-      <Maui.Flash.flash_group
+      <PUI.Flash.flash_group
         flash={@flash}
         position={@flash_placement}
         live={true}
@@ -223,12 +223,12 @@ defmodule AppWeb.Live.Demo do
         description="A compact alert with just a title and icon. Useful for brief status updates."
       >
         <div class="space-y-4">
-          <Maui.Alert.alert>
+          <PUI.Alert.alert>
             <:icon>
               <.icon name="hero-check-circle" class="size-5" />
             </:icon>
             <:title>Your changes have been saved</:title>
-          </Maui.Alert.alert>
+          </PUI.Alert.alert>
           <AppWeb.DocComponents.code_block
             code={"<.alert>\n  <:icon>\n    <.icon name=\"hero-check-circle\" class=\"size-5\" />\n  </:icon>\n  <:title>Your changes have been saved</:title>\n</.alert>"}
             language="heex"
@@ -242,7 +242,7 @@ defmodule AppWeb.Live.Demo do
         description="Use both title and description slots for more detailed alert messages."
       >
         <div class="space-y-4">
-          <Maui.Alert.alert>
+          <PUI.Alert.alert>
             <:icon>
               <.icon name="hero-information-circle" class="size-5" />
             </:icon>
@@ -250,7 +250,7 @@ defmodule AppWeb.Live.Demo do
             <:description>
               A new version of the application is available. Update now to get the latest features and improvements.
             </:description>
-          </Maui.Alert.alert>
+          </PUI.Alert.alert>
           <AppWeb.DocComponents.code_block
             code={"<.alert>\n  <:icon>\n    <.icon name=\"hero-information-circle\" class=\"size-5\" />\n  </:icon>\n  <:title>Update Available</:title>\n  <:description>\n    A new version of the application is available.\n  </:description>\n</.alert>"}
             language="heex"
@@ -264,7 +264,7 @@ defmodule AppWeb.Live.Demo do
         description="Use the destructive variant for errors, warnings, or destructive actions."
       >
         <div class="space-y-4">
-          <Maui.Alert.alert variant="destructive">
+          <PUI.Alert.alert variant="destructive">
             <:icon>
               <.icon name="hero-exclamation-triangle" class="size-5" />
             </:icon>
@@ -272,7 +272,7 @@ defmodule AppWeb.Live.Demo do
             <:description>
               Unable to process your request. Please check your connection and try again.
             </:description>
-          </Maui.Alert.alert>
+          </PUI.Alert.alert>
           <AppWeb.DocComponents.code_block
             code={"<.alert variant=\"destructive\">\n  <:icon>\n    <.icon name=\"hero-exclamation-triangle\" class=\"size-5\" />\n  </:icon>\n  <:title>Error</:title>\n  <:description>\n    Unable to process your request.\n  </:description>\n</.alert>"}
             language="heex"
@@ -286,7 +286,7 @@ defmodule AppWeb.Live.Demo do
         description="Use any icon or SVG in the icon slot to customize the alert's visual appearance."
       >
         <div class="space-y-4">
-          <Maui.Alert.alert>
+          <PUI.Alert.alert>
             <:icon>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -307,7 +307,7 @@ defmodule AppWeb.Live.Demo do
             <:description>
               Customize your alert icons using Heroicons, Lucide, or any custom SVG.
             </:description>
-          </Maui.Alert.alert>
+          </PUI.Alert.alert>
           <AppWeb.DocComponents.code_block
             code={"<.alert>\n  <:icon>\n    <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"size-5\" viewBox=\"0 0 24 24\">\n      <!-- Custom SVG icon -->\n    </svg>\n  </:icon>\n  <:title>Tips & Tricks</:title>\n</.alert>"}
             language="heex"
@@ -409,12 +409,12 @@ defmodule AppWeb.Live.Demo do
         <div class="space-y-4">
           <p class="text-sm text-zinc-600 dark:text-zinc-400">
             Add
-            <code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">use Maui</code>
+            <code class="px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded text-sm">use PUI</code>
             to your LiveView module
             to import all components automatically.
           </p>
           <AppWeb.DocComponents.code_block
-            code={"defmodule MyAppWeb.MyLive do\n  use MyAppWeb, :live_view\n  use Maui\n\n  def render(assigns) do\n    ~H\"\"\"\n    <.button>Click me</.button>\n    <.input label=\"Name\" />\n    \"\"\"\n  end\nend"}
+            code={"defmodule MyAppWeb.MyLive do\n  use MyAppWeb, :live_view\n  use PUI\n\n  def render(assigns) do\n    ~H\"\"\"\n    <.button>Click me</.button>\n    <.input label=\"Name\" />\n    \"\"\"\n  end\nend"}
             language="elixir"
           />
         </div>
@@ -571,7 +571,7 @@ defmodule AppWeb.Live.Demo do
         <.popover_base
           id="demo-popover-base"
           class="w-fit"
-          phx-hook="Maui.Popover"
+          phx-hook="PUI.Popover"
           data-placement="top"
         >
           <.button aria-haspopup="menu">
@@ -895,9 +895,9 @@ defmodule AppWeb.Live.Demo do
       
     <!-- API Section -->
       <AppWeb.DocComponents.component_api_section
-        module="Maui.Button"
+        module="PUI.Button"
         function="button"
-        import_statement="use Maui"
+        import_statement="use PUI"
         props={[
           %{
             name: "variant",
@@ -952,7 +952,7 @@ defmodule AppWeb.Live.Demo do
         description="Basic dropdown with labeled items and icons. Use the <:item> slot for simple menu options."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <Maui.Dropdown.menu_button content_class="w-52">
+          <PUI.Dropdown.menu_button content_class="w-52">
             <.icon name="hero-user" class="size-4" /> Account
             <:item navigate="/select">
               <.icon name="hero-user" class="size-4" /> Profile
@@ -963,7 +963,7 @@ defmodule AppWeb.Live.Demo do
             <:item>
               <.icon name="hero-question-mark-circle" class="size-4" /> Help
             </:item>
-          </Maui.Dropdown.menu_button>
+          </PUI.Dropdown.menu_button>
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-52">
@@ -982,7 +982,7 @@ defmodule AppWeb.Live.Demo do
         description="Display keyboard shortcuts for quick actions. Add the shortcut attribute to items."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <Maui.Dropdown.menu_button content_class="w-56">
+          <PUI.Dropdown.menu_button content_class="w-56">
             <.icon name="hero-command-line" class="size-4" /> Actions
             <:item shortcut="⌘P">
               <.icon name="hero-document" class="size-4" /> Print
@@ -996,7 +996,7 @@ defmodule AppWeb.Live.Demo do
             <:item shortcut="⌘Q">
               <.icon name="hero-arrow-right-on-rectangle" class="size-4" /> Quit
             </:item>
-          </Maui.Dropdown.menu_button>
+          </PUI.Dropdown.menu_button>
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-56">
@@ -1016,7 +1016,7 @@ defmodule AppWeb.Live.Demo do
         description="Use the destructive variant for actions that delete or remove data. These items appear with warning colors."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <Maui.Dropdown.menu_button content_class="w-56" variant="outline">
+          <PUI.Dropdown.menu_button content_class="w-56" variant="outline">
             <.icon name="hero-trash" class="size-4" /> Delete Options
             <:item variant="destructive" shortcut="⌘⌫">
               <.icon name="hero-trash" class="size-4" /> Delete File
@@ -1027,7 +1027,7 @@ defmodule AppWeb.Live.Demo do
             <:item variant="destructive">
               <.icon name="hero-user-minus" class="size-4" /> Remove User
             </:item>
-          </Maui.Dropdown.menu_button>
+          </PUI.Dropdown.menu_button>
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-56" variant="outline">
@@ -1049,28 +1049,28 @@ defmodule AppWeb.Live.Demo do
         description="Group related items with separators using the <:items> slot and menu_separator component."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <Maui.Dropdown.menu_button content_class="w-56">
+          <PUI.Dropdown.menu_button content_class="w-56">
             <.icon name="hero-bars-3" class="size-4" /> More Options
             <:items>
-              <Maui.Dropdown.menu_item>
+              <PUI.Dropdown.menu_item>
                 <.icon name="hero-eye" class="size-4" /> View Details
-              </Maui.Dropdown.menu_item>
-              <Maui.Dropdown.menu_item>
+              </PUI.Dropdown.menu_item>
+              <PUI.Dropdown.menu_item>
                 <.icon name="hero-pencil" class="size-4" /> Edit
-              </Maui.Dropdown.menu_item>
-              <Maui.Dropdown.menu_separator />
-              <Maui.Dropdown.menu_item>
+              </PUI.Dropdown.menu_item>
+              <PUI.Dropdown.menu_separator />
+              <PUI.Dropdown.menu_item>
                 <.icon name="hero-share" class="size-4" /> Share
-              </Maui.Dropdown.menu_item>
-              <Maui.Dropdown.menu_item>
+              </PUI.Dropdown.menu_item>
+              <PUI.Dropdown.menu_item>
                 <.icon name="hero-link" class="size-4" /> Copy Link
-              </Maui.Dropdown.menu_item>
-              <Maui.Dropdown.menu_separator />
-              <Maui.Dropdown.menu_item variant="destructive">
+              </PUI.Dropdown.menu_item>
+              <PUI.Dropdown.menu_separator />
+              <PUI.Dropdown.menu_item variant="destructive">
                 <.icon name="hero-trash" class="size-4" /> Delete
-              </Maui.Dropdown.menu_item>
+              </PUI.Dropdown.menu_item>
             </:items>
-          </Maui.Dropdown.menu_button>
+          </PUI.Dropdown.menu_button>
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-56">
@@ -1095,24 +1095,24 @@ defmodule AppWeb.Live.Demo do
         description="Use the <:items> slot for full control over menu items. Supports phx-click handlers like the undo action below."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <Maui.Dropdown.menu_button content_class="w-56">
+          <PUI.Dropdown.menu_button content_class="w-56">
             <.icon name="hero-ellipsis-vertical" class="size-4" /> Actions
             <:items>
-              <Maui.Dropdown.menu_item navigate="/select">
+              <PUI.Dropdown.menu_item navigate="/select">
                 <.icon name="hero-cog" class="size-4" /> Settings (navigate)
-              </Maui.Dropdown.menu_item>
-              <Maui.Dropdown.menu_item variant="destructive">
+              </PUI.Dropdown.menu_item>
+              <PUI.Dropdown.menu_item variant="destructive">
                 <.icon name="hero-trash" class="size-4" /> Delete User Profile
-              </Maui.Dropdown.menu_item>
-              <Maui.Dropdown.menu_item variant="destructive">
+              </PUI.Dropdown.menu_item>
+              <PUI.Dropdown.menu_item variant="destructive">
                 <.icon name="hero-trash" class="size-4" /> Delete User Data
-              </Maui.Dropdown.menu_item>
-              <Maui.Dropdown.menu_separator />
-              <Maui.Dropdown.menu_item variant="default" phx-click="undo">
+              </PUI.Dropdown.menu_item>
+              <PUI.Dropdown.menu_separator />
+              <PUI.Dropdown.menu_item variant="default" phx-click="undo">
                 <.icon name="hero-arrow-uturn-left" class="size-4" /> Undo
-              </Maui.Dropdown.menu_item>
+              </PUI.Dropdown.menu_item>
             </:items>
-          </Maui.Dropdown.menu_button>
+          </PUI.Dropdown.menu_button>
         </div>
         <AppWeb.DocComponents.code_block
           code={~s|<.menu_button content_class="w-56">
@@ -1136,9 +1136,9 @@ defmodule AppWeb.Live.Demo do
       
     <!-- Component API Section -->
       <AppWeb.DocComponents.component_api_section
-        module="Maui.Dropdown"
+        module="PUI.Dropdown"
         function="menu_button/1"
-        import_statement="use Maui"
+        import_statement="use PUI"
         props={[
           %{
             name: "variant",
@@ -1167,12 +1167,12 @@ defmodule AppWeb.Live.Demo do
           Built on top of Floating UI for precise positioning and smooth animations.
         </:description>
         <:example title="With Navigation">
-          <Maui.Dropdown.menu_button content_class="w-48">
+          <PUI.Dropdown.menu_button content_class="w-48">
             Navigate
             <:item navigate="/profile">View Profile</:item>
             <:item patch="/settings">Edit Settings</:item>
             <:item href="/logout">Sign Out</:item>
-          </Maui.Dropdown.menu_button>
+          </PUI.Dropdown.menu_button>
         </:example>
       </AppWeb.DocComponents.component_api_section>
       

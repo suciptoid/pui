@@ -8,7 +8,7 @@ defmodule AppWeb.Live.DemoHeadless do
   - Level 3: Styled components (default Tailwind styling)
   """
   use AppWeb, :live_view
-  use Maui
+  use PUI
 
   def mount(_params, _session, socket) do
     socket =
@@ -214,7 +214,7 @@ defmodule AppWeb.Live.DemoHeadless do
         >
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div class="space-y-4">
-              <Maui.Dropdown.menu_button
+              <PUI.Dropdown.menu_button
                 variant="unstyled"
                 class={@unstyled_button_class}
                 content_class={@unstyled_menu_class}
@@ -241,7 +241,7 @@ defmodule AppWeb.Live.DemoHeadless do
                 >
                   <.icon name="hero-arrow-right-on-rectangle" class="size-4" /> Logout
                 </:item>
-              </Maui.Dropdown.menu_button>
+              </PUI.Dropdown.menu_button>
 
               <div class="space-y-2">
                 <.input
@@ -476,7 +476,7 @@ defmodule AppWeb.Live.DemoHeadless do
             <div>
               <h4 class="font-semibold mb-2">Level 1: Low-level Hooks</h4>
               <AppWeb.DocComponents.code_block
-                code={~S|<.popover_base phx-hook="Maui.Popover" data-placement="bottom">
+                code={~S|<.popover_base phx-hook="PUI.Popover" data-placement="bottom">
     <button class="your-custom-classes">Trigger</button>
     <:popup class="your-popup-classes">
     Custom content

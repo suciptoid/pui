@@ -50,10 +50,10 @@ config :app, AppWeb.Endpoint,
       ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/app_web/(?:controllers|live|components|router)/?.*\.(ex|heex)$",
-      ~r"lib/maui/.*(ex)$"
+      ~r"lib/pui/.*(ex)$"
     ]
   ],
-  reloadable_apps: [:maui, :app]
+  reloadable_apps: [:pui, :app]
 
 config :phoenix_live_reload, dirs: ["", "../"]
 

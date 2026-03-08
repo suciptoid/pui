@@ -1,6 +1,6 @@
 defmodule AppWeb.Live.DemoPopover do
   use AppWeb, :live_view
-  use Maui
+  use PUI
   import AppWeb.DocComponents
 
   def mount(_params, _session, socket) do
@@ -36,7 +36,7 @@ defmodule AppWeb.Live.DemoPopover do
             <.popover_base
               id="demo-popover-base"
               class="w-fit"
-              phx-hook="Maui.Popover"
+              phx-hook="PUI.Popover"
               data-placement="bottom"
             >
               <.button aria-haspopup="menu">
@@ -60,7 +60,7 @@ defmodule AppWeb.Live.DemoPopover do
               code={~S|<.popover_base
     id="demo-popover-base"
     class="w-fit"
-    phx-hook="Maui.Popover"
+    phx-hook="PUI.Popover"
     data-placement="bottom"
     >
     <.button aria-haspopup="menu">
@@ -223,7 +223,7 @@ defmodule AppWeb.Live.DemoPopover do
             <.popover_base
               id="demo-popover-action"
               class="w-fit"
-              phx-hook="Maui.Popover"
+              phx-hook="PUI.Popover"
               data-placement="bottom"
             >
               <.button variant="secondary" aria-haspopup="menu">
@@ -253,7 +253,7 @@ defmodule AppWeb.Live.DemoPopover do
               code={~S|<.popover_base
     id="demo-popover-action"
     class="w-fit"
-    phx-hook="Maui.Popover"
+    phx-hook="PUI.Popover"
     data-placement="bottom"
     >
     <.button variant="secondary" aria-haspopup="menu">
@@ -340,7 +340,7 @@ defmodule AppWeb.Live.DemoPopover do
               %{
                 name: "phx-hook",
                 type: "string",
-                default: "Maui.Popover",
+                default: "PUI.Popover",
                 description: "Phoenix hook for popover base"
               },
               %{

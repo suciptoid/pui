@@ -1,6 +1,6 @@
 defmodule AppWeb.Live.DemoTab do
   use AppWeb, :live_view
-  use Maui
+  use PUI
 
   import AppWeb.DocComponents
 

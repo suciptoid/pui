@@ -1,6 +1,6 @@
 defmodule AppWeb.Live.DemoSelect do
   use AppWeb, :live_view
-  use Maui
+  use PUI
 
   alias AppWeb.DocComponents
 
@@ -30,7 +30,7 @@ defmodule AppWeb.Live.DemoSelect do
   end
 
   def handle_event("add-new-item", _params, socket) do
-    Maui.Flash.send_flash("Add new item clicked!")
+    PUI.Flash.send_flash("Add new item clicked!")
     {:noreply, socket}
   end
 

@@ -1,6 +1,6 @@
 defmodule AppWeb.Live.DemoDialog do
   use AppWeb, :live_view
-  use Maui
+  use PUI
 
   @basic_code """
   <.dialog :let={%{hide: hide}} id="x">

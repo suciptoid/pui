@@ -23,7 +23,7 @@ import "phoenix_html";
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import { hooks as colocatedHooks } from "phoenix-colocated/app";
-import { Hooks as MauiHooks } from "maui";
+import { Hooks as PUIHooks } from "pui";
 
 const CopyCode = {
   mounted() {
@@ -55,7 +55,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: {
     ...colocatedHooks,
-    ...MauiHooks,
+    ...PUIHooks,
     CopyCode,
   },
   dom: {

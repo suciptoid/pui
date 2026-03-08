@@ -64,7 +64,7 @@ defmodule App.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:tidewave, "~> 0.5", only: :dev},
-      {:maui, path: "../", override: true}
+      {:pui, path: "../", override: true}
     ]
   end
 
