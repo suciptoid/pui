@@ -1,4 +1,4 @@
-# Maui - Phoenix LiveView UI Toolkit
+# PUI - Phoenix LiveView UI Toolkit
 
 ## Commands
 
@@ -22,13 +22,13 @@
 
 ## Architecture
 
-- **lib/maui.ex**: Main module with `use Maui` macro that imports all components
-- **lib/maui/**: UI components (Button, Input, Select, Dialog, Dropdown, Alert, Popover, etc.)
+- **lib/pui.ex**: Main module with `use PUI` macro that imports all components
+- **lib/pui/**: UI components (Button, Input, Select, Dialog, Dropdown, Alert, Popover, etc.)
 - **assets/**: JS hooks and CSS for client-side functionality
 - **demo/**: Phoenix app showcasing components (see demo/AGENTS.md for Phoenix guidelines)
 
 # Docs / References
-use command `mix run -e "require IEx.Helpers; IEx.Helpers.h(Maui.Dialog)"` to read the docs for the `Maui.Dialog` module or another module from library / elixir built-in modules.
+use command `mix run -e "require IEx.Helpers; IEx.Helpers.h(PUI.Dialog)"` to read the docs for the `PUI.Dialog` module or another module from library / elixir built-in modules.
 
 ## Code Style
 
@@ -47,7 +47,7 @@ use command `mix run -e "require IEx.Helpers; IEx.Helpers.h(Maui.Dialog)"` to re
 - Include attributes table in documentation
 
 ```elixir
-defmodule Maui.Button do
+defmodule PUI.Button do
   use Phoenix.Component
 
   attr :class, :string, default: ""
@@ -68,14 +68,14 @@ end
 - Support both form field and direct value inputs
 
 ### Component Registration
-- Add new components to `lib/maui.ex` in the `__using__` macro
+- Add new components to `lib/pui.ex` in the `__using__` macro
 - Export public functions via `defdelegate` when needed
 
 ## File Organization
 
 - One component module per file
-- Component name matches file name (e.g., `Maui.Button` in `button.ex`)
-- Shared utilities go in `lib/maui/components.ex` or dedicated modules
+- Component name matches file name (e.g., `PUI.Button` in `button.ex`)
+- Shared utilities go in `lib/pui/components.ex` or dedicated modules
 - CSS variables use semantic naming: `primary`, `secondary`, `destructive`, `accent`
 
 ## Documentation Standards

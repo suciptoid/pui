@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="demo/assets/maui-hook.png" alt="MAUI Logo" width="200"/>
+  <img src="demo/assets/pui-hook.png" alt="PUI Logo" width="200"/>
 </p>
 
-# MAUI Components
+# PUI Components
 
 ## Headless Components
 
-Maui supports three usage levels:
+PUI supports three usage levels:
 
 **Level 1: Low-level Hooks** - Direct Floating UI access
 ```elixir
-<.popover_base phx-hook="Maui.Popover">
+<.popover_base phx-hook="PUI.Popover">
   <.button>Trigger</.button>
   <:popup class="custom">Content</:popup>
 </.popover_base>

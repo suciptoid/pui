@@ -1,17 +1,17 @@
-# Maui Usage Guide
+# PUI Usage Guide
 
-This guide will help you integrate Maui into your Phoenix LiveView application.
+This guide will help you integrate PUI into your Phoenix LiveView application.
 
 ## Installation
 
-### 1. Add Maui to your dependencies
+### 1. Add PUI to your dependencies
 
-Add `maui` to your `mix.exs`:
+Add `pui` to your `mix.exs`:
 
 ```elixir
 defp deps do
   [
-    {:maui, "~> 1.0.0-alpha"}
+    {:pui, "~> 1.0.0-alpha"}
   ]
 end
 ```
@@ -24,7 +24,7 @@ mix deps.get
 
 ### 2. Configure CSS
 
-Import Maui's CSS into your application's CSS file (e.g., `assets/css/app.css`):
+Import PUI's CSS into your application's CSS file (e.g., `assets/css/app.css`):
 
 ```css
 @import "tailwindcss" source(none);
@@ -32,21 +32,21 @@ Import Maui's CSS into your application's CSS file (e.g., `assets/css/app.css`):
 @source "../js";
 @source "../../lib/your_app_web";
 
-/* Add Maui source path */
-@source "../../../lib/maui";
-@import "../../../assets/css/maui.css";
+/* Add PUI source path */
+@source "../../../lib/pui";
+@import "../../../assets/css/pui.css";
 
 /* Your other imports... */
 ```
 
 ### 3. Configure JavaScript Hooks
 
-Import Maui's JavaScript hooks in your `assets/js/app.js`:
+Import PUI's JavaScript hooks in your `assets/js/app.js`:
 
 ```javascript
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
-import { Hooks as MauiHooks } from "maui";
+import { Hooks as PUIHooks } from "pui";
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
@@ -55,7 +55,7 @@ const csrfToken = document
 const liveSocket = new LiveSocket("/live", Socket, {
   params: { _csrf_token: csrfToken },
   hooks: {
-    ...MauiHooks,
+    ...PUIHooks,
     // Your other hooks...
   },
 });
@@ -63,14 +63,14 @@ const liveSocket = new LiveSocket("/live", Socket, {
 liveSocket.connect();
 ```
 
-### 4. Use Maui in Your LiveViews
+### 4. Use PUI in Your LiveViews
 
-Add `use Maui` to your LiveView modules to import all components:
+Add `use PUI` to your LiveView modules to import all components:
 
 ```elixir
 defmodule MyAppWeb.DemoLive do
   use MyAppWeb, :live_view
-  use Maui
+  use PUI
 
   def render(assigns) do
     ~H"""
@@ -85,7 +85,7 @@ end
 
 ## Components Overview
 
-Maui provides the following components:
+PUI provides the following components:
 
 ### Button
 
@@ -148,7 +148,7 @@ Maui provides the following components:
 ### Dropdown Menu
 
 ```heex
-<Maui.Dropdown.menu_button content_class="w-52">
+<PUI.Dropdown.menu_button content_class="w-52">
   <.icon name="hero-user" class="size-4" /> Update Profile
   
   <:item navigate="/profile" shortcut="⇧⌘P">
@@ -160,49 +160,49 @@ Maui provides the following components:
   <:item variant="destructive">
     <.icon name="hero-trash" class="size-4" /> Delete
   </:item>
-</Maui.Dropdown.menu_button>
+</PUI.Dropdown.menu_button>
 
 <!-- With custom items -->
-<Maui.Dropdown.menu_button content_class="w-52">
+<PUI.Dropdown.menu_button content_class="w-52">
   Options
   <:items>
     <.link navigate="/profile" role="menuitem">Profile</.link>
-    <Maui.Dropdown.menu_item>Settings</Maui.Dropdown.menu_item>
-    <Maui.Dropdown.menu_separator />
-    <Maui.Dropdown.menu_item variant="destructive">
+    <PUI.Dropdown.menu_item>Settings</PUI.Dropdown.menu_item>
+    <PUI.Dropdown.menu_separator />
+    <PUI.Dropdown.menu_item variant="destructive">
       <.icon name="hero-trash" class="size-4" /> Delete
-    </Maui.Dropdown.menu_item>
+    </PUI.Dropdown.menu_item>
   </:items>
-</Maui.Dropdown.menu_button>
+</PUI.Dropdown.menu_button>
 ```
 
 ### Alert
 
 ```heex
-<Maui.Alert.alert>
+<PUI.Alert.alert>
   <:icon>
     <.icon name="hero-check-circle" class="size-5" />
   </:icon>
   <:title>Success!</:title>
   <:description>Your changes have been saved.</:description>
-</Maui.Alert.alert>
+</PUI.Alert.alert>
 
 <!-- Destructive variant -->
-<Maui.Alert.alert variant="destructive">
+<PUI.Alert.alert variant="destructive">
   <:icon>
     <.icon name="hero-exclamation-triangle" class="size-5" />
   </:icon>
   <:title>Error</:title>
   <:description>Something went wrong.</:description>
-</Maui.Alert.alert>
+</PUI.Alert.alert>
 ```
 
 ### Popover
 
 ```heex
-<Maui.Popover.base
+<PUI.Popover.base
   id="demo-popover"
-  phx-hook="Maui.Popover"
+  phx-hook="PUI.Popover"
   data-placement="top"
 >
   <.button aria-haspopup="menu">Click Me</.button>
@@ -213,7 +213,7 @@ Maui provides the following components:
       <p class="text-sm opacity-90">This is a popover with custom content.</p>
     </div>
   </:popup>
-</Maui.Popover.base>
+</PUI.Popover.base>
 ```
 
 ### Toast/Flash Notifications
@@ -221,7 +221,7 @@ Maui provides the following components:
 Add the flash group component to your layout:
 
 ```heex
-<Maui.Flash.flash_group
+<PUI.Flash.flash_group
   flash={@flash}
   position="top-right"
   live={true}
@@ -232,10 +232,10 @@ Send flash messages from your LiveView:
 
 ```elixir
 # Basic flash message
-Maui.Flash.send_flash("Operation completed successfully!")
+PUI.Flash.send_flash("Operation completed successfully!")
 
 # Custom flash with HTML content
-Maui.Flash.send_flash(~H"""
+PUI.Flash.send_flash(~H"""
   <div class="flex items-center gap-2">
     <.icon name="hero-check-circle" class="size-5" />
     <span>Success!</span>
@@ -243,7 +243,7 @@ Maui.Flash.send_flash(~H"""
 """)
 
 # Advanced flash with custom options
-Maui.Flash.send_flash(%Maui.Flash.Message{
+PUI.Flash.send_flash(%PUI.Flash.Message{
   id: "my-flash",
   type: :info,
   message: "Custom message",
@@ -257,34 +257,34 @@ Maui.Flash.send_flash(%Maui.Flash.Message{
 
 ```heex
 <!-- Progress bar -->
-<Maui.Components.progress value={75} />
-<Maui.Components.progress value={45} class="h-4" />
+<PUI.Components.progress value={75} />
+<PUI.Components.progress value={45} class="h-4" />
 
 <!-- Badge -->
-<Maui.Components.badge>Default</Maui.Components.badge>
-<Maui.Components.badge variant="secondary">Secondary</Maui.Components.badge>
-<Maui.Components.badge variant="destructive">Error</Maui.Components.badge>
-<Maui.Components.badge variant="outline">Outline</Maui.Components.badge>
+<PUI.Components.badge>Default</PUI.Components.badge>
+<PUI.Components.badge variant="secondary">Secondary</PUI.Components.badge>
+<PUI.Components.badge variant="destructive">Error</PUI.Components.badge>
+<PUI.Components.badge variant="outline">Outline</PUI.Components.badge>
 ```
 
 ### Dialog
 
 ```heex
-<Maui.Dialog.dialog id="confirm-dialog">
+<PUI.Dialog.dialog id="confirm-dialog">
   <:trigger>
     <.button>Open Dialog</.button>
   </:trigger>
   
   <:content>
-    <Maui.Dialog.header>
-      <Maui.Dialog.title>Are you sure?</Maui.Dialog.title>
-      <Maui.Dialog.description>
+    <PUI.Dialog.header>
+      <PUI.Dialog.title>Are you sure?</PUI.Dialog.title>
+      <PUI.Dialog.description>
         This action cannot be undone.
-      </Maui.Dialog.description>
-    </Maui.Dialog.header>
+      </PUI.Dialog.description>
+    </PUI.Dialog.header>
     
     <div class="flex justify-end gap-2 mt-4">
-      <.button variant="outline" phx-click={Maui.Dialog.dismiss("confirm-dialog")}>
+      <.button variant="outline" phx-click={PUI.Dialog.dismiss("confirm-dialog")}>
         Cancel
       </.button>
       <.button variant="destructive" phx-click="confirm">
@@ -292,13 +292,13 @@ Maui.Flash.send_flash(%Maui.Flash.Message{
       </.button>
     </div>
   </:content>
-</Maui.Dialog.dialog>
+</PUI.Dialog.dialog>
 ```
 
 ### Select
 
 ```heex
-<Maui.Select.select
+<PUI.Select.select
   id="country-select"
   options={[
     %{value: "us", label: "United States"},
@@ -311,7 +311,7 @@ Maui.Flash.send_flash(%Maui.Flash.Message{
 
 ## Global Component Imports
 
-To make Maui components available in all your LiveViews without adding `use Maui` to each one, add the imports to your `my_app_web.ex` file:
+To make PUI components available in all your LiveViews without adding `use PUI` to each one, add the imports to your `my_app_web.ex` file:
 
 ```elixir
 defmodule MyAppWeb do
@@ -321,16 +321,16 @@ defmodule MyAppWeb do
     quote do
       # ... other imports
       
-      # Import Maui components globally
-      import Maui
-      import Maui.Input
-      import Maui.Button
-      import Maui.Dropdown
-      import Maui.Alert
-      import Maui.Popover
-      import Maui.Select
-      import Maui.Dialog
-      import Maui.Components
+      # Import PUI components globally
+      import PUI
+      import PUI.Input
+      import PUI.Button
+      import PUI.Dropdown
+      import PUI.Alert
+      import PUI.Popover
+      import PUI.Select
+      import PUI.Dialog
+      import PUI.Components
     end
   end
 end
@@ -338,7 +338,7 @@ end
 
 ## Customization
 
-Maui components use Tailwind CSS classes and can be customized via the `class` attribute:
+PUI components use Tailwind CSS classes and can be customized via the `class` attribute:
 
 ```heex
 <.button class="bg-purple-600 hover:bg-purple-700">
@@ -350,7 +350,7 @@ Maui components use Tailwind CSS classes and can be customized via the `class` a
 
 ## Dependencies
 
-Maui requires:
+PUI requires:
 
 - Phoenix LiveView ~> 1.1
 - Tailwind CSS v4
@@ -358,7 +358,7 @@ Maui requires:
 
 ## Demo Application
 
-Check out the `demo/` directory in the Maui repository for a complete example application showcasing all components.
+Check out the `demo/` directory in the PUI repository for a complete example application showcasing all components.
 
 To run the demo:
 
