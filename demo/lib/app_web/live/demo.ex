@@ -385,7 +385,7 @@ defmodule AppWeb.Live.Demo do
               1. Add the dependency to your mix.exs
             </h4>
             <AppWeb.DocComponents.code_block
-              code={"def deps do\n  [\n    {:maui, github: \"your-org/maui\"}\n  ]\nend"}
+              code={"def deps do\n  [\n    {:pui, github: \"your-org/pui\"}\n  ]\nend"}
               language="elixir"
             />
           </div>
