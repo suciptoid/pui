@@ -1,8 +1,8 @@
-defmodule Maui.SelectTest do
+defmodule PUI.SelectTest do
   use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Phoenix.Component
-  import Maui.Select
+  import PUI.Select
 
   describe "select with variant='unstyled'" do
     test "renders without default styles" do

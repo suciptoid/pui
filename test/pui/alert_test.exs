@@ -1,8 +1,8 @@
-defmodule Maui.AlertTest do
+defmodule PUI.AlertTest do
   use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Phoenix.Component
-  import Maui.Alert
+  import PUI.Alert
 
   describe "alert with variant='unstyled'" do
     test "renders without default styles" do

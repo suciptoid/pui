@@ -1,8 +1,8 @@
-defmodule Maui.ButtonTest do
+defmodule PUI.ButtonTest do
   use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Phoenix.Component
-  import Maui.Button
+  import PUI.Button
 
   describe "button with variant='unstyled'" do
     test "renders with only custom class" do

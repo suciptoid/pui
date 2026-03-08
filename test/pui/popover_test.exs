@@ -1,8 +1,8 @@
-defmodule Maui.PopoverTest do
+defmodule PUI.PopoverTest do
   use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Phoenix.Component
-  import Maui.Popover
+  import PUI.Popover
 
   describe "base popover with variant='unstyled'" do
     test "renders without default styles" do
@@ -10,7 +10,7 @@ defmodule Maui.PopoverTest do
 
       html =
         rendered_to_string(~H"""
-        <.base id="test" variant="unstyled" phx-hook="Maui.Popover">
+        <.base id="test" variant="unstyled" phx-hook="PUI.Popover">
           <:trigger class="my-trigger">Click</:trigger>
           <:popup class="my-popup">Content</:popup>
         </.base>
@@ -25,7 +25,7 @@ defmodule Maui.PopoverTest do
 
       html =
         rendered_to_string(~H"""
-        <.base id="test" variant="unstyled" phx-hook="Maui.Popover">
+        <.base id="test" variant="unstyled" phx-hook="PUI.Popover">
           <:trigger>Click</:trigger>
           <:popup>Content</:popup>
         </.base>

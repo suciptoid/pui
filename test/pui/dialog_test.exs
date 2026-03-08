@@ -1,8 +1,8 @@
-defmodule Maui.DialogTest do
+defmodule PUI.DialogTest do
   use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Phoenix.Component
-  import Maui.Dialog
+  import PUI.Dialog
 
   describe "dialog with variant='unstyled'" do
     test "renders without default styles" do

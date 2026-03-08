@@ -1,8 +1,8 @@
-defmodule Maui.DropdownTest do
+defmodule PUI.DropdownTest do
   use ExUnit.Case, async: true
   import Phoenix.LiveViewTest
   import Phoenix.Component
-  import Maui.Dropdown
+  import PUI.Dropdown
 
   describe "menu_button with variant='unstyled'" do
     test "renders unstyled button without default classes" do
