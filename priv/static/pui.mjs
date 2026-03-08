@@ -1746,7 +1746,7 @@ var Select = class extends Popover {
       (item) => item.dataset.value === this.hiddenInput.value
     );
     this.placeholder = items ? items.textContent : "";
-    const label = this.el.querySelector(`[data-maui="selected-label"]`);
+    const label = this.el.querySelector(`[data-pui="selected-label"]`);
     if (label) {
       label.textContent = items ? items.textContent : "";
     }
@@ -2141,11 +2141,11 @@ var FlashGroup = class extends ViewHook4 {
 
 // js/index.js
 var Hooks = {
-  "Maui.LoadingBar": LoadingBar,
-  "Maui.Popover": Popover,
-  "Maui.Select": Select,
-  "Maui.Tooltip": Tooltip,
-  "Maui.FlashGroup": FlashGroup
+  "PUI.LoadingBar": LoadingBar,
+  "PUI.Popover": Popover,
+  "PUI.Select": Select,
+  "PUI.Tooltip": Tooltip,
+  "PUI.FlashGroup": FlashGroup
 };
 export {
   FlashGroup,
@@ -2155,4 +2155,4 @@ export {
   Select,
   Tooltip
 };
-//# sourceMappingURL=maui.mjs.map
+//# sourceMappingURL=pui.mjs.map

@@ -1776,7 +1776,7 @@ var Select = class extends Popover {
       (item) => item.dataset.value === this.hiddenInput.value
     );
     this.placeholder = items ? items.textContent : "";
-    const label = this.el.querySelector(`[data-maui="selected-label"]`);
+    const label = this.el.querySelector(`[data-pui="selected-label"]`);
     if (label) {
       label.textContent = items ? items.textContent : "";
     }
@@ -2171,10 +2171,10 @@ var FlashGroup = class extends import_phoenix_live_view4.ViewHook {
 
 // js/index.js
 var Hooks = {
-  "Maui.LoadingBar": LoadingBar,
-  "Maui.Popover": Popover,
-  "Maui.Select": Select,
-  "Maui.Tooltip": Tooltip,
-  "Maui.FlashGroup": FlashGroup
+  "PUI.LoadingBar": LoadingBar,
+  "PUI.Popover": Popover,
+  "PUI.Select": Select,
+  "PUI.Tooltip": Tooltip,
+  "PUI.FlashGroup": FlashGroup
 };
-//# sourceMappingURL=maui.cjs.js.map
+//# sourceMappingURL=pui.cjs.js.map
