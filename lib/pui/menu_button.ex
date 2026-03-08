@@ -1,4 +1,4 @@
-defmodule Maui.MenuButton do
+defmodule PUI.MenuButton do
   @moduledoc """
   A button that opens a popup menu. Built on top of Popover.
 
@@ -87,7 +87,7 @@ defmodule Maui.MenuButton do
     assigns = assigns |> assign(popup: popup)
 
     ~H"""
-    <Maui.Popover.base id={@id} phx-hook="Popover" class="relative">
+    <PUI.Popover.base id={@id} phx-hook="Popover" class="relative">
       <:trigger :for={button <- @button} class={Map.get(button, :class, "")}>
         {render_slot(button)}
       </:trigger>
@@ -95,7 +95,7 @@ defmodule Maui.MenuButton do
       <:popup class={Map.get(@popup, :class, "")} role="menu">
         {render_slot(@popup)}
       </:popup>
-    </Maui.Popover.base>
+    </PUI.Popover.base>
     """
   end
 

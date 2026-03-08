@@ -1,4 +1,4 @@
-defmodule Maui.Components do
+defmodule PUI.Components do
   use Phoenix.Component
 
   attr :min, :float, default: 0.0

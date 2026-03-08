@@ -1,4 +1,4 @@
-defmodule Maui.Container do
+defmodule PUI.Container do
   @moduledoc """
   Container components for organizing content with consistent styling.
 

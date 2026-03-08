@@ -1,4 +1,4 @@
-defmodule Maui.Alert do
+defmodule PUI.Alert do
   @moduledoc """
   Alert component for displaying important messages and status updates.
 

@@ -1,4 +1,4 @@
-defmodule Maui.Flash do
+defmodule PUI.Flash do
   @moduledoc """
   Toast notification system for LiveView applications.
 
@@ -6,21 +6,21 @@ defmodule Maui.Flash do
 
   Add the flash group to your layout:
 
-      <Maui.Flash.flash_group flash={@flash} />
+      <PUI.Flash.flash_group flash={@flash} />
 
   For LiveView pages with dynamic flashes:
 
-      <Maui.Flash.flash_group flash={@flash} live={true} />
+      <PUI.Flash.flash_group flash={@flash} live={true} />
 
   ## Sending Flashes
 
   From a LiveView:
 
-      Maui.Flash.send_flash("Operation completed successfully!")
+      PUI.Flash.send_flash("Operation completed successfully!")
 
   With custom options:
 
-      Maui.Flash.send_flash(%Maui.Flash.Message{
+      PUI.Flash.send_flash(%PUI.Flash.Message{
         type: :success,
         message: "Saved!",
         duration: 8,
@@ -31,9 +31,9 @@ defmodule Maui.Flash do
 
   Position the flash container in different corners:
 
-      <Maui.Flash.flash_group flash={@flash} position="top-right" />
-      <Maui.Flash.flash_group flash={@flash} position="top-center" />
-      <Maui.Flash.flash_group flash={@flash} position="bottom-left" />
+      <PUI.Flash.flash_group flash={@flash} position="top-right" />
+      <PUI.Flash.flash_group flash={@flash} position="top-center" />
+      <PUI.Flash.flash_group flash={@flash} position="bottom-left" />
 
   Available positions: `top-left`, `top-center`, `top-right`,
   `bottom-left`, `bottom-center`, `bottom-right`
@@ -42,7 +42,7 @@ defmodule Maui.Flash do
 
   Send HEEx content in flashes:
 
-      Maui.Flash.send_flash(~H|<div class="flex items-center gap-2">
+      PUI.Flash.send_flash(~H|<div class="flex items-center gap-2">
         <.icon name="hero-check-circle" class="size-5" />
         <span>Success!</span>
       </div>|)
@@ -51,7 +51,7 @@ defmodule Maui.Flash do
 
   Update an existing flash by ID:
 
-      Maui.Flash.update_flash(%Maui.Flash.Message{
+      PUI.Flash.update_flash(%PUI.Flash.Message{
         id: "my-flash",
         message: "Updated!"
       })
@@ -71,7 +71,7 @@ defmodule Maui.Flash do
 
   Create flash messages with the `Message` struct:
 
-      %Maui.Flash.Message{
+      %PUI.Flash.Message{
         message: "Hello!",           # Required
         type: :info,                  # :info, :success, :warning, :error
         duration: 5,                  # Seconds until auto-dismiss
@@ -182,7 +182,7 @@ defmodule Maui.Flash do
 
   example:
   ```elixir
-  <Maui.Flash.flash_group flash={@flash} live={true}>
+  <PUI.Flash.flash_group flash={@flash} live={true}>
   ```
 
   """
@@ -214,7 +214,7 @@ defmodule Maui.Flash do
       ~H"""
       <.live_component
         id={@id}
-        module={Maui.Flash}
+        module={PUI.Flash}
         limit={@limit}
         flash={@flash}
         position={@position}
@@ -226,14 +226,14 @@ defmodule Maui.Flash do
 
       ~H"""
       <.container id={@id} position={@position}>
-        <Maui.Flash.flash
+        <PUI.Flash.flash
           :for={flash <- @flashs}
           id={flash.id}
           data-flash-id={flash.id}
           position={@position}
         >
           {flash.message}
-        </Maui.Flash.flash>
+        </PUI.Flash.flash>
       </.container>
       """
     end
@@ -314,7 +314,7 @@ defmodule Maui.Flash do
     ~H"""
     <div
       data-position={@position}
-      phx-hook="Maui.FlashGroup"
+      phx-hook="PUI.FlashGroup"
       class={[
         "fixed z-10  flex flex-col w-[300px]",
         @position_classes
@@ -358,7 +358,7 @@ defmodule Maui.Flash do
         if is_nil(v), do: "fl-#{System.unique_integer([:positive])}", else: v
       end)
 
-    Phoenix.LiveView.send_update(pid, Maui.Flash,
+    Phoenix.LiveView.send_update(pid, PUI.Flash,
       id: @default_container_id,
       flash: flash,
       from: :send_flash
@@ -372,7 +372,7 @@ defmodule Maui.Flash do
   end
 
   def update_flash(pid \\ self(), %Message{} = flash) do
-    Phoenix.LiveView.send_update(pid, Maui.Flash,
+    Phoenix.LiveView.send_update(pid, PUI.Flash,
       id: @default_container_id,
       flash: flash,
       from: :update_flash

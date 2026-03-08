@@ -1,4 +1,4 @@
-defmodule Maui.Button do
+defmodule PUI.Button do
   @moduledoc """
   A versatile button component with multiple variants and sizes.
 

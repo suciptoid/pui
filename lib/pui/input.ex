@@ -1,4 +1,4 @@
-defmodule Maui.Input do
+defmodule PUI.Input do
   @moduledoc """
   Form input components including text inputs, checkboxes, radio buttons, switches, and textareas.
 

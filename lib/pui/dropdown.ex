@@ -1,4 +1,4 @@
-defmodule Maui.Dropdown do
+defmodule PUI.Dropdown do
   @moduledoc """
   Dropdown menu component for displaying actions and options.
 
@@ -111,8 +111,8 @@ defmodule Maui.Dropdown do
     assigns = assign(assigns, id: id, is_unstyled: is_unstyled)
 
     ~H"""
-    <div id={@id} class="w-fit" phx-hook="Maui.Popover">
-      <Maui.Button.button
+    <div id={@id} class="w-fit" phx-hook="PUI.Popover">
+      <PUI.Button.button
         :if={not @is_unstyled}
         id={"#{@id}-trigger"}
         variant={@variant}
@@ -122,7 +122,7 @@ defmodule Maui.Dropdown do
         class={@class}
       >
         {render_slot(@inner_block)}
-      </Maui.Button.button>
+      </PUI.Button.button>
       <button
         :if={@is_unstyled}
         id={"#{@id}-trigger"}

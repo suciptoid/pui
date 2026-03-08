@@ -1,4 +1,4 @@
-defmodule Maui.Dialog do
+defmodule PUI.Dialog do
   @moduledoc """
   A modal dialog component for LiveView applications.
 
@@ -105,8 +105,8 @@ defmodule Maui.Dialog do
 
   Use `show_dialog/1` and `hide_dialog/1` functions directly:
 
-      <.button phx-click={Maui.Dialog.show_dialog("my-dialog")}>Open</.button>
-      <.button phx-click={Maui.Dialog.hide_dialog("my-dialog")}>Close</.button>
+      <.button phx-click={PUI.Dialog.show_dialog("my-dialog")}>Open</.button>
+      <.button phx-click={PUI.Dialog.hide_dialog("my-dialog")}>Close</.button>
 
   ## Attributes
 

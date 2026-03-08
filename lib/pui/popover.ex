@@ -1,4 +1,4 @@
-defmodule Maui.Popover do
+defmodule PUI.Popover do
   @moduledoc """
   Popover and tooltip components using Floating UI for positioning.
 
@@ -8,7 +8,7 @@ defmodule Maui.Popover do
 
       <.popover_base
         id="my-popover"
-        phx-hook="Maui.Popover"
+        phx-hook="PUI.Popover"
         data-placement="bottom"
       >
         <.button aria-haspopup="menu">Click Me</.button>
@@ -163,7 +163,7 @@ defmodule Maui.Popover do
       id={@id}
       class="w-fit group"
       data-placement={@placement}
-      phx-hook="Maui.Tooltip"
+      phx-hook="PUI.Tooltip"
     >
       {render_slot(@inner_block)}
 

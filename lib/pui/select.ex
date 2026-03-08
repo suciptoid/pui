@@ -1,4 +1,4 @@
-defmodule Maui.Select do
+defmodule PUI.Select do
   @moduledoc """
   A customizable select dropdown component with search and grouping support.
 
@@ -94,7 +94,7 @@ defmodule Maui.Select do
   """
 
   use Phoenix.Component
-  import Maui.Input, only: [label: 1]
+  import PUI.Input, only: [label: 1]
 
   attr :id, :string, default: nil
   attr :name, :string, default: nil
@@ -163,7 +163,7 @@ defmodule Maui.Select do
     <div
       id={@id}
       data-value={@value}
-      phx-hook="Maui.Select"
+      phx-hook="PUI.Select"
       class="relative"
     >
       <input type="hidden" name={@name} value={@value} />

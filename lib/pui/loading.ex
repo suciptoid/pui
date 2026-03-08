@@ -1,4 +1,4 @@
-defmodule Maui.Loading do
+defmodule PUI.Loading do
   @moduledoc """
   Loading indicators and progress components.
 
@@ -9,13 +9,13 @@ defmodule Maui.Loading do
 
   Add to your root layout:
 
-      <Maui.Loading.topbar />
+      <PUI.Loading.topbar />
 
   ## Customization
 
   Adjust the delay and color:
 
-      <Maui.Loading.topbar delay={100} class="!bg-amber-400 !shadow-amber-500/20" />
+      <PUI.Loading.topbar delay={100} class="!bg-amber-400 !shadow-amber-500/20" />
 
   ## How It Works
 
@@ -41,8 +41,8 @@ defmodule Maui.Loading do
 
   ## Example
 
-      <Maui.Loading.topbar />
-      <Maui.Loading.topbar delay={100} class="!bg-amber-400" />
+      <PUI.Loading.topbar />
+      <PUI.Loading.topbar delay={100} class="!bg-amber-400" />
   """
   attr :delay, :integer, default: 300
   attr :class, :string, default: ""
@@ -50,7 +50,7 @@ defmodule Maui.Loading do
   def topbar(assigns) do
     ~H"""
     <div
-      phx-hook="Maui.LoadingBar"
+      phx-hook="PUI.LoadingBar"
       data-delay={@delay}
       id="loadingbar"
       class="w-full z-[1000] fixed top-0 left-0 right-0 pointer-events-none"
