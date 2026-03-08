@@ -1,6 +1,6 @@
 defmodule AppWeb.Live.DemoHeadless do
   @moduledoc """
-  Interactive demo showcasing Maui's headless/unstyled component variants.
+  Interactive demo showcasing PUI's headless/unstyled component variants.
 
   Demonstrates the three usage levels:
   - Level 1: Low-level hooks (direct Floating UI access)
@@ -109,7 +109,7 @@ defmodule AppWeb.Live.DemoHeadless do
             Headless Components
           </h1>
           <p class="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Maui supports three levels of component usage. Use low-level hooks, unstyled components,
+            PUI supports three levels of component usage. Use low-level hooks, unstyled components,
             or fully styled defaults. Your choice, your styles.
           </p>
         </div>

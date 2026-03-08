@@ -6,8 +6,8 @@
 @source "../js";
 @source "../../lib/app_web";
 
-@source "../../../lib/maui";
-@import "../../../assets/css/maui.css";
+@source "../../../lib/pui";
+@import "../../../assets/css/pui.css";
 
 /* A Tailwind plugin that makes "hero-#{ICON}" classes available.
    The heroicons installation itself is managed by your mix.exs */

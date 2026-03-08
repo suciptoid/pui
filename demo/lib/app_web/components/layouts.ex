@@ -81,7 +81,7 @@ defmodule AppWeb.Layouts do
           <%!-- Logo Header --%>
           <div class="flex items-center justify-between border-b border-border px-6 py-4">
             <a href="/" class="flex items-center gap-3">
-              <img src={~p"/images/maui-hook-2d.png"} width="36" />
+              <img src={~p"/images/pui-hook-2d.png"} width="36" />
               <div class="flex flex-col">
                 <span class="text-lg font-bold text-foreground">PUI</span>
                 <span class="text-xs text-muted-foreground">v1.0.0-alpha.10</span>

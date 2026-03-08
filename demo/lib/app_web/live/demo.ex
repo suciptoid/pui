@@ -358,7 +358,7 @@ defmodule AppWeb.Live.Demo do
           </div>
         </div>
         <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl mb-4">
-          Maui UI Components
+          PUI UI Components
         </h1>
         <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
           A comprehensive collection of Phoenix LiveView components built with Tailwind CSS.
@@ -377,7 +377,7 @@ defmodule AppWeb.Live.Demo do
       <%!-- Installation Section --%>
       <AppWeb.DocComponents.example_card
         title="Installation"
-        description="Add Maui to your Phoenix LiveView project in just a few steps."
+        description="Add PUI to your Phoenix LiveView project in just a few steps."
       >
         <div class="space-y-4">
           <div>

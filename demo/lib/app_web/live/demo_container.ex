@@ -19,7 +19,7 @@ defmodule AppWeb.Live.DemoContainer do
         <div>
           <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Container Components</h1>
           <p class="mt-2 text-zinc-600 dark:text-zinc-400">
-            Maui provides various container components for organizing content with consistent styling.
+            PUI provides various container components for organizing content with consistent styling.
           </p>
         </div>
         

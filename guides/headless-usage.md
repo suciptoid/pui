@@ -1,13 +1,13 @@
 # Headless Component Usage
 
-Maui supports three levels of component usage, from fully styled to completely custom.
+PUI supports three levels of component usage, from fully styled to completely custom.
 
 ## Level 1: Low-level Hooks (Direct Floating UI)
 
 For maximum control, use the low-level hooks directly with Floating UI:
 
 ```elixir
-<.popover_base phx-hook="Maui.Popover" data-placement="bottom">
+<.popover_base phx-hook="PUI.Popover" data-placement="bottom">
   <.button class="your-custom-classes">Trigger</.button>
   <:popup class="your-popup-classes">
     Custom content with full control
@@ -17,9 +17,9 @@ For maximum control, use the low-level hooks directly with Floating UI:
 
 ### Available Hooks
 
-- `Maui.Popover` - Popover/dropdown positioning
-- `Maui.Tooltip` - Tooltip positioning
-- `Maui.Select` - Select dropdown with search
+- `PUI.Popover` - Popover/dropdown positioning
+- `PUI.Tooltip` - Tooltip positioning
+- `PUI.Select` - Select dropdown with search
 
 ### Hook Configuration
 
@@ -27,7 +27,7 @@ Hooks accept data attributes for configuration:
 
 ```elixir
 <.popover_base 
-  phx-hook="Maui.Popover"
+  phx-hook="PUI.Popover"
   data-placement="top"
   data-trigger="hover"
   data-strategy="fixed"

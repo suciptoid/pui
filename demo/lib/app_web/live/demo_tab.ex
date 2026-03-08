@@ -211,7 +211,7 @@ defmodule AppWeb.Live.DemoTab do
         <%!-- Props Table --%>
         <.example_card
           title="Implementation Notes"
-          description="Tips for building tab interfaces with Maui components."
+          description="Tips for building tab interfaces with PUI components."
         >
           <div class="space-y-4 text-sm text-zinc-600 dark:text-zinc-400">
             <div>

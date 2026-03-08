@@ -181,7 +181,7 @@ defmodule PUI.Select do
           end
         }
       >
-        <span data-maui="selected-label">
+        <span data-pui="selected-label">
           {@placeholder}
         </span>
         <.select_icon :if={not @is_unstyled} class="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -208,7 +208,7 @@ defmodule PUI.Select do
 
         <.select_search :if={@searchable and not @is_unstyled} />
 
-        <div data-maui="menu-items">
+        <div data-pui="menu-items">
           {render_slot(@inner_block)}
         </div>
 
@@ -220,7 +220,7 @@ defmodule PUI.Select do
 
   def select_search(assigns) do
     ~H"""
-    <div data-maui="combobox-search" class="flex h-9 items-center gap-2 border-b px-3">
+    <div data-pui="combobox-search" class="flex h-9 items-center gap-2 border-b px-3">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
