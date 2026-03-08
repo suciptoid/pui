@@ -55,7 +55,7 @@ export default class Select extends Popover {
     );
     this.placeholder = items ? items.textContent : "";
 
-    const label = this.el.querySelector(`[data-maui="selected-label"]`);
+    const label = this.el.querySelector(`[data-pui="selected-label"]`);
     if (label) {
       label.textContent = items ? items.textContent : "";
     }

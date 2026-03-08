@@ -5,11 +5,11 @@ import Tooltip from "./tooltip";
 import FlashGroup from "./flash";
 
 export const Hooks = {
-  "Maui.LoadingBar": LoadingBar,
-  "Maui.Popover": Popover,
-  "Maui.Select": Select,
-  "Maui.Tooltip": Tooltip,
-  "Maui.FlashGroup": FlashGroup,
+  "PUI.LoadingBar": LoadingBar,
+  "PUI.Popover": Popover,
+  "PUI.Select": Select,
+  "PUI.Tooltip": Tooltip,
+  "PUI.FlashGroup": FlashGroup,
 };
 
 export { Popover, Select, LoadingBar, Tooltip, FlashGroup };
