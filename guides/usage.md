@@ -33,8 +33,8 @@ Import PUI's CSS into your application's CSS file (e.g., `assets/css/app.css`):
 @source "../../lib/your_app_web";
 
 /* Add PUI source path */
-@source "../../../lib/pui";
-@import "../../../assets/css/pui.css";
+@source "../../deps/pui";
+@import "../../deps/pui/assets/css/pui.css";
 
 /* Your other imports... */
 ```
