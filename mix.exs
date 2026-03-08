@@ -1,9 +1,9 @@
-defmodule Maui.MixProject do
+defmodule PUI.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :maui,
+      app: :pui,
       version: "1.0.0-alpha.10",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -41,10 +41,10 @@ defmodule Maui.MixProject do
 
   defp package do
     [
-      name: :maui,
+      name: :pui,
       description: "A Phoenix LiveView UI toolkit",
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/suciptoid/maui"},
+      links: %{"GitHub" => "https://github.com/suciptoid/pui"},
       maintainers: ["Sucipto"],
       files: ~w(
         assets/js assets/css lib priv mix.exs package.json README.md guides
