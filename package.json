@@ -1,12 +1,12 @@
 {
-  "name": "maui",
+  "name": "pui",
   "version": "0.1.0",
-  "description": "Maui Hooks",
-  "module": "./priv/static/maui.mjs",
-  "main": "./priv/static/maui.cjs.js",
+  "description": "PUI Hooks",
+  "module": "./priv/static/pui.mjs",
+  "main": "./priv/static/pui.cjs.js",
   "exports": {
-    "import": "./priv/static/maui.mjs",
-    "require": "./priv/static/maui.cjs.js"
+    "import": "./priv/static/pui.mjs",
+    "require": "./priv/static/pui.cjs.js"
   },
   "files": [
     "README.md",
