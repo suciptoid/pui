@@ -18,5 +18,5 @@ end
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.25.4",
-  module: esbuild.(~w(--format=esm --sourcemap --outfile=../priv/static/maui.mjs)),
-  main: esbuild.(~w(--format=cjs --sourcemap --outfile=../priv/static/maui.cjs.js))
+  module: esbuild.(~w(--format=esm --sourcemap --outfile=../priv/static/pui.mjs)),
+  main: esbuild.(~w(--format=cjs --sourcemap --outfile=../priv/static/pui.cjs.js))
