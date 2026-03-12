@@ -4,7 +4,7 @@ defmodule PUI.MixProject do
   def project do
     [
       app: :pui,
-      version: "1.0.0-alpha.11",
+      version: "1.0.0-alpha.13",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -57,10 +57,11 @@ defmodule PUI.MixProject do
       main: "readme",
       extras: [
         "README.md",
-        "guides/usage.md"
+        "guides/usage.md",
+        "guides/headless-usage.md"
       ],
       groups_for_extras: [
-        Guides: ["guides/usage.md"]
+        Guides: ["guides/usage.md", "guides/headless-usage.md"]
       ]
     ]
   end

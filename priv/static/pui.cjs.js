@@ -1748,7 +1748,14 @@ var Select = class extends Popover {
   }
   updated() {
     super.updated();
-    this.selectDefaultValue();
+    this.syncValueFromDataset();
+  }
+  syncValueFromDataset() {
+    const serverValue = this.el.dataset.value;
+    if (serverValue && this.hiddenInput.value !== serverValue) {
+      this.hiddenInput.value = serverValue;
+      this.updatePlaceholder();
+    }
   }
   selectDefaultValue() {
     const defaultValue = this.el.dataset.value;
@@ -1763,8 +1770,9 @@ var Select = class extends Popover {
   }
   selectItem(itemEl) {
     if (this.hiddenInput) {
-      if (itemEl.dataset.value) {
-        this.hiddenInput.value = itemEl.dataset.value;
+      const newValue = itemEl.dataset.value;
+      if (newValue && this.hiddenInput.value !== newValue) {
+        this.hiddenInput.value = newValue;
         this.hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
       }
     }
