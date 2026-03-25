@@ -12,6 +12,8 @@ export default class Popover extends ViewHook {
   expanded = false;
   name = "popover";
   placement = "bottom-start";
+  defaultPlacement = "bottom-start";
+  activePlacement = "bottom-start";
   strategy = "absolute"; // floating-ui strategy
   event_trigger = "click"; // "click" | "hover" | "focus"
   currentIndex = -1;
@@ -22,16 +24,12 @@ export default class Popover extends ViewHook {
   #clear_floating;
 
   mounted() {
-    // Initialize trigger and popup elements
-    this.trigger = this.el.querySelector("[aria-haspopup],[role='combobox']");
-    this.popup = this.el.querySelector("[role='menu'],[role='listbox']");
-
-    this.placement = this.el.dataset.placement || this.placement;
+    this.defaultPlacement = this.el.dataset.placement || this.placement;
+    this.activePlacement = this.defaultPlacement;
+    this.placement = this.defaultPlacement;
     this.strategy = this.el.dataset.strategy || this.strategy;
     this.event_trigger = this.el.dataset.trigger || this.event_trigger;
-
-    this.items =
-      this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
+    this.cacheElements();
 
     this.refreshExpanded();
 
@@ -41,7 +39,7 @@ export default class Popover extends ViewHook {
         if (this.expanded) {
           this.closePopover();
         } else {
-          this.openPopover();
+          this.openPopover({ placement: this.getOpenPlacement() });
         }
 
         this.refreshExpanded();
@@ -98,6 +96,7 @@ export default class Popover extends ViewHook {
   }
 
   updated() {
+    this.cacheElements();
     this.restoreExpanded();
     this.refreshFloatingUI();
   }
@@ -111,14 +110,18 @@ export default class Popover extends ViewHook {
   }
 
   handleTriggerKeyDown(event) {
-    if (event.key === "ArrowDown" && !this.expanded) {
+    if (!this.expanded && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
       event.preventDefault();
-      this.openPopover();
+      this.openPopover({ placement: this.getPlacementForKey(event.key) });
+      return;
     }
-    // if (event.key === "Enter" && !this.expanded) {
-    //   event.preventDefault();
-    //   this.closePopover();
-    // }
+
+    if (!this.expanded && this.isPrintableKeyEvent(event)) {
+      const handled = this.handleTriggerTypeahead(event);
+      if (handled) {
+        event.preventDefault();
+      }
+    }
   }
 
   handleContainerKeyDown(event) {
@@ -143,6 +146,13 @@ export default class Popover extends ViewHook {
       case "Tab":
         this.closePopover();
         break;
+      default:
+        if (this.isPrintableKeyEvent(event)) {
+          const handled = this.handlePrintableKey(event);
+          if (handled) {
+            event.preventDefault();
+          }
+        }
     }
   }
 
@@ -150,15 +160,18 @@ export default class Popover extends ViewHook {
     // see select.js for example
   }
 
+  handleTriggerTypeahead(_event) {
+    return false;
+  }
+
+  handlePrintableKey(_event) {
+    return false;
+  }
+
   handleArrowNavigation(event) {
     if (!this.expanded) return;
 
-    const visibleItems = Array.from(this.items).filter(
-      (item) =>
-        item.style.display !== "none" &&
-        item.getAttribute("aria-disabled") !== "true" &&
-        item.getAttribute("aria-hidden") !== "true",
-    );
+    const visibleItems = this.getNavigableItems();
     const itemCount = visibleItems.length;
 
     if (itemCount === 0) return;
@@ -182,21 +195,7 @@ export default class Popover extends ViewHook {
         break;
     }
 
-    visibleItems.forEach((item, index) => {
-      if (index === newIndex) {
-        item.setAttribute("aria-selected", "true");
-        item.setAttribute("tabindex", "0");
-        if (this.focus_selected) {
-          item.focus();
-        }
-        item.scrollIntoView({ block: "nearest" });
-      } else {
-        item.setAttribute("tabindex", "-1");
-        item.removeAttribute("aria-selected");
-      }
-    });
-
-    this.currentIndex = newIndex;
+    this.setCurrentItemByIndex(newIndex, visibleItems);
   }
 
   initFloatingUI() {
@@ -215,7 +214,7 @@ export default class Popover extends ViewHook {
     const expand_popover = this.expand_popover;
     const popup = this.popup;
     computePosition(this.trigger, this.popup, {
-      placement: this.placement,
+      placement: this.activePlacement,
       strategy: this.strategy,
       middleware: [
         offset(8),
@@ -244,27 +243,33 @@ export default class Popover extends ViewHook {
 
     this.expanded = false;
     this.currentIndex = -1;
+    this.activePlacement = this.defaultPlacement;
 
     this.onPopupClosed();
     this.removeOutsideListener();
   }
+
+  onPopupOpened() {}
 
   onPopupClosed() {
     if (
       this.popup?.contains(document.activeElement) ||
       this.trigger?.contains(document.activeElement)
     ) {
-      this.trigger?.focus();
+      this.focusElement(this.trigger);
     }
   }
 
-  openPopover() {
+  openPopover(options = {}) {
+    this.activePlacement = options.placement || this.getOpenPlacement();
     this.trigger?.setAttribute("aria-expanded", "true");
     this.popup?.setAttribute("aria-hidden", "false");
 
-    this.popup?.focus();
+    this.focusElement(this.popup);
     this.expanded = true;
+    this.currentIndex = this.getInitialNavigationIndex(this.getNavigableItems());
 
+    this.onPopupOpened();
     this.listenOutside();
   }
 
@@ -278,9 +283,100 @@ export default class Popover extends ViewHook {
 
   restoreExpanded() {
     if (this.expanded) {
-      this.openPopover();
+      this.openPopover({ placement: this.activePlacement });
     } else {
       this.closePopover();
+    }
+  }
+
+  cacheElements() {
+    this.trigger = this.el.querySelector("[aria-haspopup],[role='combobox']");
+    this.popup = this.el.querySelector("[role='menu'],[role='listbox']");
+    this.items =
+      this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
+  }
+
+  getOpenPlacement() {
+    return this.defaultPlacement;
+  }
+
+  getPlacementForKey(_key) {
+    return this.defaultPlacement;
+  }
+
+  getNavigableItems() {
+    return Array.from(this.items).filter(
+      (item) =>
+        item.style.display !== "none" &&
+        item.getAttribute("aria-disabled") !== "true" &&
+        item.getAttribute("aria-hidden") !== "true",
+    );
+  }
+
+  getInitialNavigationIndex(items) {
+    return items.length > 0 ? 0 : -1;
+  }
+
+  setCurrentItemByIndex(index, items = this.getNavigableItems()) {
+    const itemCount = items.length;
+    if (itemCount === 0 || index < 0 || index >= itemCount) {
+      this.currentIndex = -1;
+      return null;
+    }
+
+    items.forEach((item, itemIndex) => {
+      if (itemIndex === index) {
+        item.setAttribute("aria-selected", "true");
+        item.setAttribute("tabindex", "0");
+        if (this.focus_selected) {
+          this.focusElement(item);
+        }
+        this.scrollItemIntoView(item);
+      } else {
+        item.setAttribute("tabindex", "-1");
+        item.removeAttribute("aria-selected");
+      }
+    });
+
+    this.currentIndex = index;
+    return items[index];
+  }
+
+  isPrintableKeyEvent(event) {
+    return (
+      event.key.length === 1 &&
+      !event.altKey &&
+      !event.ctrlKey &&
+      !event.metaKey
+    );
+  }
+
+  focusElement(element) {
+    if (!element) {
+      return;
+    }
+
+    if (typeof element.focus === "function") {
+      try {
+        element.focus({ preventScroll: true });
+      } catch {
+        element.focus();
+      }
+    }
+  }
+
+  scrollItemIntoView(item) {
+    if (!item || !this.popup) {
+      return;
+    }
+
+    const popupRect = this.popup.getBoundingClientRect();
+    const itemRect = item.getBoundingClientRect();
+
+    if (itemRect.top < popupRect.top) {
+      this.popup.scrollTop -= popupRect.top - itemRect.top;
+    } else if (itemRect.bottom > popupRect.bottom) {
+      this.popup.scrollTop += itemRect.bottom - popupRect.bottom;
     }
   }
 }

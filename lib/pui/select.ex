@@ -157,7 +157,12 @@ defmodule PUI.Select do
   def select(%{variant: variant} = assigns) do
     assigns = map_field(assigns)
     is_unstyled = variant == "unstyled"
-    assigns = assign(assigns, :is_unstyled, is_unstyled)
+    listbox_id = if assigns.id, do: "#{assigns.id}-listbox", else: nil
+
+    assigns =
+      assigns
+      |> assign(:is_unstyled, is_unstyled)
+      |> assign(:listbox_id, listbox_id)
 
     ~H"""
     <div
@@ -170,6 +175,9 @@ defmodule PUI.Select do
       <button
         type="button"
         role="combobox"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-controls={@listbox_id}
         class={
           if @is_unstyled do
             [@class]
@@ -188,7 +196,9 @@ defmodule PUI.Select do
       </button>
 
       <div
+        id={@listbox_id}
         role="listbox"
+        tabindex="-1"
         aria-hidden="true"
         class={
           if @is_unstyled do
@@ -206,7 +216,7 @@ defmodule PUI.Select do
       >
         {render_slot(@header)}
 
-        <.select_search :if={@searchable and not @is_unstyled} />
+        <.select_search :if={@searchable and not @is_unstyled} listbox_id={@listbox_id} />
 
         <div data-pui="menu-items">
           {render_slot(@inner_block)}
@@ -217,6 +227,8 @@ defmodule PUI.Select do
     </div>
     """
   end
+
+  attr :listbox_id, :string, default: nil
 
   def select_search(assigns) do
     ~H"""
@@ -244,7 +256,8 @@ defmodule PUI.Select do
         spellcheck="false"
         aria-autocomplete="list"
         role="combobox"
-        aria-expanded="true"
+        aria-expanded="false"
+        aria-controls={@listbox_id}
         type="text"
         value=""
       />
@@ -264,7 +277,9 @@ defmodule PUI.Select do
 
     ~H"""
     <div
-      role="menuitem"
+      role="option"
+      aria-selected="false"
+      tabindex="-1"
       data-value={@value}
       class={
         if @is_unstyled do
@@ -272,7 +287,7 @@ defmodule PUI.Select do
         else
           [
             "aria-hidden:hidden",
-            "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground",
+            "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground",
             "data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground",
             "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
             "data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
