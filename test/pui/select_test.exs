@@ -35,6 +35,7 @@ defmodule PUI.SelectTest do
       assert html =~ ~s(role="option")
       assert html =~ ~s(aria-haspopup="listbox")
       assert html =~ ~s(aria-expanded="false")
+      assert html =~ ~s(id="test-trigger")
       assert html =~ ~s(aria-controls="test-listbox")
     end
 
@@ -63,6 +64,19 @@ defmodule PUI.SelectTest do
 
       assert html =~ ~s(id="test-search-listbox")
       assert html =~ ~s(aria-controls="test-search-listbox")
+    end
+
+    test "label points to the trigger button" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.select id="food" label="Select Food">
+          <.select_item value="a">Option A</.select_item>
+        </.select>
+        """)
+
+      assert html =~ ~s(for="food-trigger")
     end
   end
 end

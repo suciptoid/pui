@@ -69,6 +69,7 @@ defmodule PUI.Alert do
 
   attr :class, :string, default: ""
   attr :variant, :string, values: ["default", "destructive", "unstyled"], default: "default"
+  attr :role, :string, default: nil
 
   slot :icon, required: false
 
@@ -98,21 +99,36 @@ defmodule PUI.Alert do
         end
       end
 
-    assigns = assign(assigns, variant_class: variant_class, is_unstyled: is_unstyled)
+    role =
+      case assigns[:role] do
+        nil ->
+          if assigns[:variant] == "destructive", do: "alert", else: "status"
+
+        value ->
+          value
+      end
+
+    assigns =
+      assign(assigns, variant_class: variant_class, is_unstyled: is_unstyled, role: role)
 
     ~H"""
-    <div class={
-      if @is_unstyled do
-        [@class]
-      else
-        [
-          "relative w-full rounded-lg border border-border px-4 py-3 text-sm grid grid-cols-[0_1fr] gap-y-0.5 items-start ",
-          "has-[>[data-icon]]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>[data-icon]]:gap-x-3 [&>[data-icon]]:size-4 [&>[data-icon]]:text-current",
-          @variant_class,
-          @class
-        ]
-      end
-    }>
+    <div
+      role={@role}
+      aria-live={if @role == "alert", do: "assertive", else: "polite"}
+      aria-atomic="true"
+      class={
+        if @is_unstyled do
+          [@class]
+        else
+          [
+            "relative w-full rounded-lg border border-border px-4 py-3 text-sm grid grid-cols-[0_1fr] gap-y-0.5 items-start ",
+            "has-[>[data-icon]]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>[data-icon]]:gap-x-3 [&>[data-icon]]:size-4 [&>[data-icon]]:text-current",
+            @variant_class,
+            @class
+          ]
+        end
+      }
+    >
       <div :if={@icon !== []} data-icon="alert-icon">
         {render_slot(@icon)}
       </div>

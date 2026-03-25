@@ -33,7 +33,7 @@ defmodule PUI.DropdownTest do
         """)
 
       assert html =~ ~s(aria-haspopup="menu")
-      assert html =~ ~s(role="listbox")
+      assert html =~ ~s(role="menu")
       assert html =~ ~s(role="menuitem")
     end
 

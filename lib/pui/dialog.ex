@@ -196,6 +196,7 @@ defmodule PUI.Dialog do
   attr :size, :string, values: ["sm", "md", "lg", "xl"], default: "md"
   attr :variant, :string, default: "default", values: ["default", "unstyled"]
   attr :class, :string, default: ""
+  attr :rest, :global, include: ~w(aria-label aria-labelledby aria-describedby)
 
   slot :inner_block
   slot :trigger, required: false
@@ -264,6 +265,8 @@ defmodule PUI.Dialog do
         id={"#{@id}-content"}
         hidden={not @show}
         is_unstyled={@is_unstyled}
+        tabindex="-1"
+        {@rest}
       >
         {render_slot(@inner_block, %{
           hide: JS.exec("data-cancel", to: "##{@id}"),

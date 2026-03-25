@@ -534,7 +534,11 @@ defmodule AppWeb.Live.DemoHeadless do
         ]}>
           <.icon
             name={@icon}
-            class={["size-5", @active && "text-primary", !@active && "text-muted-foreground"] |> Enum.filter(&(&1 != false && &1 != nil)) |> Enum.join(" ")}
+            class={
+              ["size-5", @active && "text-primary", !@active && "text-muted-foreground"]
+              |> Enum.filter(&(&1 != false && &1 != nil))
+              |> Enum.join(" ")
+            }
           />
         </div>
         <div>

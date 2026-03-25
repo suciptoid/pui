@@ -169,7 +169,9 @@ defmodule PUI.Dropdown do
     ~H"""
     <div
       aria-hidden="true"
-      role="listbox"
+      role="menu"
+      aria-orientation="vertical"
+      tabindex="-1"
       class={
         if @is_unstyled do
           [@class]
@@ -195,7 +197,10 @@ defmodule PUI.Dropdown do
   attr :variant, :string, default: "default", values: ["default", "destructive"]
   attr :is_unstyled, :boolean, default: false
   attr :class, :string, default: ""
-  attr :rest, :global, include: ~w(href navigate patch method download name value disabled phx-click phx-value-action)
+
+  attr :rest, :global,
+    include:
+      ~w(href navigate patch method download name value disabled phx-click phx-value-action)
 
   def menu_item(%{rest: rest, is_unstyled: is_unstyled} = assigns) do
     base_class =
@@ -225,7 +230,8 @@ defmodule PUI.Dropdown do
       """
     else
       ~H"""
-      <div
+      <button
+        type="button"
         data-variant={@variant}
         role="menuitem"
         class={@class}
@@ -235,7 +241,7 @@ defmodule PUI.Dropdown do
         <.menu_shortcut :if={@shortcut != nil} is_unstyled={@is_unstyled}>
           {@shortcut}
         </.menu_shortcut>
-      </div>
+      </button>
       """
     end
   end

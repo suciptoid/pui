@@ -739,7 +739,7 @@ defmodule AppWeb.Live.Demo do
         <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div class="rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 bg-zinc-50 dark:bg-zinc-800/50">
             <div class="flex items-center justify-center min-h-[100px]">
-              <.button variant={@variant} size={@size} phx-click="btn_click">
+              <.button id="button-preview" variant={@variant} size={@size} phx-click="btn_click">
                 Button Preview
               </.button>
             </div>
@@ -804,6 +804,7 @@ defmodule AppWeb.Live.Demo do
               :for={variant <- ["default", "secondary", "destructive", "outline", "ghost"]}
               variant={variant}
               size="icon"
+              aria-label={"#{variant} favorite button"}
               phx-click="btn_click"
             >
               <.icon name="hero-heart" class="w-4 h-4" />
@@ -952,7 +953,7 @@ defmodule AppWeb.Live.Demo do
         description="Basic dropdown with labeled items and icons. Use the <:item> slot for simple menu options."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <PUI.Dropdown.menu_button content_class="w-52">
+          <PUI.Dropdown.menu_button id="dropdown-account" content_class="w-52">
             <.icon name="hero-user" class="size-4" /> Account
             <:item navigate="/select">
               <.icon name="hero-user" class="size-4" /> Profile
@@ -982,7 +983,7 @@ defmodule AppWeb.Live.Demo do
         description="Display keyboard shortcuts for quick actions. Add the shortcut attribute to items."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <PUI.Dropdown.menu_button content_class="w-56">
+          <PUI.Dropdown.menu_button id="dropdown-shortcuts" content_class="w-56">
             <.icon name="hero-command-line" class="size-4" /> Actions
             <:item shortcut="⌘P">
               <.icon name="hero-document" class="size-4" /> Print
@@ -1016,7 +1017,7 @@ defmodule AppWeb.Live.Demo do
         description="Use the destructive variant for actions that delete or remove data. These items appear with warning colors."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <PUI.Dropdown.menu_button content_class="w-56" variant="outline">
+          <PUI.Dropdown.menu_button id="dropdown-destructive" content_class="w-56" variant="outline">
             <.icon name="hero-trash" class="size-4" /> Delete Options
             <:item variant="destructive" shortcut="⌘⌫">
               <.icon name="hero-trash" class="size-4" /> Delete File
@@ -1049,7 +1050,7 @@ defmodule AppWeb.Live.Demo do
         description="Group related items with separators using the <:items> slot and menu_separator component."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <PUI.Dropdown.menu_button content_class="w-56">
+          <PUI.Dropdown.menu_button id="dropdown-separators" content_class="w-56">
             <.icon name="hero-bars-3" class="size-4" /> More Options
             <:items>
               <PUI.Dropdown.menu_item>
@@ -1095,7 +1096,7 @@ defmodule AppWeb.Live.Demo do
         description="Use the <:items> slot for full control over menu items. Supports phx-click handlers like the undo action below."
       >
         <div class="flex flex-wrap gap-4 mb-6">
-          <PUI.Dropdown.menu_button content_class="w-56">
+          <PUI.Dropdown.menu_button id="dropdown-actions" content_class="w-56">
             <.icon name="hero-ellipsis-vertical" class="size-4" /> Actions
             <:items>
               <PUI.Dropdown.menu_item navigate="/select">

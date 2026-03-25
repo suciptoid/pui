@@ -115,7 +115,7 @@ defmodule PUI.Popover do
         :for={t <- @trigger}
         type="button"
         class={Map.get(t, :class, "")}
-        role={Map.get(t, :role, "combobox")}
+        role={Map.get(t, :role)}
         id={"#{@id}-trigger"}
         aria-controls={"#{@id}-listbox"}
         aria-haspopup="listbox"
@@ -129,7 +129,7 @@ defmodule PUI.Popover do
       <%!-- Popover --%>
       <div
         :for={p <- @popup}
-        id={"#{@id}-popover"}
+        id={"#{@id}-listbox"}
         role={Map.get(p, :role, "listbox")}
         aria-hidden="true"
         class={Map.get(p, :class, "")}
@@ -156,7 +156,11 @@ defmodule PUI.Popover do
   def tooltip(%{variant: variant} = assigns) do
     assigns = assign_new(assigns, :id, fn -> "tooltip#{System.unique_integer()}" end)
     is_unstyled = variant == "unstyled"
-    assigns = assign(assigns, :is_unstyled, is_unstyled)
+
+    assigns =
+      assigns
+      |> assign(:is_unstyled, is_unstyled)
+      |> assign(:tooltip_id, "#{assigns.id}-tooltip")
 
     ~H"""
     <div
@@ -164,13 +168,14 @@ defmodule PUI.Popover do
       class="w-fit group"
       data-placement={@placement}
       phx-hook="PUI.Tooltip"
+      aria-describedby={@tooltip_id}
     >
       {render_slot(@inner_block)}
 
       <div
         :if={@tooltip != []}
         role="tooltip"
-        id={"#{@id}-tooltip"}
+        id={@tooltip_id}
         aria-hidden="true"
         data-placement={@placement}
         class={

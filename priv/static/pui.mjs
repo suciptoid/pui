@@ -1855,7 +1855,9 @@ var Select = class extends ViewHook2 {
     this.trigger = this.el.querySelector("[aria-haspopup],[role='combobox']");
     this.popup = this.el.querySelector("[role='menu'],[role='listbox']");
     this.items = this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
-    this.search = this.el.querySelector("input[type='text'][role='combobox']");
+    this.search = this.el.querySelector(
+      "input[type='text'][role='searchbox'], input[type='text'][role='combobox']"
+    );
     this.hiddenInput = this.el.querySelector("input[type='hidden']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
   }
@@ -2388,6 +2390,8 @@ var Tooltip = class extends ViewHook4 {
   #clear_floating;
   #enterBind;
   #leaveBind;
+  #focusInBind;
+  #focusOutBind;
   leaveTimeout = null;
   mounted() {
     this.trigger = this.el.querySelector(':scope > :not([role="tooltip"])');
@@ -2396,6 +2400,7 @@ var Tooltip = class extends ViewHook4 {
       ':scope > [role="tooltip"] > [data-arrow]'
     );
     this.js().ignoreAttributes(this.tooltip, ["aria-*", "data-*", "style"]);
+    this.trigger?.setAttribute("aria-describedby", this.tooltip?.id || "");
     this.placement = this.el.dataset.placement || this.placement;
     this.delay = this.el.dataset.delay || this.delay;
     this.#clear_floating = autoUpdate(this.trigger, this.tooltip, () => {
@@ -2403,8 +2408,12 @@ var Tooltip = class extends ViewHook4 {
     });
     this.#enterBind = this._onMouseEnter.bind(this);
     this.#leaveBind = this._onMouseLeave.bind(this);
+    this.#focusInBind = this._onFocusIn.bind(this);
+    this.#focusOutBind = this._onFocusOut.bind(this);
     this.el?.addEventListener("mouseenter", this.#enterBind);
     this.el?.addEventListener("mouseleave", this.#leaveBind);
+    this.el?.addEventListener("focusin", this.#focusInBind);
+    this.el?.addEventListener("focusout", this.#focusOutBind);
   }
   updated() {
     this.setHidden(this.hovering ? false : true);
@@ -2416,6 +2425,8 @@ var Tooltip = class extends ViewHook4 {
     }
     this.el?.removeEventListener("mouseenter", this.#enterBind);
     this.el?.removeEventListener("mouseleave", this.#leaveBind);
+    this.el?.removeEventListener("focusin", this.#focusInBind);
+    this.el?.removeEventListener("focusout", this.#focusOutBind);
   }
   setHidden(hidden) {
     requestAnimationFrame(() => {
@@ -2428,6 +2439,22 @@ var Tooltip = class extends ViewHook4 {
     this.setHidden(false);
   }
   _onMouseLeave(e) {
+    if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.hovering = false;
+    this.leaveTimeout = setTimeout(() => {
+      this.setHidden(true);
+    }, this.delay);
+  }
+  _onFocusIn() {
+    this.hovering = true;
+    if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.setHidden(false);
+  }
+  _onFocusOut(event) {
+    const nextFocusedElement = event.relatedTarget;
+    if (nextFocusedElement && this.el?.contains(nextFocusedElement)) {
+      return;
+    }
     if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
     this.hovering = false;
     this.leaveTimeout = setTimeout(() => {

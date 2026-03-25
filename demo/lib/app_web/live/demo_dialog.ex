@@ -204,6 +204,7 @@ defmodule AppWeb.Live.DemoDialog do
           <.dialog
             :let={%{hide: dialog_hide}}
             id="x"
+            aria-label="Edit profile dialog"
             on_cancel={Phoenix.LiveView.JS.toggle_attribute({"data-canceled", "true", "false"})}
           >
             <:trigger :let={dialog_attr}>
@@ -233,7 +234,12 @@ defmodule AppWeb.Live.DemoDialog do
         description="A dialog designed for destructive actions with warning styling and confirmation."
       >
         <div class="flex items-center gap-3 mb-4">
-          <.dialog :let={%{hide: dialog_destroy_hide}} size="sm" id="destroy">
+          <.dialog
+            :let={%{hide: dialog_destroy_hide}}
+            size="sm"
+            id="destroy"
+            aria-label="Destroy server dialog"
+          >
             <:trigger :let={dialog_destroy_attr}>
               <.button variant="destructive" type="button" {dialog_destroy_attr}>
                 Destroy Server

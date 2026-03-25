@@ -17,6 +17,7 @@ defmodule PUI.AlertTest do
         """)
 
       assert html =~ "my-alert"
+      assert html =~ ~s(role="status")
       refute html =~ "bg-card"
       refute html =~ "rounded-lg"
     end
@@ -34,6 +35,7 @@ defmodule PUI.AlertTest do
 
       assert html =~ "My Title"
       assert html =~ "My Description"
+      assert html =~ ~s(aria-live="polite")
       refute html =~ "col-start-2"
     end
   end

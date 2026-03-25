@@ -39,7 +39,7 @@ defmodule AppWeb.Live.DemoPopover do
               phx-hook="PUI.Popover"
               data-placement="bottom"
             >
-              <.button aria-haspopup="menu">
+              <.button aria-label="Open popover example" aria-haspopup="menu">
                 Open Popover
               </.button>
 
@@ -88,7 +88,7 @@ defmodule AppWeb.Live.DemoPopover do
         >
           <div class="flex flex-wrap gap-6 items-center justify-center">
             <.tooltip id="tooltip-left" placement="left">
-              <.button variant="outline" size="icon">
+              <.button variant="outline" size="icon" aria-label="Show left tooltip">
                 <.icon name="hero-arrow-left" class="w-4 h-4" />
               </.button>
               <:tooltip>Tooltip on the left</:tooltip>
@@ -104,14 +104,14 @@ defmodule AppWeb.Live.DemoPopover do
             </.tooltip>
 
             <.tooltip id="tooltip-bottom" placement="bottom">
-              <.button variant="outline" size="icon">
+              <.button variant="outline" size="icon" aria-label="Show bottom tooltip">
                 <.icon name="hero-arrow-down" class="w-4 h-4" />
               </.button>
               <:tooltip>Tooltip on the bottom</:tooltip>
             </.tooltip>
 
             <.tooltip id="tooltip-right" placement="right">
-              <.button variant="outline" size="icon">
+              <.button variant="outline" size="icon" aria-label="Show right tooltip">
                 <.icon name="hero-arrow-right" class="w-4 h-4" />
               </.button>
               <:tooltip>Tooltip on the right</:tooltip>
@@ -158,7 +158,13 @@ defmodule AppWeb.Live.DemoPopover do
             <div class="flex items-center gap-2">
               <span class="text-sm text-zinc-600 dark:text-zinc-400">Hover for info:</span>
               <.tooltip id="tooltip-info" placement="top">
-                <.icon name="hero-information-circle" class="w-5 h-5 text-zinc-500 cursor-help" />
+                <button
+                  type="button"
+                  class="inline-flex cursor-help"
+                  aria-label="More information"
+                >
+                  <.icon name="hero-information-circle" class="w-5 h-5 text-zinc-500" />
+                </button>
                 <:tooltip>
                   This provides additional context about the feature.
                 </:tooltip>
@@ -168,10 +174,14 @@ defmodule AppWeb.Live.DemoPopover do
             <div class="flex items-center gap-2">
               <span class="text-sm text-zinc-600 dark:text-zinc-400">Status:</span>
               <.tooltip id="tooltip-status" placement="bottom">
-                <span class="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  class="flex items-center gap-1.5"
+                  aria-label="Show system status details"
+                >
                   <span class="w-2 h-2 rounded-full bg-green-500"></span>
                   <span class="text-sm">Active</span>
-                </span>
+                </button>
                 <:tooltip>
                   System is running normally with all services operational.
                 </:tooltip>
@@ -181,7 +191,12 @@ defmodule AppWeb.Live.DemoPopover do
             <div class="flex items-center gap-2">
               <span class="text-sm text-zinc-600 dark:text-zinc-400">Settings:</span>
               <.tooltip id="tooltip-settings" placement="top">
-                <.button variant="ghost" size="icon" class="h-8 w-8">
+                <.button
+                  variant="ghost"
+                  size="icon"
+                  class="h-8 w-8"
+                  aria-label="Open settings tooltip"
+                >
                   <.icon name="hero-cog-6-tooth" class="w-4 h-4" />
                 </.button>
                 <:tooltip>Configure settings</:tooltip>

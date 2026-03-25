@@ -115,11 +115,14 @@ defmodule PUI.Select do
   slot :footer
 
   def select(%{label: label} = assigns) when label not in ["", nil] do
-    assigns = map_field(assigns)
+    assigns =
+      assigns
+      |> map_field()
+      |> assign(:label_target_id, "#{assigns.id}-trigger")
 
     ~H"""
     <div class="grid w-full items-center gap-3">
-      <.label for={@id}>{@label}</.label>
+      <.label for={@label_target_id}>{@label}</.label>
       <.select {assigns |> Map.delete(:label)} />
     </div>
     """
@@ -158,11 +161,13 @@ defmodule PUI.Select do
     assigns = map_field(assigns)
     is_unstyled = variant == "unstyled"
     listbox_id = if assigns.id, do: "#{assigns.id}-listbox", else: nil
+    trigger_id = if assigns.id, do: "#{assigns.id}-trigger", else: nil
 
     assigns =
       assigns
       |> assign(:is_unstyled, is_unstyled)
       |> assign(:listbox_id, listbox_id)
+      |> assign(:trigger_id, trigger_id)
 
     ~H"""
     <div
@@ -173,11 +178,13 @@ defmodule PUI.Select do
     >
       <input type="hidden" name={@name} value={@value} />
       <button
+        id={@trigger_id}
         type="button"
         role="combobox"
         aria-haspopup="listbox"
         aria-expanded="false"
         aria-controls={@listbox_id}
+        aria-autocomplete={if @searchable, do: "list", else: nil}
         class={
           if @is_unstyled do
             [@class]
@@ -199,6 +206,7 @@ defmodule PUI.Select do
         id={@listbox_id}
         role="listbox"
         tabindex="-1"
+        aria-labelledby={@trigger_id}
         aria-hidden="true"
         class={
           if @is_unstyled do
@@ -254,8 +262,7 @@ defmodule PUI.Select do
         autocomplete="off"
         autocorrect="off"
         spellcheck="false"
-        aria-autocomplete="list"
-        role="combobox"
+        role="searchbox"
         aria-expanded="false"
         aria-controls={@listbox_id}
         type="text"

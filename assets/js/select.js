@@ -92,7 +92,9 @@ export default class Select extends ViewHook {
     this.popup = this.el.querySelector("[role='menu'],[role='listbox']");
     this.items =
       this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
-    this.search = this.el.querySelector("input[type='text'][role='combobox']");
+    this.search = this.el.querySelector(
+      "input[type='text'][role='searchbox'], input[type='text'][role='combobox']",
+    );
     this.hiddenInput = this.el.querySelector("input[type='hidden']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
   }

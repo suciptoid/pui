@@ -16,6 +16,8 @@ export default class Tooltip extends ViewHook {
 
   #enterBind;
   #leaveBind;
+  #focusInBind;
+  #focusOutBind;
   leaveTimeout = null;
 
   mounted() {
@@ -26,6 +28,7 @@ export default class Tooltip extends ViewHook {
     );
     // this attribute controlled on client side, prevent liveview patching this attr
     this.js().ignoreAttributes(this.tooltip, ["aria-*", "data-*", "style"]);
+    this.trigger?.setAttribute("aria-describedby", this.tooltip?.id || "");
 
     this.placement = this.el.dataset.placement || this.placement;
     this.delay = this.el.dataset.delay || this.delay;
@@ -35,9 +38,13 @@ export default class Tooltip extends ViewHook {
 
     this.#enterBind = this._onMouseEnter.bind(this);
     this.#leaveBind = this._onMouseLeave.bind(this);
+    this.#focusInBind = this._onFocusIn.bind(this);
+    this.#focusOutBind = this._onFocusOut.bind(this);
 
     this.el?.addEventListener("mouseenter", this.#enterBind);
     this.el?.addEventListener("mouseleave", this.#leaveBind);
+    this.el?.addEventListener("focusin", this.#focusInBind);
+    this.el?.addEventListener("focusout", this.#focusOutBind);
   }
 
   updated() {
@@ -53,6 +60,8 @@ export default class Tooltip extends ViewHook {
 
     this.el?.removeEventListener("mouseenter", this.#enterBind);
     this.el?.removeEventListener("mouseleave", this.#leaveBind);
+    this.el?.removeEventListener("focusin", this.#focusInBind);
+    this.el?.removeEventListener("focusout", this.#focusOutBind);
   }
 
   setHidden(hidden) {
@@ -68,6 +77,26 @@ export default class Tooltip extends ViewHook {
   }
 
   _onMouseLeave(e) {
+    if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.hovering = false;
+    this.leaveTimeout = setTimeout(() => {
+      this.setHidden(true);
+    }, this.delay);
+  }
+
+  _onFocusIn() {
+    this.hovering = true;
+    if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.setHidden(false);
+  }
+
+  _onFocusOut(event) {
+    const nextFocusedElement = event.relatedTarget;
+
+    if (nextFocusedElement && this.el?.contains(nextFocusedElement)) {
+      return;
+    }
+
     if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
     this.hovering = false;
     this.leaveTimeout = setTimeout(() => {
