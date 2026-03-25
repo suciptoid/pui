@@ -316,7 +316,7 @@ defmodule PUI.Flash do
       data-position={@position}
       phx-hook="PUI.FlashGroup"
       class={[
-        "fixed z-10  flex flex-col w-[300px]",
+        "fixed z-[1000] flex flex-col w-[300px]",
         @position_classes
       ]}
       {@rest}
