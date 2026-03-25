@@ -3,10 +3,10 @@ defmodule AppWeb.InputsFeatureTest do
 
   feature "inputs page supports form input and switch semantics", %{session: session} do
     session
-    |> visit("/inputs")
-    |> fill_in(text_field("With Phoenix Form"), with: "Jane Doe")
-    |> assert_has(css("#form-demo", text: "Jane Doe"))
-    |> assert_has(css("input#switch-1[role='switch']"))
-    |> assert_has(css("#demo-checkbox-1"))
+    |> visit("/__test__/components/input")
+    |> fill_in(text_field("Full Name"), with: "Jane Doe")
+    |> assert_has(css("#input-value", text: "Jane Doe"))
+    |> assert_has(css("#email-switch[role='switch']"))
+    |> assert_has(css("#terms-checkbox"))
   end
 end

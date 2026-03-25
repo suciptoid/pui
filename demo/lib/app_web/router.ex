@@ -30,6 +30,16 @@ defmodule AppWeb.Router do
     live "/container", Live.DemoContainer, :container
     live "/progress-badges", Live.DemoProgressBadges, :progress_badges
     live "/headless", Live.DemoHeadless, :headless
+    live "/__test__/components/button", Live.ComponentHarness, :button
+    live "/__test__/components/input", Live.ComponentHarness, :input
+    live "/__test__/components/select", Live.ComponentHarness, :select
+    live "/__test__/components/dropdown", Live.ComponentHarness, :dropdown
+    live "/__test__/components/dialog", Live.ComponentHarness, :dialog
+    live "/__test__/components/popover", Live.ComponentHarness, :popover
+    live "/__test__/components/alert", Live.ComponentHarness, :alert
+    live "/__test__/components/flash", Live.ComponentHarness, :flash
+    live "/__test__/components/container", Live.ComponentHarness, :container
+    live "/__test__/components/loading", Live.ComponentHarness, :loading
     live "/link/:any", Live.Demo, :index
     live "/tab/:tab", Live.DemoTab
     live "/tab", Live.DemoTab, :index

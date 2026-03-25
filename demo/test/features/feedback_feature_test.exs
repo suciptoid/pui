@@ -3,18 +3,19 @@ defmodule AppWeb.FeedbackFeatureTest do
 
   feature "alert, toast, and container demos render expected accessible UI", %{session: session} do
     session
-    |> visit("/alert")
-    |> assert_has(css("[role='status']", text: "Your changes have been saved"))
-    |> assert_has(css("[role='alert']", text: "Unable to process your request"))
+    |> visit("/__test__/components/alert")
+    |> assert_has(css("#status-alert[role='status']", text: "Changes persisted successfully."))
+    |> assert_has(css("#destructive-alert[role='alert']", text: "Unable to save changes."))
 
     session
-    |> visit("/toast")
-    |> assert_has(css("button", text: "Use send_flash"))
-    |> assert_has(css("button", text: "Customize Flash"))
+    |> visit("/__test__/components/flash")
+    |> click(button("Send Flash"))
+    |> assert_has(css("[role='alert']", visible: false, count: 1))
 
     session
-    |> visit("/container")
-    |> assert_has(css("p", text: "john@example.com"))
-    |> assert_has(css("button", text: "Save Changes"))
+    |> visit("/__test__/components/container")
+    |> assert_has(css("#profile-card"))
+    |> assert_has(css("#profile-email", text: "john@example.com"))
+    |> assert_has(css("#save-profile", text: "Save Changes"))
   end
 end

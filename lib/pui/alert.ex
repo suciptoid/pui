@@ -70,6 +70,7 @@ defmodule PUI.Alert do
   attr :class, :string, default: ""
   attr :variant, :string, values: ["default", "destructive", "unstyled"], default: "default"
   attr :role, :string, default: nil
+  attr :rest, :global
 
   slot :icon, required: false
 
@@ -116,6 +117,7 @@ defmodule PUI.Alert do
       role={@role}
       aria-live={if @role == "alert", do: "assertive", else: "polite"}
       aria-atomic="true"
+      {@rest}
       class={
         if @is_unstyled do
           [@class]
