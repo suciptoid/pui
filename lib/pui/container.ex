@@ -99,11 +99,12 @@ defmodule PUI.Container do
     """
   end
 
+  attr :class, :string, default: ""
   slot :inner_block
 
   def card_title(assigns) do
     ~H"""
-    <div class="leading-none font-semibold">
+    <div class={["leading-none font-semibold", @class]}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -162,11 +163,12 @@ defmodule PUI.Container do
     """
   end
 
+  attr :class, :string, default: ""
   slot :inner_block
 
   def card_footer(assigns) do
     ~H"""
-    <div class="flex items-center px-6 [.border-t]:pt-6">
+    <div class={["flex items-center px-6 [.border-t]:pt-6", @class]}>
       {render_slot(@inner_block)}
     </div>
     """

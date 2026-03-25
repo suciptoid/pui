@@ -99,6 +99,9 @@ defmodule PUI.Dropdown do
     attr :href, :string
     attr :navigate, :string
     attr :patch, :string
+    attr :class, :string
+    attr :"phx-click", :string
+    attr :"phx-value-action", :string
   end
 
   slot :items
@@ -143,6 +146,8 @@ defmodule PUI.Dropdown do
           navigate={Map.get(item, :navigate)}
           patch={Map.get(item, :patch)}
           class={Map.get(item, :class)}
+          phx-click={Map.get(item, :"phx-click")}
+          phx-value-action={Map.get(item, :"phx-value-action")}
           is_unstyled={@is_unstyled}
         >
           {render_slot(item)}
@@ -190,7 +195,7 @@ defmodule PUI.Dropdown do
   attr :variant, :string, default: "default", values: ["default", "destructive"]
   attr :is_unstyled, :boolean, default: false
   attr :class, :string, default: ""
-  attr :rest, :global, include: ~w(href navigate patch method download name value disabled)
+  attr :rest, :global, include: ~w(href navigate patch method download name value disabled phx-click phx-value-action)
 
   def menu_item(%{rest: rest, is_unstyled: is_unstyled} = assigns) do
     base_class =
