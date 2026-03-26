@@ -124,6 +124,7 @@ export default class Select extends ViewHook {
   handleTriggerKeyDown(event) {
     if (!this.expanded && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
       event.preventDefault();
+      event.stopPropagation();
       this.openPopover({ placement: this.getPlacementForKey(event.key) });
       return;
     }
@@ -178,6 +179,12 @@ export default class Select extends ViewHook {
     }
 
     event.preventDefault();
+
+    if (this.currentIndex < 0) {
+      const initialIndex = this.getInitialNavigationIndex(visibleItems);
+      this.setCurrentItemByIndex(initialIndex, visibleItems);
+      return;
+    }
 
     let newIndex = this.currentIndex;
 
@@ -412,6 +419,8 @@ export default class Select extends ViewHook {
       item.setAttribute("tabindex", isSelected ? "0" : "-1");
     });
 
+    const visibleItems = this.getNavigableItems();
+    this.currentIndex = visibleItems.findIndex((item) => item === selectedItem);
     this.setActiveDescendant(selectedItem);
   }
 
