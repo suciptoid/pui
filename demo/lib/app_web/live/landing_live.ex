@@ -197,6 +197,7 @@ defmodule AppWeb.Live.LandingLive do
                       <span class="text-amber-300">&quot;&quot;&quot;</span>
                     </span>
                     <span class="block pl-4"><span class="text-fuchsia-300">end</span></span>
+                    <span class="block"><span class="text-fuchsia-300">end</span></span>
                   </.code_panel>
                 </div>
               </div>
