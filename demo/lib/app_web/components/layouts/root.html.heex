@@ -1,10 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+  <% seo = assigns[:seo] || AppWeb.Seo.default_meta() %>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title default="PUI" suffix=" · PUI Demo">
+    <meta name="description" content={seo.description} />
+    <meta name="robots" content={seo.robots} />
+    <link rel="canonical" href={seo.canonical_url} />
+    <meta property="og:site_name" content={seo.site_name} />
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:type" content={seo.type} />
+    <meta property="og:url" content={seo.canonical_url} />
+    <meta property="og:image" content={seo.image_url} />
+    <meta name="twitter:card" content={seo.twitter_card} />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={seo.image_url} />
+    <.live_title default={AppWeb.Seo.default_meta().title}>
       {assigns[:page_title]}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />

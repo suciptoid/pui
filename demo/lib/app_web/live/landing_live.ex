@@ -4,7 +4,9 @@ defmodule AppWeb.Live.LandingLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, page_title: "Phoenix LiveView UI Toolkit")}
+    seo = AppWeb.Seo.landing_meta()
+
+    {:ok, assign(socket, page_title: seo.title, seo: seo)}
   end
 
   @impl true

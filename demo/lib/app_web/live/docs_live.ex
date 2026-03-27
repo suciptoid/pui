@@ -13,11 +13,13 @@ defmodule AppWeb.Live.DocsLive do
   @impl true
   def mount(_params, _session, socket) do
     docs = App.Docs.grouped_docs()
+    seo = AppWeb.Seo.docs_index_meta()
 
     {:ok,
      socket
      |> assign(docs: docs)
      |> assign(form: to_form(%{"name" => "", "email" => "", "select" => ""}))
+     |> assign(page_title: seo.title, seo: seo)
      |> assign(
        btn_variant: "default",
        btn_size: "default",
@@ -30,10 +32,11 @@ defmodule AppWeb.Live.DocsLive do
   @impl true
   def handle_params(%{"slug" => slug}, _uri, socket) do
     doc = App.Docs.get_doc!(slug)
+    seo = AppWeb.Seo.doc_meta(doc)
 
     {:noreply,
      socket
-     |> assign(doc: doc, page_title: doc.title)
+     |> assign(doc: doc, page_title: seo.title, seo: seo)
      |> assign(live_action: :show)}
   end
 
@@ -48,7 +51,8 @@ defmodule AppWeb.Live.DocsLive do
       Logger.info("Docs redirect target: #{target.id}")
       {:noreply, push_navigate(socket, to: ~p"/docs/#{target.id}")}
     else
-      {:noreply, assign(socket, doc: nil, page_title: "Documentation", live_action: :index)}
+      seo = AppWeb.Seo.docs_index_meta()
+      {:noreply, assign(socket, doc: nil, page_title: seo.title, seo: seo, live_action: :index)}
     end
   end
 

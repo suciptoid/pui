@@ -6,6 +6,7 @@ defmodule AppWeb.Live.ComponentHarness do
 
   def mount(_params, _session, socket) do
     form = to_form(%{"name" => "John Doe", "choice" => "beta", "notes" => "hello"})
+    seo = harness_seo(socket.assigns.live_action)
 
     {:ok,
      socket
@@ -15,7 +16,9 @@ defmodule AppWeb.Live.ComponentHarness do
      |> assign(:selected_choice, "beta")
      |> assign(:form, form)
      |> assign(:popover_count, 0)
-     |> assign(:flash_position, "top-center")}
+     |> assign(:flash_position, "top-center")
+     |> assign(:page_title, seo.title)
+     |> assign(:seo, seo)}
   end
 
   def handle_event("button_click", _params, socket) do
@@ -244,4 +247,15 @@ defmodule AppWeb.Live.ComponentHarness do
       :loading -> "Loading Harness"
     end
   end
+
+  defp harness_seo(action) do
+    AppWeb.Seo.build_meta(%{
+      title: page_title(action),
+      description: "Internal component harness used to validate demo behavior.",
+      path: harness_path(action),
+      robots: "noindex,nofollow"
+    })
+  end
+
+  defp harness_path(action), do: "/__test__/components/#{action}"
 end

@@ -1,6 +1,11 @@
 defmodule AppWeb.Router do
   use AppWeb, :router
 
+  scope "/", AppWeb do
+    get "/robots.txt", SeoController, :robots
+    get "/sitemap.xml", SeoController, :sitemap
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
