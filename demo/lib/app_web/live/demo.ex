@@ -368,7 +368,7 @@ defmodule AppWeb.Live.Demo do
           <.button patch={~p"/inputs"} size="lg">
             <.icon name="hero-rocket-launch" class="size-5 mr-2" /> Get Started
           </.button>
-          <.button variant="outline" size="lg" href="https://github.com">
+          <.button variant="outline" size="lg" href="https://github.com/suciptoid/pui">
             <.icon name="hero-code-bracket" class="size-5 mr-2" /> View on GitHub
           </.button>
         </div>

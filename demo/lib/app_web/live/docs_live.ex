@@ -147,17 +147,19 @@ defmodule AppWeb.Live.DocsLive do
         <div class="flex h-full flex-col">
           <%!-- Logo --%>
           <div class="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
-            <a href="/" class="flex items-center gap-3 group">
+            <.link navigate={~p"/"} class="flex items-center gap-3 group">
               <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
                 <.icon name="hero-cube" class="size-4" />
               </div>
               <div class="flex flex-col">
                 <span class="text-base font-bold text-foreground">PUI</span>
-                <span class="text-[10px] text-muted-foreground leading-none">Documentation</span>
+                <span class="text-[10px] leading-none text-zinc-600 dark:text-zinc-400">
+                  Documentation
+                </span>
               </div>
-            </a>
+            </.link>
             <button
-              class="lg:hidden p-1.5 rounded-md hover:bg-accent text-muted-foreground"
+              class="lg:hidden rounded-md p-1.5 text-zinc-600 hover:bg-accent dark:text-zinc-300"
               phx-click={JS.hide(to: "#docs-mobile-sidebar") |> JS.hide(to: "#docs-mobile-overlay")}
             >
               <.icon name="hero-x-mark" class="size-5" />
@@ -167,7 +169,7 @@ defmodule AppWeb.Live.DocsLive do
           <%!-- Navigation --%>
           <nav class="flex-1 overflow-y-auto p-4 space-y-6">
             <div :for={{group, docs} <- @docs}>
-              <h3 class="flex items-center gap-2 px-3 py-2 mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h3 class="mb-1 flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                 <.icon name={group_icon(group)} class="size-3.5" />
                 {group}
               </h3>
@@ -180,7 +182,7 @@ defmodule AppWeb.Live.DocsLive do
                       @doc && @doc.id == d.id &&
                         "bg-primary/10 text-primary font-medium",
                       !(@doc && @doc.id == d.id) &&
-                        "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                        "text-zinc-700 hover:bg-accent/60 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
                     ]}
                   >
                     {d.title}
@@ -207,6 +209,22 @@ defmodule AppWeb.Live.DocsLive do
           </div>
           <div class="flex items-center gap-3">
             <a
+              href={website_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
+            >
+              <.icon name="hero-globe-alt" class="size-4" /> Website
+            </a>
+            <a
+              href={source_code_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
+            >
+              <.icon name="hero-code-bracket" class="size-4" /> Source Code
+            </a>
+            <a
               href="https://hexdocs.pm/pui"
               target="_blank"
               class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
@@ -228,9 +246,9 @@ defmodule AppWeb.Live.DocsLive do
                   <p>
                     © 2026 PUI. Built with <span class="text-red-500">♥</span> and Phoenix LiveView.
                   </p>
-                  <a href="/" class="hover:text-foreground transition-colors">
-                    View Demo →
-                  </a>
+                  <.link navigate={~p"/"} class="transition-colors hover:text-foreground">
+                    Back to home →
+                  </.link>
                 </div>
               </footer>
             </div>
@@ -242,7 +260,7 @@ defmodule AppWeb.Live.DocsLive do
             class="hidden xl:block w-56 shrink-0 self-start border-l border-border bg-background sticky top-8"
           >
             <div class="sticky top-0 max-h-screen overflow-y-auto px-5 py-8">
-              <h5 class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h5 class="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                 On this page
               </h5>
               <ul class="space-y-1.5">
@@ -250,7 +268,7 @@ defmodule AppWeb.Live.DocsLive do
                   <a
                     href={"##{item.id}"}
                     class={[
-                      "block text-sm text-muted-foreground hover:text-foreground transition-colors",
+                      "block text-sm text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white",
                       item.level == 3 && "pl-3"
                     ]}
                   >
@@ -1152,4 +1170,7 @@ defmodule AppWeb.Live.DocsLive do
   defp group_icon("Layout"), do: "hero-view-columns"
   defp group_icon("Data Display"), do: "hero-chart-bar"
   defp group_icon(_), do: "hero-document"
+
+  defp source_code_url, do: "https://github.com/suciptoid/pui"
+  defp website_url, do: "https://pui.sukacipta.com"
 end

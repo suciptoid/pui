@@ -111,12 +111,7 @@ defmodule AppWeb.Layouts do
           <nav class="flex-1 overflow-y-auto p-4 space-y-6">
             <%!-- Getting Started --%>
             <.sidebar_group title="Getting Started" icon="hero-rocket-launch">
-              <.sidebar_link
-                patch={~p"/"}
-                active={@live_action == :index}
-              >
-                Overview
-              </.sidebar_link>
+              <.sidebar_link navigate={~p"/"}>Home</.sidebar_link>
               <.sidebar_link
                 patch={~p"/headless"}
                 active={@live_action == :headless}
@@ -191,7 +186,7 @@ defmodule AppWeb.Layouts do
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <a
-                  href="https://github.com"
+                  href="https://github.com/suciptoid/pui"
                   class="p-2 text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
                   target="_blank"
                 >
@@ -218,9 +213,12 @@ defmodule AppWeb.Layouts do
 
             <%!-- Breadcrumbs --%>
             <nav aria-label="Breadcrumb" class="hidden md:flex items-center gap-2 text-sm">
-              <a href="/" class="text-muted-foreground hover:text-foreground transition-colors">
-                Docs
-              </a>
+              <.link
+                navigate={~p"/"}
+                class="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Home
+              </.link>
               <.icon name="hero-chevron-right" class="size-4 text-muted-foreground" />
               <span class="font-medium text-foreground">{page_title(@live_action)}</span>
             </nav>
@@ -235,7 +233,7 @@ defmodule AppWeb.Layouts do
               <.icon name="hero-book-open" class="size-4" /> API
             </a>
             <a
-              href="https://github.com"
+              href="https://github.com/suciptoid/pui"
               class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-foreground text-background rounded-md hover:bg-foreground/90 transition-colors"
               target="_blank"
             >
@@ -273,7 +271,7 @@ defmodule AppWeb.Layouts do
                     using Phoenix LiveView.
                   </p>
                   <a
-                    href="https://github.com"
+                    href="https://github.com/suciptoid/pui"
                     class="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Edit this page on GitHub
@@ -357,7 +355,8 @@ defmodule AppWeb.Layouts do
     """
   end
 
-  attr :patch, :string, required: true
+  attr :patch, :string, default: nil
+  attr :navigate, :string, default: nil
   attr :active, :boolean, default: false
   slot :inner_block, required: true
 
@@ -366,6 +365,7 @@ defmodule AppWeb.Layouts do
     <li>
       <.link
         patch={@patch}
+        navigate={@navigate}
         class={[
           "flex items-center justify-between px-3 py-1.5 text-sm rounded-md transition-colors",
           @active && "bg-accent text-accent-foreground font-medium",
