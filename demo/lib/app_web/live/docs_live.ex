@@ -37,10 +37,13 @@ defmodule AppWeb.Live.DocsLive do
 
   def handle_params(_params, _uri, socket) do
     docs = App.Docs.all_docs()
-    first_doc = List.first(docs)
 
-    if first_doc do
-      {:noreply, push_navigate(socket, to: ~p"/docs/#{first_doc.id}")}
+    # Prefer the `button` doc as the primary docs entry when available.
+    preferred = Enum.find(docs, &(&1.id == "button"))
+    target = preferred || List.first(docs)
+
+    if target do
+      {:noreply, push_navigate(socket, to: ~p"/docs/#{target.id}")}
     else
       {:noreply, assign(socket, doc: nil, page_title: "Documentation", live_action: :index)}
     end
