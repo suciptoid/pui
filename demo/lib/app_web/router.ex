@@ -21,18 +21,6 @@ defmodule AppWeb.Router do
     live "/docs/:slug", Live.DocsLive, :show
 
     live "/", Live.LandingLive, :index
-    live "/inputs", Live.Demo, :inputs
-    live "/buttons", Live.Demo, :buttons
-    live "/dropdown", Live.Demo, :dropdown
-    live "/dialog", Live.DemoDialog, :dialog
-    live "/popover", Live.DemoPopover, :popover
-    live "/toast", Live.Demo, :toast
-    live "/flash", Live.Demo, :toast
-    live "/alert", Live.Demo, :alert
-    live "/select", Live.DemoSelect, :select
-    live "/container", Live.DemoContainer, :container
-    live "/progress-badges", Live.DemoProgressBadges, :progress_badges
-    live "/headless", Live.DemoHeadless, :headless
     live "/__test__/components/button", Live.ComponentHarness, :button
     live "/__test__/components/input", Live.ComponentHarness, :input
     live "/__test__/components/select", Live.ComponentHarness, :select
@@ -43,10 +31,6 @@ defmodule AppWeb.Router do
     live "/__test__/components/flash", Live.ComponentHarness, :flash
     live "/__test__/components/container", Live.ComponentHarness, :container
     live "/__test__/components/loading", Live.ComponentHarness, :loading
-    live "/link/:any", Live.Demo, :index
-    live "/tab/:tab", Live.DemoTab
-    live "/tab", Live.DemoTab, :index
-    get "/lc", PageController, :lc
   end
 
   # Other scopes may use custom stacks.
