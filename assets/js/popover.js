@@ -130,6 +130,7 @@ export default class Popover extends ViewHook {
     switch (event.key) {
       case "Escape":
         event.preventDefault();
+        event.stopPropagation();
         this.closePopover();
         this.trigger?.focus();
         break;

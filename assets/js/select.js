@@ -145,6 +145,7 @@ export default class Select extends ViewHook {
     switch (event.key) {
       case "Escape":
         event.preventDefault();
+        event.stopPropagation();
         this.closePopover();
         this.focusElement(this.trigger);
         break;

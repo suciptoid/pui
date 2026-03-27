@@ -146,6 +146,15 @@ defmodule AppWeb.Live.ComponentHarness do
       >
         <div id="server-dialog-body" class="space-y-4">
           <p>Dialog content</p>
+          <.form for={@form} id="dialog-form" phx-change="validate_inputs" class="space-y-4">
+            <.input field={@form[:name]} label="Full Name" />
+            <.select
+              id="dialog-select"
+              field={@form[:choice]}
+              label="Category"
+              options={[{"alpha", "Alpha"}, {"beta", "Beta"}, {"gamma", "Gamma"}]}
+            />
+          </.form>
           <.button id="server-dialog-close" variant="secondary" phx-click="close_dialog">
             Close Dialog
           </.button>

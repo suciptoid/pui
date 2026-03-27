@@ -1612,6 +1612,7 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
     switch (event.key) {
       case "Escape":
         event.preventDefault();
+        event.stopPropagation();
         this.closePopover();
         this.trigger?.focus();
         break;
@@ -1912,6 +1913,7 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
   handleTriggerKeyDown(event) {
     if (!this.expanded && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
       event.preventDefault();
+      event.stopPropagation();
       this.openPopover({ placement: this.getPlacementForKey(event.key) });
       return;
     }
@@ -1929,6 +1931,7 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     switch (event.key) {
       case "Escape":
         event.preventDefault();
+        event.stopPropagation();
         this.closePopover();
         this.focusElement(this.trigger);
         break;
@@ -1960,6 +1963,11 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
       return;
     }
     event.preventDefault();
+    if (this.currentIndex < 0) {
+      const initialIndex = this.getInitialNavigationIndex(visibleItems);
+      this.setCurrentItemByIndex(initialIndex, visibleItems);
+      return;
+    }
     let newIndex = this.currentIndex;
     switch (event.key) {
       case "ArrowDown":
@@ -2145,6 +2153,8 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
       item.setAttribute("aria-selected", String(isSelected));
       item.setAttribute("tabindex", isSelected ? "0" : "-1");
     });
+    const visibleItems = this.getNavigableItems();
+    this.currentIndex = visibleItems.findIndex((item) => item === selectedItem);
     this.setActiveDescendant(selectedItem);
   }
   clearActiveItems() {
