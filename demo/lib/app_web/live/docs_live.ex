@@ -146,7 +146,7 @@ defmodule AppWeb.Live.DocsLive do
       >
         <div class="flex h-full flex-col">
           <%!-- Logo --%>
-          <div class="flex items-center justify-between border-b border-border px-5 py-4">
+          <div class="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
             <a href="/" class="flex items-center gap-3 group">
               <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
                 <.icon name="hero-cube" class="size-4" />
@@ -189,26 +189,13 @@ defmodule AppWeb.Live.DocsLive do
               </ul>
             </div>
           </nav>
-
-          <%!-- Footer --%>
-          <div class="border-t border-border p-4">
-            <div class="flex items-center justify-between">
-              <a
-                href="/"
-                class="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                ← Back to Demo
-              </a>
-              <Layouts.theme_toggle />
-            </div>
-          </div>
         </div>
       </aside>
 
       <%!-- Main --%>
       <div class="flex flex-1 flex-col min-w-0">
         <%!-- Top bar --%>
-        <header class="flex items-center justify-between border-b border-border px-4 lg:px-8 py-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-30">
+        <header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:px-8">
           <div class="flex items-center gap-4">
             <button
               class="lg:hidden p-2 -ml-2 rounded-md hover:bg-accent"
@@ -218,7 +205,7 @@ defmodule AppWeb.Live.DocsLive do
             </button>
             <span class="text-sm font-medium text-foreground">Documentation</span>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-3">
             <a
               href="https://hexdocs.pm/pui"
               target="_blank"
@@ -226,6 +213,7 @@ defmodule AppWeb.Live.DocsLive do
             >
               <.icon name="hero-book-open" class="size-4" /> HexDocs
             </a>
+            <Layouts.theme_toggle />
           </div>
         </header>
 
@@ -402,6 +390,97 @@ defmodule AppWeb.Live.DocsLive do
     """
   end
 
+  defp live_demos(%{slug: "headless"} = assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
+
+      <.demo_section title="Unstyled Button and Menu" id="unstyled-button-and-menu">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <div class="flex flex-wrap items-start gap-4">
+            <.button
+              variant="unstyled"
+              class="inline-flex items-center rounded-xl bg-zinc-950 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
+            >
+              Custom Trigger
+            </.button>
+
+            <.menu_button
+              variant="unstyled"
+              class="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
+              content_class="aria-hidden:hidden block min-w-48 rounded-xl border border-border bg-background p-1 shadow-xl"
+            >
+              Custom Menu
+              <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
+                <.icon name="hero-user" class="size-4" /> Profile
+              </:item>
+              <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
+                <.icon name="hero-cog-6-tooth" class="size-4" /> Settings
+              </:item>
+              <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10">
+                <.icon name="hero-trash" class="size-4" /> Delete
+              </:item>
+            </.menu_button>
+          </div>
+
+          <div class="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+            <p class="font-medium text-foreground">What PUI still handles</p>
+            <ul class="mt-3 space-y-2">
+              <li>ARIA attributes and keyboard navigation</li>
+              <li>Popover positioning, dismissal, and focus behavior</li>
+              <li>Slot-based composition for items and triggers</li>
+            </ul>
+          </div>
+        </div>
+      </.demo_section>
+
+      <.demo_section title="Low-level Popover Hook" id="low-level-popover-hook">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <.popover_base
+            id="docs-headless-popover"
+            class="w-fit"
+            phx-hook="PUI.Popover"
+            data-placement="bottom-start"
+          >
+            <:trigger>
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent"
+              >
+                <.icon name="hero-code-bracket" class="size-4" /> Open custom popover
+              </button>
+            </:trigger>
+            <:popup class="aria-hidden:hidden block w-72 rounded-2xl border border-border bg-background p-4 shadow-xl">
+              <div class="space-y-3">
+                <span class="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                  Level 1
+                </span>
+                <h3 class="text-sm font-semibold text-foreground">Low-level hook example</h3>
+                <p class="text-sm text-muted-foreground">
+                  This example uses <code>popover_base</code>
+                  directly so you control the trigger markup,
+                  popup container, and every utility class yourself.
+                </p>
+              </div>
+            </:popup>
+          </.popover_base>
+
+          <div class="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+            <p class="font-medium text-foreground">When to use this</p>
+            <ul class="mt-3 space-y-2">
+              <li>Building a custom design system on top of PUI behavior</li>
+              <li>Reusing Floating UI positioning with your own markup</li>
+              <li>Creating bespoke popovers, menus, or tooltips</li>
+            </ul>
+          </div>
+        </div>
+      </.demo_section>
+    </section>
+    """
+  end
+
   defp live_demos(%{slug: "input"} = assigns) do
     ~H"""
     <section class="space-y-8">
@@ -426,25 +505,29 @@ defmodule AppWeb.Live.DocsLive do
             label="Password"
             placeholder="••••••••"
           />
+          <.input
+            id="demo-number"
+            name="demo-number"
+            type="number"
+            label="Quantity"
+            placeholder="12"
+            min="0"
+          />
         </div>
       </.demo_section>
+    </section>
+    """
+  end
 
-      <.demo_section title="Checkbox" id="checkbox">
-        <div class="space-y-3">
-          <.checkbox id="demo-terms" name="terms" label="I agree to the terms and conditions" />
-          <.checkbox id="demo-newsletter" name="newsletter" label="Subscribe to newsletter" />
-        </div>
-      </.demo_section>
+  defp live_demos(%{slug: "textarea"} = assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
 
-      <.demo_section title="Switch" id="switch">
-        <div class="space-y-3">
-          <.switch id="demo-notifications" name="notifications" label="Enable notifications" />
-          <.switch id="demo-darkmode" name="dark_mode" label="Dark mode" />
-        </div>
-      </.demo_section>
-
-      <.demo_section title="Textarea" id="textarea">
-        <div class="max-w-sm">
+      <.demo_section title="Basic Textareas" id="basic-textareas">
+        <div class="max-w-xl space-y-4">
           <.textarea
             id="demo-bio"
             name="bio"
@@ -452,6 +535,77 @@ defmodule AppWeb.Live.DocsLive do
             placeholder="Tell us about yourself..."
             rows="4"
           />
+
+          <.textarea
+            id="demo-feedback"
+            name="feedback"
+            label="Team Feedback"
+            placeholder="Share context, blockers, or ideas..."
+            rows="6"
+          />
+        </div>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  defp live_demos(%{slug: "checkbox"} = assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
+
+      <.demo_section title="Checkbox States" id="checkbox-states">
+        <div class="space-y-4">
+          <.checkbox id="demo-terms" name="terms" label="I agree to the terms and conditions" />
+          <.checkbox id="demo-newsletter" name="newsletter" label="Subscribe to newsletter" checked />
+          <.checkbox id="demo-disabled-checkbox" name="disabled" label="Disabled checkbox" disabled />
+        </div>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  defp live_demos(%{slug: "radio"} = assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
+
+      <.demo_section title="Radio Group" id="radio-group">
+        <div class="space-y-3">
+          <label class="flex items-center gap-3">
+            <.radio id="demo-plan-starter" name="demo-plan" value="starter" checked />
+            <span class="text-sm text-foreground">Starter</span>
+          </label>
+          <label class="flex items-center gap-3">
+            <.radio id="demo-plan-pro" name="demo-plan" value="pro" />
+            <span class="text-sm text-foreground">Pro</span>
+          </label>
+          <label class="flex items-center gap-3">
+            <.radio id="demo-plan-enterprise" name="demo-plan" value="enterprise" />
+            <span class="text-sm text-foreground">Enterprise</span>
+          </label>
+        </div>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  defp live_demos(%{slug: "switch"} = assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
+
+      <.demo_section title="Switches" id="switches">
+        <div class="space-y-4">
+          <.switch id="demo-notifications" name="notifications" label="Enable notifications" />
+          <.switch id="demo-marketing" name="marketing" label="Receive product updates" />
+          <.switch id="demo-disabled-switch" name="disabled-switch" label="Disabled switch" disabled />
         </div>
       </.demo_section>
     </section>

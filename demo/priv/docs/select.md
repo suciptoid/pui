@@ -2,7 +2,7 @@
   title: "Select",
   description: "Customizable dropdown with search, grouping, keyboard navigation, and form integration.",
   group: "Forms",
-  order: 1,
+  order: 5,
   icon: "hero-document-text"
 }
 ---
