@@ -8,6 +8,8 @@ defmodule AppWeb.Live.DocsLive do
   use AppWeb, :live_view
   use PUI
 
+  require Logger
+
   @impl true
   def mount(_params, _session, socket) do
     docs = App.Docs.grouped_docs()
@@ -43,6 +45,7 @@ defmodule AppWeb.Live.DocsLive do
     target = preferred || List.first(docs)
 
     if target do
+      Logger.info("Docs redirect target: #{target.id}")
       {:noreply, push_navigate(socket, to: ~p"/docs/#{target.id}")}
     else
       {:noreply, assign(socket, doc: nil, page_title: "Documentation", live_action: :index)}
