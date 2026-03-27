@@ -95,7 +95,7 @@ defmodule AppWeb.Live.DocsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <.docs_shell docs={@docs} doc={@doc}>
+    <.docs_shell docs={@docs} doc={@doc} flash={@flash}>
       <div :if={@doc} class="space-y-12">
         <%!-- Page Header --%>
         <div class="border-b border-border pb-8">
@@ -112,9 +112,9 @@ defmodule AppWeb.Live.DocsLive do
         <.live_demos slug={@doc.id} assigns={assigns} />
 
         <%!-- Markdown Documentation --%>
-        <div class="docs-prose">
+        <article class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-code:before:content-none prose-code:after:content-none">
           {raw(@doc.body)}
-        </div>
+        </article>
       </div>
     </.docs_shell>
     """
@@ -124,11 +124,14 @@ defmodule AppWeb.Live.DocsLive do
 
   attr :docs, :list, required: true
   attr :doc, :any, default: nil
+  attr :flash, :map, required: true
   slot :inner_block, required: true
 
   defp docs_shell(assigns) do
     ~H"""
     <div class="flex min-h-screen bg-background">
+      <PUI.Flash.flash_group flash={@flash} live={true} position="top-right" />
+
       <%!-- Mobile Sidebar Overlay --%>
       <div
         id="docs-mobile-overlay"
@@ -227,7 +230,7 @@ defmodule AppWeb.Live.DocsLive do
         </header>
 
         <%!-- Content + TOC --%>
-        <div class="flex flex-1 overflow-hidden">
+        <div class="flex flex-1 min-h-0">
           <main class="flex-1 overflow-y-auto" id="docs-main-content">
             <div class="mx-auto max-w-4xl px-4 lg:px-8 py-8 lg:py-12">
               {render_slot(@inner_block)}
@@ -248,9 +251,9 @@ defmodule AppWeb.Live.DocsLive do
           <%!-- TOC --%>
           <aside
             :if={@doc && @doc.toc != []}
-            class="hidden xl:block w-56 shrink-0 overflow-y-auto border-l border-border px-5 py-8"
+            class="hidden xl:block w-56 shrink-0 self-start border-l border-border bg-background"
           >
-            <div class="sticky top-8">
+            <div class="sticky top-0 max-h-screen overflow-y-auto px-5 py-8">
               <h5 class="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 On this page
               </h5>
@@ -288,11 +291,11 @@ defmodule AppWeb.Live.DocsLive do
       </h2>
 
       <%!-- Playground --%>
-      <div class="rounded-xl border border-border overflow-hidden">
-        <div class="bg-muted/30 px-5 py-3 border-b border-border">
+      <div class="rounded-xl border border-border bg-background shadow-sm">
+        <div class="rounded-t-xl bg-muted/30 px-5 py-3 border-b border-border">
           <h3 class="text-sm font-medium text-foreground">Playground</h3>
         </div>
-        <div class="p-6 flex flex-col gap-6">
+        <div class="rounded-b-xl p-6 flex flex-col gap-6 overflow-visible">
           <div class="flex flex-wrap items-center gap-3">
             <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Variant
@@ -559,125 +562,94 @@ defmodule AppWeb.Live.DocsLive do
       </h2>
 
       <.demo_section title="Basic Dialog" id="basic-dialog">
-        <.button phx-click={PUI.Dialog.show_dialog("demo-dialog")}>
-          Open Dialog
-        </.button>
+        <.dialog :let={%{hide: hide}} id="demo-dialog" size="md">
+          <:trigger :let={attr}>
+            <.button {attr}>Open Dialog</.button>
+          </:trigger>
 
-        <.dialog id="demo-dialog" size="md">
-          <:content>
-            <div class="space-y-4">
-              <div>
-                <h2 class="text-lg font-semibold">Dialog Title</h2>
-                <p class="text-sm text-muted-foreground mt-1">
-                  This is a demonstration of the PUI dialog component.
-                </p>
-              </div>
-              <p class="text-sm text-muted-foreground">
-                Dialogs are useful for confirmations, forms, and complex interactions that require user attention.
+          <div class="space-y-4">
+            <div>
+              <h2 class="text-lg font-semibold">Dialog Title</h2>
+              <p class="mt-1 text-sm text-muted-foreground">
+                This is a demonstration of the PUI dialog component.
               </p>
-              <div class="flex justify-end gap-2 pt-2">
-                <.button
-                  variant="outline"
-                  phx-click={PUI.Dialog.hide_dialog("demo-dialog")}
-                >
-                  Cancel
-                </.button>
-                <.button phx-click={PUI.Dialog.hide_dialog("demo-dialog")}>
-                  Confirm
-                </.button>
-              </div>
             </div>
-          </:content>
+            <p class="text-sm text-muted-foreground">
+              Dialogs are useful for confirmations, forms, and complex interactions that require user attention.
+            </p>
+            <div class="flex justify-end gap-2 pt-2">
+              <.button variant="outline" phx-click={hide}>
+                Cancel
+              </.button>
+              <.button phx-click={hide}>Confirm</.button>
+            </div>
+          </div>
         </.dialog>
       </.demo_section>
 
       <.demo_section title="Dialog Sizes" id="dialog-sizes">
         <div class="flex flex-wrap gap-3">
-          <.button
-            variant="outline"
-            phx-click={PUI.Dialog.show_dialog("demo-sm")}
-          >
-            Small
-          </.button>
-          <.button
-            variant="outline"
-            phx-click={PUI.Dialog.show_dialog("demo-lg")}
-          >
-            Large
-          </.button>
-          <.button
-            variant="outline"
-            phx-click={PUI.Dialog.show_dialog("demo-xl")}
-          >
-            Extra Large
-          </.button>
-        </div>
+          <.dialog :let={%{hide: hide}} id="demo-sm" size="sm">
+            <:trigger :let={attr}>
+              <.button variant="outline" {attr}>Small</.button>
+            </:trigger>
 
-        <.dialog id="demo-sm" size="sm">
-          <:content>
             <p class="text-sm">This is a small dialog.</p>
-            <div class="flex justify-end mt-4">
-              <.button size="sm" phx-click={PUI.Dialog.hide_dialog("demo-sm")}>
+            <div class="mt-4 flex justify-end">
+              <.button size="sm" phx-click={hide}>
                 Close
               </.button>
             </div>
-          </:content>
-        </.dialog>
+          </.dialog>
 
-        <.dialog id="demo-lg" size="lg">
-          <:content>
+          <.dialog :let={%{hide: hide}} id="demo-lg" size="lg">
+            <:trigger :let={attr}>
+              <.button variant="outline" {attr}>Large</.button>
+            </:trigger>
+
             <p class="text-sm">This is a large dialog with more room for content.</p>
-            <div class="flex justify-end mt-4">
-              <.button phx-click={PUI.Dialog.hide_dialog("demo-lg")}>
+            <div class="mt-4 flex justify-end">
+              <.button phx-click={hide}>
                 Close
               </.button>
             </div>
-          </:content>
-        </.dialog>
+          </.dialog>
 
-        <.dialog id="demo-xl" size="xl">
-          <:content>
+          <.dialog :let={%{hide: hide}} id="demo-xl" size="xl">
+            <:trigger :let={attr}>
+              <.button variant="outline" {attr}>Extra Large</.button>
+            </:trigger>
+
             <p class="text-sm">This is an extra large dialog for complex content.</p>
-            <div class="flex justify-end mt-4">
-              <.button phx-click={PUI.Dialog.hide_dialog("demo-xl")}>
+            <div class="mt-4 flex justify-end">
+              <.button phx-click={hide}>
                 Close
               </.button>
             </div>
-          </:content>
-        </.dialog>
+          </.dialog>
+        </div>
       </.demo_section>
 
       <.demo_section title="Alert Dialog" id="alert-dialog">
-        <.button
-          variant="destructive"
-          phx-click={PUI.Dialog.show_dialog("demo-alert")}
-        >
-          Delete Item
-        </.button>
+        <.dialog :let={%{hide: hide}} id="demo-alert" alert={true} size="sm">
+          <:trigger :let={attr}>
+            <.button variant="destructive" {attr}>Delete Item</.button>
+          </:trigger>
 
-        <.dialog id="demo-alert" alert={true} size="sm">
-          <:content>
-            <div class="space-y-3">
-              <h2 class="text-lg font-semibold text-destructive">Are you sure?</h2>
-              <p class="text-sm text-muted-foreground">
-                This action cannot be undone. This will permanently delete the item.
-              </p>
-              <div class="flex justify-end gap-2 pt-2">
-                <.button
-                  variant="outline"
-                  phx-click={PUI.Dialog.hide_dialog("demo-alert")}
-                >
-                  Cancel
-                </.button>
-                <.button
-                  variant="destructive"
-                  phx-click={PUI.Dialog.hide_dialog("demo-alert")}
-                >
-                  Delete
-                </.button>
-              </div>
+          <div class="space-y-3">
+            <h2 class="text-lg font-semibold text-destructive">Are you sure?</h2>
+            <p class="text-sm text-muted-foreground">
+              This action cannot be undone. This will permanently delete the item.
+            </p>
+            <div class="flex justify-end gap-2 pt-2">
+              <.button variant="outline" phx-click={hide}>
+                Cancel
+              </.button>
+              <.button variant="destructive" phx-click={hide}>
+                Delete
+              </.button>
             </div>
-          </:content>
+          </div>
         </.dialog>
       </.demo_section>
     </section>
@@ -750,11 +722,16 @@ defmodule AppWeb.Live.DocsLive do
       </h2>
 
       <.demo_section title="Basic Popover" id="basic-popover">
-        <.popover_base id="demo-popover">
+        <.popover_base
+          id="demo-popover"
+          class="w-fit"
+          phx-hook="PUI.Popover"
+          data-placement="bottom"
+        >
           <:trigger>
             <.button variant="outline">Show Popover</.button>
           </:trigger>
-          <:popup>
+          <:popup class="aria-hidden:hidden block min-w-[250px] rounded-md border border-border bg-popover p-4 text-popover-foreground shadow-md z-50">
             <div class="p-4 space-y-2 w-64">
               <h3 class="font-semibold text-sm">Popover Title</h3>
               <p class="text-sm text-muted-foreground">
@@ -1000,11 +977,11 @@ defmodule AppWeb.Live.DocsLive do
 
   defp demo_section(assigns) do
     ~H"""
-    <div class="rounded-xl border border-border overflow-hidden" id={@id}>
-      <div class="bg-muted/30 px-5 py-3 border-b border-border">
+    <div class="rounded-xl border border-border bg-background shadow-sm overflow-visible" id={@id}>
+      <div class="rounded-t-xl bg-muted/30 px-5 py-3 border-b border-border">
         <h3 class="text-sm font-medium text-foreground">{@title}</h3>
       </div>
-      <div class="p-6 bg-background">
+      <div class="rounded-b-xl p-6 bg-background overflow-visible">
         {render_slot(@inner_block)}
       </div>
     </div>
