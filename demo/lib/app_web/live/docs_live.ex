@@ -38,8 +38,8 @@ defmodule AppWeb.Live.DocsLive do
   def handle_params(_params, _uri, socket) do
     docs = App.Docs.all_docs()
 
-    # Prefer the `button` doc as the primary docs entry when available.
-    preferred = Enum.find(docs, &(&1.id == "button"))
+    # Prefer the `getting-started` doc as the primary docs entry when available.
+    preferred = Enum.find(docs, &(&1.id == "getting-started"))
     target = preferred || List.first(docs)
 
     if target do
