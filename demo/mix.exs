@@ -65,7 +65,9 @@ defmodule App.MixProject do
       {:bandit, "~> 1.5"},
       {:tidewave, "~> 0.5", only: :dev},
       {:wallaby, "~> 0.30", runtime: false, only: :test},
-      {:pui, path: "../", override: true}
+      {:pui, path: "../", override: true},
+      {:nimble_publisher, "~> 1.1"},
+      {:mdex, "~> 0.4"}
     ]
   end
 

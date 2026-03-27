@@ -17,6 +17,9 @@ defmodule AppWeb.Router do
   scope "/", AppWeb do
     pipe_through :browser
 
+    live "/docs", Live.DocsLive, :index
+    live "/docs/:slug", Live.DocsLive, :show
+
     live "/", Live.Demo, :index
     live "/inputs", Live.Demo, :inputs
     live "/buttons", Live.Demo, :buttons
