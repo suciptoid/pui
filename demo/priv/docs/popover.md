@@ -1,13 +1,13 @@
 %{
-  title: "Popover",
-  description: "Floating popovers and tooltips using Floating UI for precise positioning.",
+title: "Popover",
+description: "Floating content panels built with Floating UI for precise positioning and dismissal behavior.",
   group: "Overlays",
   order: 1,
   icon: "hero-squares-2x2"
 }
 ---
 
-The Popover component provides floating content panels and tooltips built with Floating UI for precise, collision-aware positioning. Use `base` for custom popover UIs and `tooltip` for simple hover tooltips.
+The Popover component provides floating content panels built with Floating UI for precise, collision-aware positioning. Use `popover_base` when you need a low-level primitive for custom popover UIs or menus.
 
 ## Import
 
@@ -23,8 +23,8 @@ The `popover_base` component is a low-level building block with `trigger` and `p
 
 ```heex
 <.popover_base id="my-popover">
-  <:trigger>
-    <.button variant="outline">Show Info</.button>
+  <:trigger class="inline-flex items-center rounded-md border px-4 py-2 text-sm font-medium">
+    Show Info
   </:trigger>
   <:popup>
     <div class="p-4 space-y-2">
@@ -37,52 +37,13 @@ The `popover_base` component is a low-level building block with `trigger` and `p
 </.popover_base>
 ```
 
-## Tooltip
-
-Display a tooltip on hover with configurable placement:
-
-```heex
-<.tooltip>
-  <.button variant="outline">Hover me</.button>
-  <:tooltip>This is a helpful tooltip</:tooltip>
-</.tooltip>
-```
-
-### Placement
-
-Tooltips support four placement options:
-
-```heex
-<.tooltip placement="top">
-  <span>Top</span>
-  <:tooltip>Top tooltip</:tooltip>
-</.tooltip>
-
-<.tooltip placement="bottom">
-  <span>Bottom</span>
-  <:tooltip>Bottom tooltip</:tooltip>
-</.tooltip>
-
-<.tooltip placement="left">
-  <span>Left</span>
-  <:tooltip>Left tooltip</:tooltip>
-</.tooltip>
-
-<.tooltip placement="right">
-  <span>Right</span>
-  <:tooltip>Right tooltip</:tooltip>
-</.tooltip>
-```
-
 ## Unstyled / Headless
 
 Use `variant="unstyled"` for complete styling control:
 
 ```heex
 <.popover_base id="custom-popover" variant="unstyled">
-  <:trigger>
-    <button class="my-trigger">Open</:button>
-  </:trigger>
+  <:trigger class="my-trigger">Open</:trigger>
   <:popup class="my-popup-class">
     Custom styled content
   </:popup>
@@ -106,19 +67,3 @@ Use `variant="unstyled"` for complete styling control:
 | `trigger` | — | Element that opens the popover (supports `class`, `role`) |
 | `popup` | — | Floating content panel (supports `class`, `role`) |
 | `inner_block` | — | Alternative to trigger slot |
-
-### Tooltip Attributes
-
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `id` | `string` | auto-generated | Unique identifier |
-| `placement` | `string` | `"top"` | Position: `"top"`, `"bottom"`, `"left"`, `"right"` |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
-| `class` | `string` | `""` | Additional CSS classes |
-
-### Tooltip Slots
-
-| Name | Required | Description |
-|------|----------|-------------|
-| `inner_block` | ✓ | Trigger element |
-| `tooltip` | ✓ | Tooltip content (supports `class`) |

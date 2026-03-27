@@ -22,6 +22,13 @@ export default class Popover extends ViewHook {
 
   #outside_listener;
   #clear_floating;
+  #triggerClickHandler;
+  #triggerMouseEnterHandler;
+  #triggerMouseLeaveHandler;
+  #triggerFocusHandler;
+  #triggerBlurHandler;
+  #containerKeyDownHandler;
+  #triggerKeyDownHandler;
 
   mounted() {
     this.defaultPlacement = this.el.dataset.placement || this.placement;
@@ -33,47 +40,15 @@ export default class Popover extends ViewHook {
 
     this.refreshExpanded();
 
-    if (this.event_trigger === "click") {
-      // Trigger click handler
-      this.trigger?.addEventListener("click", () => {
-        if (this.expanded) {
-          this.closePopover();
-        } else {
-          this.openPopover({ placement: this.getOpenPlacement() });
-        }
+    this.#triggerClickHandler = this.handleTriggerClick.bind(this);
+    this.#triggerMouseEnterHandler = this.handleTriggerMouseEnter.bind(this);
+    this.#triggerMouseLeaveHandler = this.handleTriggerMouseLeave.bind(this);
+    this.#triggerFocusHandler = this.handleTriggerFocus.bind(this);
+    this.#triggerBlurHandler = this.handleTriggerBlur.bind(this);
+    this.#containerKeyDownHandler = this.handleContainerKeyDown.bind(this);
+    this.#triggerKeyDownHandler = this.handleTriggerKeyDown.bind(this);
 
-        this.refreshExpanded();
-      });
-    } else if (this.event_trigger === "hover") {
-      // Trigger hover handler
-      this.trigger?.addEventListener("mouseenter", () => {
-        this.openPopover();
-        this.refreshExpanded();
-      });
-
-      this.trigger?.addEventListener("mouseleave", () => {
-        this.closePopover();
-        this.refreshExpanded();
-      });
-    } else if (this.event_trigger === "focus") {
-      // Trigger focus handler
-      this.trigger?.addEventListener("focus", () => {
-        this.openPopover();
-        this.refreshExpanded();
-      });
-
-      this.trigger?.addEventListener("blur", () => {
-        this.closePopover();
-        this.refreshExpanded();
-      });
-    }
-
-    // Keydown handler
-    this.el.addEventListener("keydown", this.handleContainerKeyDown.bind(this));
-    this.trigger?.addEventListener(
-      "keydown",
-      this.handleTriggerKeyDown.bind(this),
-    );
+    this.bindEventListeners();
 
     this.#outside_listener = (event) => {
       const target = event.target;
@@ -96,12 +71,17 @@ export default class Popover extends ViewHook {
   }
 
   updated() {
+    const previousTrigger = this.trigger;
+
     this.cacheElements();
+    this.rebindEventListeners(previousTrigger);
     this.restoreExpanded();
+    this.initFloatingUI();
     this.refreshFloatingUI();
   }
 
   destroyed() {
+    this.unbindEventListeners(this.trigger);
     document.removeEventListener("click", this.#outside_listener);
 
     if (this.#clear_floating) {
@@ -122,6 +102,36 @@ export default class Popover extends ViewHook {
         event.preventDefault();
       }
     }
+  }
+
+  handleTriggerClick() {
+    if (this.expanded) {
+      this.closePopover();
+    } else {
+      this.openPopover({ placement: this.getOpenPlacement() });
+    }
+
+    this.refreshExpanded();
+  }
+
+  handleTriggerMouseEnter() {
+    this.openPopover();
+    this.refreshExpanded();
+  }
+
+  handleTriggerMouseLeave() {
+    this.closePopover();
+    this.refreshExpanded();
+  }
+
+  handleTriggerFocus() {
+    this.openPopover();
+    this.refreshExpanded();
+  }
+
+  handleTriggerBlur() {
+    this.closePopover();
+    this.refreshExpanded();
   }
 
   handleContainerKeyDown(event) {
@@ -211,7 +221,51 @@ export default class Popover extends ViewHook {
     });
   }
 
+  bindEventListeners() {
+    this.el.addEventListener("keydown", this.#containerKeyDownHandler);
+    this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
+
+    if (this.event_trigger === "click") {
+      this.trigger?.addEventListener("click", this.#triggerClickHandler);
+      return;
+    }
+
+    if (this.event_trigger === "hover") {
+      this.trigger?.addEventListener("mouseenter", this.#triggerMouseEnterHandler);
+      this.trigger?.addEventListener("mouseleave", this.#triggerMouseLeaveHandler);
+      return;
+    }
+
+    if (this.event_trigger === "focus") {
+      this.trigger?.addEventListener("focus", this.#triggerFocusHandler);
+      this.trigger?.addEventListener("blur", this.#triggerBlurHandler);
+    }
+  }
+
+  unbindEventListeners(trigger) {
+    this.el.removeEventListener("keydown", this.#containerKeyDownHandler);
+    trigger?.removeEventListener("keydown", this.#triggerKeyDownHandler);
+    trigger?.removeEventListener("click", this.#triggerClickHandler);
+    trigger?.removeEventListener("mouseenter", this.#triggerMouseEnterHandler);
+    trigger?.removeEventListener("mouseleave", this.#triggerMouseLeaveHandler);
+    trigger?.removeEventListener("focus", this.#triggerFocusHandler);
+    trigger?.removeEventListener("blur", this.#triggerBlurHandler);
+  }
+
+  rebindEventListeners(previousTrigger) {
+    if (previousTrigger === this.trigger) {
+      return;
+    }
+
+    this.unbindEventListeners(previousTrigger);
+    this.bindEventListeners();
+  }
+
   refreshFloatingUI() {
+    if (!this.trigger || !this.popup) {
+      return;
+    }
+
     const expand_popover = this.expand_popover;
     const popup = this.popup;
     computePosition(this.trigger, this.popup, {

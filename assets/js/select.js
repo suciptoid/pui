@@ -42,11 +42,7 @@ export default class Select extends ViewHook {
     this.#searchInputHandler = this.handleSearchInput.bind(this);
     this.#searchKeyDownHandler = this.handleSearchKeyDown.bind(this);
 
-    this.trigger?.addEventListener("click", this.#triggerClickHandler);
-    this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
-    this.el.addEventListener("keydown", this.#containerKeyDownHandler);
-    this.popup?.addEventListener("click", this.#popupClickHandler);
-    this.search?.addEventListener("keydown", this.#searchKeyDownHandler);
+    this.bindEventListeners();
 
     this.#outsideListener = (event) => {
       const target = event.target;
@@ -64,20 +60,21 @@ export default class Select extends ViewHook {
   }
 
   updated() {
+    const previousTrigger = this.trigger;
+    const previousPopup = this.popup;
+    const previousSearch = this.search;
+
     this.cacheElements();
+    this.rebindEventListeners(previousTrigger, previousPopup, previousSearch);
     this.ensureOptionMetadata();
     this.restoreExpanded();
     this.syncValueFromDataset();
+    this.initFloatingUI();
     this.refreshFloatingUI();
   }
 
   destroyed() {
-    this.trigger?.removeEventListener("click", this.#triggerClickHandler);
-    this.trigger?.removeEventListener("keydown", this.#triggerKeyDownHandler);
-    this.el.removeEventListener("keydown", this.#containerKeyDownHandler);
-    this.popup?.removeEventListener("click", this.#popupClickHandler);
-    this.search?.removeEventListener("keydown", this.#searchKeyDownHandler);
-    this.search?.removeEventListener("input", this.#searchInputHandler);
+    this.unbindEventListeners(this.trigger, this.popup, this.search);
     document.removeEventListener("click", this.#outsideListener);
 
     if (this.#clearFloating) {
@@ -97,6 +94,40 @@ export default class Select extends ViewHook {
     );
     this.hiddenInput = this.el.querySelector("input[type='hidden']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
+  }
+
+  bindEventListeners() {
+    this.el.addEventListener("keydown", this.#containerKeyDownHandler);
+    this.trigger?.addEventListener("click", this.#triggerClickHandler);
+    this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
+    this.popup?.addEventListener("click", this.#popupClickHandler);
+    this.search?.addEventListener("keydown", this.#searchKeyDownHandler);
+  }
+
+  unbindEventListeners(trigger, popup, search) {
+    this.el.removeEventListener("keydown", this.#containerKeyDownHandler);
+    trigger?.removeEventListener("click", this.#triggerClickHandler);
+    trigger?.removeEventListener("keydown", this.#triggerKeyDownHandler);
+    popup?.removeEventListener("click", this.#popupClickHandler);
+    search?.removeEventListener("keydown", this.#searchKeyDownHandler);
+    search?.removeEventListener("input", this.#searchInputHandler);
+  }
+
+  rebindEventListeners(previousTrigger, previousPopup, previousSearch) {
+    if (
+      previousTrigger === this.trigger &&
+      previousPopup === this.popup &&
+      previousSearch === this.search
+    ) {
+      return;
+    }
+
+    this.unbindEventListeners(previousTrigger, previousPopup, previousSearch);
+    this.bindEventListeners();
+
+    if (this.expanded) {
+      this.search?.addEventListener("input", this.#searchInputHandler);
+    }
   }
 
   refreshExpanded() {

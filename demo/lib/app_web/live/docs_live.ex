@@ -25,7 +25,8 @@ defmodule AppWeb.Live.DocsLive do
        btn_size: "default",
        show_dialog: false,
        progress_value: 45.0,
-       toast_count: 0
+       toast_count: 0,
+       flash_position: "top-right"
      )}
   end
 
@@ -79,6 +80,10 @@ defmodule AppWeb.Live.DocsLive do
     {:noreply, assign(socket, toast_count: count)}
   end
 
+  def handle_event("select_flash_position", %{"position" => position}, socket) do
+    {:noreply, assign(socket, flash_position: position)}
+  end
+
   def handle_event("update_progress", %{"value" => value}, socket) do
     val =
       case Float.parse(value) do
@@ -105,7 +110,7 @@ defmodule AppWeb.Live.DocsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <.docs_shell docs={@docs} doc={@doc} flash={@flash}>
+    <.docs_shell docs={@docs} doc={@doc} flash={@flash} flash_position={@flash_position}>
       <div :if={@doc} class="space-y-12">
         <%!-- Page Header --%>
         <div class="border-b border-border pb-8">
@@ -135,12 +140,13 @@ defmodule AppWeb.Live.DocsLive do
   attr :docs, :list, required: true
   attr :doc, :any, default: nil
   attr :flash, :map, required: true
+  attr :flash_position, :string, default: "top-right"
   slot :inner_block, required: true
 
   defp docs_shell(assigns) do
     ~H"""
     <div class="flex min-h-screen bg-background">
-      <PUI.Flash.flash_group flash={@flash} live={true} position="top-right" />
+      <PUI.Flash.flash_group flash={@flash} live={true} position={@flash_position} />
 
       <%!-- Mobile Sidebar Overlay --%>
       <div
@@ -472,13 +478,8 @@ defmodule AppWeb.Live.DocsLive do
             phx-hook="PUI.Popover"
             data-placement="bottom-start"
           >
-            <:trigger>
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent"
-              >
-                <.icon name="hero-code-bracket" class="size-4" /> Open custom popover
-              </button>
+            <:trigger class="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent">
+              <.icon name="hero-code-bracket" class="size-4" /> Open custom popover
             </:trigger>
             <:popup class="aria-hidden:hidden block w-72 rounded-2xl border border-border bg-background p-4 shadow-xl">
               <div class="space-y-3">
@@ -910,8 +911,8 @@ defmodule AppWeb.Live.DocsLive do
           phx-hook="PUI.Popover"
           data-placement="bottom"
         >
-          <:trigger>
-            <.button variant="outline">Show Popover</.button>
+          <:trigger class="inline-flex h-9 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium shadow-xs transition-[color,box-shadow] hover:bg-accent hover:text-accent-foreground">
+            Show Popover
           </:trigger>
           <:popup class="aria-hidden:hidden block min-w-[250px] rounded-md border border-border bg-popover p-4 text-popover-foreground shadow-md z-50">
             <div class="p-4 space-y-2 w-64">
@@ -923,8 +924,18 @@ defmodule AppWeb.Live.DocsLive do
           </:popup>
         </.popover_base>
       </.demo_section>
+    </section>
+    """
+  end
 
-      <.demo_section title="Tooltips" id="tooltips">
+  defp live_demos(%{slug: "tooltip"} = assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
+
+      <.demo_section title="Tooltip Placements" id="tooltip-placements">
         <div class="flex flex-wrap items-center gap-6">
           <.tooltip placement="top">
             <.button variant="outline" size="sm">Top</.button>
@@ -943,6 +954,20 @@ defmodule AppWeb.Live.DocsLive do
             <:tooltip>Tooltip on right</:tooltip>
           </.tooltip>
         </div>
+      </.demo_section>
+
+      <.demo_section title="Rich Tooltip" id="rich-tooltip">
+        <.tooltip id="docs-rich-tooltip" placement="bottom">
+          <.button variant="outline">Hover for details</.button>
+          <:tooltip>
+            <div class="w-56 space-y-2">
+              <p class="text-sm font-medium">Tooltip content</p>
+              <p class="text-xs text-muted-foreground">
+                Tooltips can hold short, contextual guidance without taking over the layout.
+              </p>
+            </div>
+          </:tooltip>
+        </.tooltip>
       </.demo_section>
     </section>
     """
@@ -994,13 +1019,40 @@ defmodule AppWeb.Live.DocsLive do
       </h2>
 
       <.demo_section title="Send Toast" id="send-toast">
-        <div class="flex flex-wrap gap-3">
-          <.button phx-click="send_toast">
-            <.icon name="hero-bell" class="size-4 mr-2" /> Send Toast
-          </.button>
-          <p class="text-sm text-muted-foreground self-center">
-            Click to send a toast notification. Count: {@assigns.toast_count}
-          </p>
+        <div class="space-y-6">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Position
+            </span>
+            <div class="flex flex-wrap gap-1.5">
+              <button
+                :for={
+                  position <- ~w(top-left top-center top-right bottom-left bottom-center bottom-right)
+                }
+                type="button"
+                phx-click="select_flash_position"
+                phx-value-position={position}
+                class={[
+                  "px-3 py-1 text-xs font-medium rounded-full transition-all",
+                  position == @assigns.flash_position &&
+                    "bg-primary text-primary-foreground shadow-sm",
+                  position != @assigns.flash_position &&
+                    "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+                ]}
+              >
+                {position}
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <.button phx-click="send_toast">
+              <.icon name="hero-bell" class="size-4 mr-2" /> Send Toast
+            </.button>
+            <p class="text-sm text-muted-foreground self-center">
+              Position: {@assigns.flash_position}. Count: {@assigns.toast_count}
+            </p>
+          </div>
         </div>
       </.demo_section>
     </section>

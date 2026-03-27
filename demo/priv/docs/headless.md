@@ -17,11 +17,7 @@ Use low-level primitives such as `popover_base` when you want to own the trigger
 
 ```heex
 <.popover_base phx-hook="PUI.Popover" data-placement="bottom-start">
-  <:trigger>
-    <button type="button" class="my-trigger">
-      Open custom popover
-    </button>
-  </:trigger>
+  <:trigger class="my-trigger">Open custom popover</:trigger>
   <:popup class="aria-hidden:hidden block my-popover">
     Custom content
   </:popup>

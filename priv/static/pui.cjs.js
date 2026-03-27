@@ -1526,6 +1526,13 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
   focus_selected = true;
   #outside_listener;
   #clear_floating;
+  #triggerClickHandler;
+  #triggerMouseEnterHandler;
+  #triggerMouseLeaveHandler;
+  #triggerFocusHandler;
+  #triggerBlurHandler;
+  #containerKeyDownHandler;
+  #triggerKeyDownHandler;
   mounted() {
     this.defaultPlacement = this.el.dataset.placement || this.placement;
     this.activePlacement = this.defaultPlacement;
@@ -1534,39 +1541,14 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
     this.event_trigger = this.el.dataset.trigger || this.event_trigger;
     this.cacheElements();
     this.refreshExpanded();
-    if (this.event_trigger === "click") {
-      this.trigger?.addEventListener("click", () => {
-        if (this.expanded) {
-          this.closePopover();
-        } else {
-          this.openPopover({ placement: this.getOpenPlacement() });
-        }
-        this.refreshExpanded();
-      });
-    } else if (this.event_trigger === "hover") {
-      this.trigger?.addEventListener("mouseenter", () => {
-        this.openPopover();
-        this.refreshExpanded();
-      });
-      this.trigger?.addEventListener("mouseleave", () => {
-        this.closePopover();
-        this.refreshExpanded();
-      });
-    } else if (this.event_trigger === "focus") {
-      this.trigger?.addEventListener("focus", () => {
-        this.openPopover();
-        this.refreshExpanded();
-      });
-      this.trigger?.addEventListener("blur", () => {
-        this.closePopover();
-        this.refreshExpanded();
-      });
-    }
-    this.el.addEventListener("keydown", this.handleContainerKeyDown.bind(this));
-    this.trigger?.addEventListener(
-      "keydown",
-      this.handleTriggerKeyDown.bind(this)
-    );
+    this.#triggerClickHandler = this.handleTriggerClick.bind(this);
+    this.#triggerMouseEnterHandler = this.handleTriggerMouseEnter.bind(this);
+    this.#triggerMouseLeaveHandler = this.handleTriggerMouseLeave.bind(this);
+    this.#triggerFocusHandler = this.handleTriggerFocus.bind(this);
+    this.#triggerBlurHandler = this.handleTriggerBlur.bind(this);
+    this.#containerKeyDownHandler = this.handleContainerKeyDown.bind(this);
+    this.#triggerKeyDownHandler = this.handleTriggerKeyDown.bind(this);
+    this.bindEventListeners();
     this.#outside_listener = (event) => {
       const target = event.target;
       const clickedOnTrigger = this.trigger?.contains(target);
@@ -1584,11 +1566,15 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
     document.removeEventListener("click", this.#outside_listener);
   }
   updated() {
+    const previousTrigger = this.trigger;
     this.cacheElements();
+    this.rebindEventListeners(previousTrigger);
     this.restoreExpanded();
+    this.initFloatingUI();
     this.refreshFloatingUI();
   }
   destroyed() {
+    this.unbindEventListeners(this.trigger);
     document.removeEventListener("click", this.#outside_listener);
     if (this.#clear_floating) {
       this.#clear_floating();
@@ -1606,6 +1592,30 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
         event.preventDefault();
       }
     }
+  }
+  handleTriggerClick() {
+    if (this.expanded) {
+      this.closePopover();
+    } else {
+      this.openPopover({ placement: this.getOpenPlacement() });
+    }
+    this.refreshExpanded();
+  }
+  handleTriggerMouseEnter() {
+    this.openPopover();
+    this.refreshExpanded();
+  }
+  handleTriggerMouseLeave() {
+    this.closePopover();
+    this.refreshExpanded();
+  }
+  handleTriggerFocus() {
+    this.openPopover();
+    this.refreshExpanded();
+  }
+  handleTriggerBlur() {
+    this.closePopover();
+    this.refreshExpanded();
   }
   handleContainerKeyDown(event) {
     if (!this.expanded) return;
@@ -1679,7 +1689,43 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
       this.refreshFloatingUI();
     });
   }
+  bindEventListeners() {
+    this.el.addEventListener("keydown", this.#containerKeyDownHandler);
+    this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
+    if (this.event_trigger === "click") {
+      this.trigger?.addEventListener("click", this.#triggerClickHandler);
+      return;
+    }
+    if (this.event_trigger === "hover") {
+      this.trigger?.addEventListener("mouseenter", this.#triggerMouseEnterHandler);
+      this.trigger?.addEventListener("mouseleave", this.#triggerMouseLeaveHandler);
+      return;
+    }
+    if (this.event_trigger === "focus") {
+      this.trigger?.addEventListener("focus", this.#triggerFocusHandler);
+      this.trigger?.addEventListener("blur", this.#triggerBlurHandler);
+    }
+  }
+  unbindEventListeners(trigger) {
+    this.el.removeEventListener("keydown", this.#containerKeyDownHandler);
+    trigger?.removeEventListener("keydown", this.#triggerKeyDownHandler);
+    trigger?.removeEventListener("click", this.#triggerClickHandler);
+    trigger?.removeEventListener("mouseenter", this.#triggerMouseEnterHandler);
+    trigger?.removeEventListener("mouseleave", this.#triggerMouseLeaveHandler);
+    trigger?.removeEventListener("focus", this.#triggerFocusHandler);
+    trigger?.removeEventListener("blur", this.#triggerBlurHandler);
+  }
+  rebindEventListeners(previousTrigger) {
+    if (previousTrigger === this.trigger) {
+      return;
+    }
+    this.unbindEventListeners(previousTrigger);
+    this.bindEventListeners();
+  }
   refreshFloatingUI() {
+    if (!this.trigger || !this.popup) {
+      return;
+    }
     const expand_popover = this.expand_popover;
     const popup = this.popup;
     computePosition2(this.trigger, this.popup, {
@@ -1845,11 +1891,7 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     this.#popupClickHandler = this.handlePopupClick.bind(this);
     this.#searchInputHandler = this.handleSearchInput.bind(this);
     this.#searchKeyDownHandler = this.handleSearchKeyDown.bind(this);
-    this.trigger?.addEventListener("click", this.#triggerClickHandler);
-    this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
-    this.el.addEventListener("keydown", this.#containerKeyDownHandler);
-    this.popup?.addEventListener("click", this.#popupClickHandler);
-    this.search?.addEventListener("keydown", this.#searchKeyDownHandler);
+    this.bindEventListeners();
     this.#outsideListener = (event) => {
       const target = event.target;
       const clickedOnTrigger = this.trigger?.contains(target);
@@ -1863,19 +1905,19 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     this.selectDefaultValue();
   }
   updated() {
+    const previousTrigger = this.trigger;
+    const previousPopup = this.popup;
+    const previousSearch = this.search;
     this.cacheElements();
+    this.rebindEventListeners(previousTrigger, previousPopup, previousSearch);
     this.ensureOptionMetadata();
     this.restoreExpanded();
     this.syncValueFromDataset();
+    this.initFloatingUI();
     this.refreshFloatingUI();
   }
   destroyed() {
-    this.trigger?.removeEventListener("click", this.#triggerClickHandler);
-    this.trigger?.removeEventListener("keydown", this.#triggerKeyDownHandler);
-    this.el.removeEventListener("keydown", this.#containerKeyDownHandler);
-    this.popup?.removeEventListener("click", this.#popupClickHandler);
-    this.search?.removeEventListener("keydown", this.#searchKeyDownHandler);
-    this.search?.removeEventListener("input", this.#searchInputHandler);
+    this.unbindEventListeners(this.trigger, this.popup, this.search);
     document.removeEventListener("click", this.#outsideListener);
     if (this.#clearFloating) {
       this.#clearFloating();
@@ -1891,6 +1933,31 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     );
     this.hiddenInput = this.el.querySelector("input[type='hidden']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
+  }
+  bindEventListeners() {
+    this.el.addEventListener("keydown", this.#containerKeyDownHandler);
+    this.trigger?.addEventListener("click", this.#triggerClickHandler);
+    this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
+    this.popup?.addEventListener("click", this.#popupClickHandler);
+    this.search?.addEventListener("keydown", this.#searchKeyDownHandler);
+  }
+  unbindEventListeners(trigger, popup, search) {
+    this.el.removeEventListener("keydown", this.#containerKeyDownHandler);
+    trigger?.removeEventListener("click", this.#triggerClickHandler);
+    trigger?.removeEventListener("keydown", this.#triggerKeyDownHandler);
+    popup?.removeEventListener("click", this.#popupClickHandler);
+    search?.removeEventListener("keydown", this.#searchKeyDownHandler);
+    search?.removeEventListener("input", this.#searchInputHandler);
+  }
+  rebindEventListeners(previousTrigger, previousPopup, previousSearch) {
+    if (previousTrigger === this.trigger && previousPopup === this.popup && previousSearch === this.search) {
+      return;
+    }
+    this.unbindEventListeners(previousTrigger, previousPopup, previousSearch);
+    this.bindEventListeners();
+    if (this.expanded) {
+      this.search?.addEventListener("input", this.#searchInputHandler);
+    }
   }
   refreshExpanded() {
     this.expanded = this.trigger?.getAttribute("aria-expanded") === "true";

@@ -10,4 +10,16 @@ defmodule AppWeb.DialogFeatureTest do
     |> click(button("Close Dialog"))
     |> assert_has(css("#server-dialog-content[hidden]", visible: false))
   end
+
+  feature "dialog select can reopen after changing the selected category", %{session: session} do
+    session
+    |> visit("/__test__/components/dialog")
+    |> click(button("Open Dialog"))
+    |> click(css("#dialog-select-trigger"))
+    |> click(css("#dialog-select-listbox [role='option']", text: "Gamma"))
+    |> assert_has(css("#dialog-select-trigger", text: "Gamma"))
+    |> click(css("#dialog-select-trigger"))
+    |> assert_has(css("#dialog-select-listbox[aria-hidden='false']"))
+    |> assert_has(css("#dialog-select-listbox [role='option']", text: "Gamma"))
+  end
 end
