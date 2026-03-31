@@ -181,7 +181,6 @@ defmodule PUI.Select do
         <.label for={@label_target_id}>{@label}</.label>
         <div>
         <.select {assigns |> Map.delete(:label) |> Map.put(:show_errors, false)} />
-        <.field_error errors={@errors} />
       </div>
     </div>
     """
