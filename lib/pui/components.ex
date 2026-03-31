@@ -81,4 +81,48 @@ defmodule PUI.Components do
     </span>
     """
   end
+
+  @doc """
+  Renders form field error messages.
+
+  Displays validation errors below form inputs. Renders nothing when `errors` is empty.
+
+  ## Examples
+
+      <.field_error errors={["can't be blank"]} />
+      <.field_error errors={["must be at least 3 characters", "is invalid"]} />
+      <.field_error errors={[]} />
+  """
+  attr :errors, :list, default: []
+
+  def field_error(assigns) do
+    ~H"""
+    <p
+      :for={msg <- @errors}
+      class="mt-1.5 text-[0.8rem] font-medium text-destructive"
+    >
+      {msg}
+    </p>
+    """
+  end
+
+  @doc """
+  Translates a form error tuple into a human-readable string.
+
+  Error tuples from changesets have the form `{msg, opts}` where `msg` may contain
+  interpolation placeholders like `%{count}`.
+
+  ## Examples
+
+      iex> PUI.Components.translate_error({"can't be blank", []})
+      "can't be blank"
+
+      iex> PUI.Components.translate_error({"should be at least %{count} character(s)", [count: 3]})
+      "should be at least 3 character(s)"
+  """
+  def translate_error({msg, opts}) do
+    Enum.reduce(opts, msg, fn {key, value}, acc ->
+      String.replace(acc, "%{#{key}}", to_string(value))
+    end)
+  end
 end

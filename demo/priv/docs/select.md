@@ -141,6 +141,19 @@ Select works seamlessly with Phoenix forms:
 </.form>
 ```
 
+Field-based errors are shown automatically once the user has interacted with the
+select, and you can also provide them manually:
+
+```heex
+<.select
+  id="category"
+  name="category"
+  label="Category"
+  errors={["Please choose a category."]}
+  options={["Technology", "Design", "Business"]}
+/>
+```
+
 ## Unstyled / Headless
 
 Use `variant="unstyled"` for full styling control:
@@ -166,6 +179,7 @@ Use `variant="unstyled"` for full styling control:
 | `label` | `string` | `nil` | Label text |
 | `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `field` | `FormField` | `nil` | Phoenix form field |
+| `errors` | `list` | `[]` | Error messages rendered below the select |
 | `class` | `string` | `"w-fit"` | Additional CSS classes |
 
 ### Select Slots

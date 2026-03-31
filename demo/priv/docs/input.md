@@ -66,6 +66,19 @@ Inputs work seamlessly with Phoenix form fields via the `field` attribute:
 
 When using form fields, error messages are automatically displayed when the field has been interacted with.
 
+## Manual Errors
+
+You can also render errors without a form field by passing `errors` directly:
+
+```heex
+<.input
+  id="company"
+  name="company"
+  label="Company"
+  errors={["Please enter a company name."]}
+/>
+```
+
 ## Related Form Controls
 
 - [Textarea](/docs/textarea)
@@ -84,6 +97,7 @@ When using form fields, error messages are automatically displayed when the fiel
 | `type` | `string` | `"text"` | HTML input type |
 | `label` | `string` | `nil` | Label text |
 | `field` | `FormField` | `nil` | Phoenix form field for automatic name/value/error binding |
+| `errors` | `list` | `[]` | Error messages rendered below the input |
 | `class` | `string` | `""` | Additional CSS classes |
 | `placeholder` | `string` | — | Placeholder text |
 | `required` | `boolean` | `false` | Mark as required |

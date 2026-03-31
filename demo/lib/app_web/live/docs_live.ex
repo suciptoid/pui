@@ -18,7 +18,18 @@ defmodule AppWeb.Live.DocsLive do
     {:ok,
      socket
      |> assign(docs: docs)
-     |> assign(form: to_form(%{"name" => "", "email" => "", "select" => ""}))
+     |> assign(
+       form:
+         build_docs_form(%{
+           "name" => "",
+           "email" => "",
+           "notes" => "",
+           "select" => "",
+           "terms" => "false",
+           "notifications" => "false",
+           "plan" => ""
+         })
+     )
      |> assign(page_title: seo.title, seo: seo)
      |> assign(
        btn_variant: "default",
@@ -95,7 +106,7 @@ defmodule AppWeb.Live.DocsLive do
   end
 
   def handle_event("validate", params, socket) do
-    {:noreply, assign(socket, form: to_form(params))}
+    {:noreply, assign(socket, form: build_docs_form(params["demo"] || %{}, validate?: true))}
   end
 
   def handle_event("submit", _params, socket) do
@@ -124,7 +135,7 @@ defmodule AppWeb.Live.DocsLive do
         </div>
 
         <%!-- Interactive Demos --%>
-        <.live_demos slug={@doc.id} assigns={assigns} />
+        {live_demos(Map.put(assigns, :slug, @doc.id))}
 
         <%!-- Markdown Documentation --%>
         <article class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-code:before:content-none prose-code:after:content-none">
@@ -303,7 +314,6 @@ defmodule AppWeb.Live.DocsLive do
   # ── Interactive demos per component ─────────────────────────────────────
 
   attr :slug, :string, required: true
-  attr :assigns, :map, required: true
 
   defp live_demos(%{slug: "button"} = assigns) do
     ~H"""
@@ -333,9 +343,9 @@ defmodule AppWeb.Live.DocsLive do
                 phx-value-variant={v}
                 class={[
                   "px-3 py-1 text-xs font-medium rounded-full transition-all",
-                  v == @assigns.btn_variant &&
+                  v == @btn_variant &&
                     "bg-primary text-primary-foreground shadow-sm",
-                  v != @assigns.btn_variant &&
+                  v != @btn_variant &&
                     "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
                 ]}
               >
@@ -355,9 +365,9 @@ defmodule AppWeb.Live.DocsLive do
                 phx-value-size={s}
                 class={[
                   "px-3 py-1 text-xs font-medium rounded-full transition-all",
-                  s == @assigns.btn_size &&
+                  s == @btn_size &&
                     "bg-primary text-primary-foreground shadow-sm",
-                  s != @assigns.btn_size &&
+                  s != @btn_size &&
                     "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
                 ]}
               >
@@ -366,8 +376,8 @@ defmodule AppWeb.Live.DocsLive do
             </div>
           </div>
           <div class="flex items-center justify-center py-8 rounded-lg bg-muted/20 border border-dashed border-border">
-            <.button variant={@assigns.btn_variant} size={@assigns.btn_size}>
-              {if @assigns.btn_size == "icon", do: "🔔", else: "Button"}
+            <.button variant={@btn_variant} size={@btn_size}>
+              {if @btn_size == "icon", do: "🔔", else: "Button"}
             </.button>
           </div>
         </div>
@@ -544,6 +554,18 @@ defmodule AppWeb.Live.DocsLive do
           />
         </div>
       </.demo_section>
+
+      <.demo_section title="Phoenix Form Errors" id="input-errors">
+        <.form for={@form} phx-change="validate" class="max-w-sm space-y-4">
+          <.input field={@form[:name]} label="Full Name" placeholder="Jane Doe" />
+          <.input
+            field={@form[:email]}
+            type="email"
+            label="Email"
+            placeholder="jane@example.com"
+          />
+        </.form>
+      </.demo_section>
     </section>
     """
   end
@@ -574,6 +596,17 @@ defmodule AppWeb.Live.DocsLive do
           />
         </div>
       </.demo_section>
+
+      <.demo_section title="Validation Errors" id="textarea-errors">
+        <.form for={@form} phx-change="validate" class="max-w-xl space-y-4">
+          <.textarea
+            field={@form[:notes]}
+            label="Project Notes"
+            placeholder="Add a short update for your team..."
+            rows="5"
+          />
+        </.form>
+      </.demo_section>
     </section>
     """
   end
@@ -590,6 +623,17 @@ defmodule AppWeb.Live.DocsLive do
           <.checkbox id="demo-terms" name="terms" label="I agree to the terms and conditions" />
           <.checkbox id="demo-newsletter" name="newsletter" label="Subscribe to newsletter" checked />
           <.checkbox id="demo-disabled-checkbox" name="disabled" label="Disabled checkbox" disabled />
+        </div>
+      </.demo_section>
+
+      <.demo_section title="Error State" id="checkbox-errors">
+        <div class="space-y-4 max-w-sm">
+          <.checkbox
+            id="demo-terms-error"
+            name="terms-error"
+            label="I agree to the terms and conditions"
+            errors={["Please accept the terms to continue."]}
+          />
         </div>
       </.demo_section>
     </section>
@@ -619,6 +663,24 @@ defmodule AppWeb.Live.DocsLive do
           </label>
         </div>
       </.demo_section>
+
+      <.demo_section title="Error State" id="radio-errors">
+        <div class="space-y-3 max-w-sm">
+          <div class="space-y-2">
+            <label class="flex items-center gap-3">
+              <.radio id="demo-plan-error" name="demo-plan-error" value="starter" />
+              <span class="text-sm text-foreground">Starter</span>
+            </label>
+          </div>
+          <div>
+            <label class="flex items-center gap-3">
+              <.radio id="demo-plan-error-pro" name="demo-plan-error" value="pro" />
+              <span class="text-sm text-foreground">Pro</span>
+            </label>
+          </div>
+          <p class="text-destructive text-sm mt-1">Choose a plan to continue.</p>
+        </div>
+      </.demo_section>
     </section>
     """
   end
@@ -635,6 +697,17 @@ defmodule AppWeb.Live.DocsLive do
           <.switch id="demo-notifications" name="notifications" label="Enable notifications" />
           <.switch id="demo-marketing" name="marketing" label="Receive product updates" />
           <.switch id="demo-disabled-switch" name="disabled-switch" label="Disabled switch" disabled />
+        </div>
+      </.demo_section>
+
+      <.demo_section title="Error State" id="switch-errors">
+        <div class="space-y-4 max-w-sm">
+          <.switch
+            id="demo-switch-error"
+            name="demo-switch-error"
+            label="Enable notifications"
+            errors={["Turn this on before continuing."]}
+          />
         </div>
       </.demo_section>
     </section>
@@ -732,6 +805,17 @@ defmodule AppWeb.Live.DocsLive do
             </:footer>
           </.select>
         </div>
+      </.demo_section>
+
+      <.demo_section title="Phoenix Form Errors" id="select-errors">
+        <.form for={@form} phx-change="validate" class="max-w-sm">
+          <.select
+            field={@form[:select]}
+            label="Favorite Fruit"
+            placeholder="Choose one"
+            options={["Apple", "Banana", "Cherry", "Date"]}
+          />
+        </.form>
       </.demo_section>
     </section>
     """
@@ -1034,9 +1118,9 @@ defmodule AppWeb.Live.DocsLive do
                 phx-value-position={position}
                 class={[
                   "px-3 py-1 text-xs font-medium rounded-full transition-all",
-                  position == @assigns.flash_position &&
+                  position == @flash_position &&
                     "bg-primary text-primary-foreground shadow-sm",
-                  position != @assigns.flash_position &&
+                  position != @flash_position &&
                     "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
                 ]}
               >
@@ -1050,7 +1134,7 @@ defmodule AppWeb.Live.DocsLive do
               <.icon name="hero-bell" class="size-4 mr-2" /> Send Toast
             </.button>
             <p class="text-sm text-muted-foreground self-center">
-              Position: {@assigns.flash_position}. Count: {@assigns.toast_count}
+              Position: {@flash_position}. Count: {@toast_count}
             </p>
           </div>
         </div>
@@ -1151,19 +1235,19 @@ defmodule AppWeb.Live.DocsLive do
 
       <.demo_section title="Progress Bar" id="progress-demo">
         <div class="space-y-4 max-w-md">
-          <.progress value={@assigns.progress_value} />
+          <.progress value={@progress_value} />
           <div class="flex items-center gap-3">
             <input
               type="range"
               min="0"
               max="100"
-              value={@assigns.progress_value}
+              value={@progress_value}
               phx-change="update_progress"
               name="value"
               class="flex-1"
             />
             <span class="text-sm font-mono text-muted-foreground w-12 text-right">
-              {trunc(@assigns.progress_value)}%
+              {trunc(@progress_value)}%
             </span>
           </div>
         </div>
@@ -1202,6 +1286,35 @@ defmodule AppWeb.Live.DocsLive do
     ~H"""
     """
   end
+
+  defp build_docs_form(params, opts \\ []) do
+    errors =
+      []
+      |> maybe_error(:name, blank?(params["name"]), "Please enter your full name.")
+      |> maybe_error(
+        :email,
+        invalid_email?(params["email"]),
+        "Please enter a valid email address."
+      )
+      |> maybe_error(:notes, blank?(params["notes"]), "Please add a short note.")
+      |> maybe_error(:select, blank?(params["select"]), "Please choose an option.")
+
+    form_opts =
+      [as: :demo]
+      |> maybe_put_option(:errors, errors, errors != [])
+      |> maybe_put_option(:action, :validate, Keyword.get(opts, :validate?, false))
+
+    to_form(params, form_opts)
+  end
+
+  defp maybe_error(errors, field, true, message), do: [{field, {message, []}} | errors]
+  defp maybe_error(errors, _field, false, _message), do: errors
+
+  defp maybe_put_option(opts, key, value, true), do: Keyword.put(opts, key, value)
+  defp maybe_put_option(opts, _key, _value, false), do: opts
+
+  defp blank?(value), do: value in [nil, ""]
+  defp invalid_email?(value), do: blank?(value) or not String.contains?(value, "@")
 
   # ── Helper components ───────────────────────────────────────────────────
 

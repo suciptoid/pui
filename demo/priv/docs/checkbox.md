@@ -51,6 +51,19 @@ If you need custom copy or layout, render the label manually and place the check
 </label>
 ```
 
+## Errors
+
+Use `errors` to render validation feedback below the checkbox.
+
+```heex
+<.checkbox
+  id="terms"
+  name="terms"
+  label="I agree to the terms"
+  errors={["Please accept the terms before continuing."]}
+/>
+```
+
 ## API Reference
 
 ### Attributes
@@ -60,6 +73,8 @@ If you need custom copy or layout, render the label manually and place the check
 | `id` | `any` | `nil` | Element ID |
 | `label` | `string` | `nil` | Label text when using the built-in wrapper |
 | `class` | `string` | `nil` | Additional CSS classes |
+| `field` | `FormField` | `nil` | Phoenix form field |
+| `errors` | `list` | `[]` | Error messages rendered below the checkbox |
 | `checked` | `boolean` | — | Render the checkbox as checked |
 | `disabled` | `boolean` | `false` | Disable the checkbox |
 | `name` | `string` | — | Form field name |

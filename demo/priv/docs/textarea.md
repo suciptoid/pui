@@ -49,6 +49,18 @@ Use the standard `rows` attribute to control the visible height.
 </.form>
 ```
 
+Validation errors appear automatically for used form fields, or you can provide
+them manually:
+
+```heex
+<.textarea
+  id="notes"
+  name="notes"
+  label="Notes"
+  errors={["Please add a short note."]}
+/>
+```
+
 ## API Reference
 
 ### Attributes
@@ -58,6 +70,7 @@ Use the standard `rows` attribute to control the visible height.
 | `id` | `any` | `nil` | Element ID |
 | `label` | `string` | `nil` | Label text |
 | `field` | `FormField` | `nil` | Phoenix form field |
+| `errors` | `list` | `[]` | Error messages rendered below the textarea |
 | `class` | `string` | `""` | Additional CSS classes |
 | `rows` | `string` | — | Number of visible text lines |
 | `placeholder` | `string` | — | Placeholder text |

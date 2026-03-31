@@ -51,6 +51,19 @@ Use `disabled` when a setting is read-only or temporarily unavailable.
 />
 ```
 
+## Errors
+
+Use `errors` to show validation feedback below the switch.
+
+```heex
+<.switch
+  id="notifications"
+  name="notifications"
+  label="Enable notifications"
+  errors={["Turn this on before continuing."]}
+/>
+```
+
 ## API Reference
 
 ### Attributes
@@ -60,6 +73,7 @@ Use `disabled` when a setting is read-only or temporarily unavailable.
 | `id` | `any` | `nil` | Element ID |
 | `label` | `string` | `nil` | Label text |
 | `field` | `FormField` | `nil` | Phoenix form field |
+| `errors` | `list` | `[]` | Error messages rendered below the switch |
 | `class` | `string` | `""` | Additional CSS classes |
 | `disabled` | `boolean` | `false` | Disable the switch |
 | `name` | `string` | — | Form field name |

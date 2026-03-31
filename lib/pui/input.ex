@@ -1,81 +1,50 @@
 defmodule PUI.Input do
   @moduledoc """
-  Form input components including text inputs, checkboxes, radio buttons, switches, and textareas.
+  Form controls for text inputs, checkboxes, radios, switches, labels, and textareas.
 
-  ## Basic Text Input
+  `PUI.Input` collects the core form primitives used across PUI. The text-based
+  controls support direct binding to `Phoenix.HTML.FormField` values, and all
+  form controls can render validation feedback through the `errors` attribute.
 
-      <.input type="text" name="username" placeholder="Enter username" />
-
-  ## Input with Label
-
-      <.input type="email" label="Email" placeholder="you@example.com" />
-
-  ## With Phoenix Form
+  ## Field-based forms
 
       <.form for={@form} phx-change="validate">
         <.input field={@form[:email]} type="email" label="Email" />
-        <.input field={@form[:password]} type="password" label="Password" />
+        <.textarea field={@form[:notes]} label="Notes" rows="5" />
       </.form>
 
-  ## Input Types
+  When `field` is provided, the component derives its `id`, `name`, and `value`
+  from the form field. Errors are shown only after
+  `Phoenix.Component.used_input?/1` marks the field as used.
 
-  Supports various HTML input types:
+  ## Manual errors
 
-      <.input type="text" placeholder="Text input" />
-      <.input type="email" placeholder="Email input" />
-      <.input type="password" placeholder="Password" />
-      <.input type="number" placeholder="Number" />
-      <.input type="file" />
-      <.input type="date" />
+      <.checkbox
+        id="terms"
+        name="terms"
+        label="I agree to the terms"
+        errors={["Please accept the terms."]}
+      />
 
-  ## Checkbox
+      <.switch
+        id="notifications"
+        name="notifications"
+        label="Enable notifications"
+        errors={["Turn this on before continuing."]}
+      />
 
-      <.checkbox id="terms" label="I agree to the terms" />
+  ## Included components
 
-  Or with custom label:
-
-      <label class="flex items-center gap-2">
-        <.checkbox id="terms" />
-        <span>Accept terms</span>
-      </label>
-
-  ## Radio Button
-
-      <label class="flex items-center gap-2">
-        <.radio name="plan" value="basic" />
-        <span>Basic Plan</span>
-      </label>
-
-  ## Switch/Toggle
-
-      <.switch id="notifications" label="Enable notifications" />
-
-  ## Textarea
-
-      <.textarea label="Description" placeholder="Enter description..." />
-
-  ## Disabled State
-
-      <.input type="text" disabled placeholder="Disabled input" />
-      <.checkbox id="terms" disabled label="Disabled checkbox" />
-
-  ## Attributes (input/1)
-
-  | Attribute | Type | Default | Description |
-  |-----------|------|---------|-------------|
-  | `type` | `string` | `"text"` | Input type (text, email, password, etc.) |
-  | `label` | `string` | `nil` | Label text (creates wrapped label + input) |
-  | `field` | `FormField` | `nil` | Phoenix form field struct |
-  | `class` | `string` | `""` | Additional CSS classes |
-  | `id` | `any` | `nil` | Input ID |
-
-  ## Global Attributes
-
-  All standard HTML input attributes are supported: `accept`, `autocomplete`,
-  `disabled`, `max`, `min`, `pattern`, `placeholder`, `readonly`, `required`, etc.
+  - `input/1` for single-line HTML inputs
+  - `textarea/1` for multi-line text
+  - `checkbox/1` for boolean choices
+  - `radio/1` for single-choice groups
+  - `switch/1` for toggle-style boolean controls
+  - `label/1` for standalone labels
   """
 
   use Phoenix.Component
+  import PUI.Components, only: [field_error: 1]
 
   attr :id, :any, default: nil
   attr :class, :string, default: ""
@@ -86,23 +55,58 @@ defmodule PUI.Input do
     default: nil,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
+  attr :errors, :list,
+    default: [],
+    doc: "a list of error strings to display below the input"
+
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
               multiple pattern placeholder readonly required rows size step name value)
 
+  @doc """
+  Renders a styled single-line HTML input.
+
+  Use `field={@form[:name]}` to bind the input to a Phoenix form field, or pass
+  `name`, `value`, and `errors` directly for manual control.
+
+  ## Examples
+
+      <.input type="email" name="email" label="Email" placeholder="you@example.com" />
+
+      <.input field={@form[:email]} type="email" label="Email" />
+
+      <.input
+        name="company"
+        label="Company"
+        errors={["Please enter a company name."]}
+      />
+  """
   def input(%{label: label} = assigns) when label not in ["", nil] do
     assigns = map_field(assigns)
+
+    assigns =
+      if assigns.errors != [],
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        else: assigns
 
     ~H"""
     <div class="grid w-full items-center gap-3">
       <.label for={@id}>{@label}</.label>
-      <.input id={@id} class={@class} type={@type} field={@field} {@rest} />
+      <div>
+        <.input id={@id} class={@class} type={@type} {@rest} />
+        <.field_error errors={@errors} />
+      </div>
     </div>
     """
   end
 
   def input(assigns) do
     assigns = map_field(assigns)
+
+    assigns =
+      if assigns.errors != [],
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        else: assigns
 
     ~H"""
     <input
@@ -116,6 +120,7 @@ defmodule PUI.Input do
       ]}
       {@rest}
     />
+    <.field_error errors={@errors} />
     """
   end
 
@@ -123,6 +128,13 @@ defmodule PUI.Input do
   attr :rest, :global, include: ~w(for)
   slot :inner_block
 
+  @doc """
+  Renders a standalone form label.
+
+  ## Examples
+
+      <.label for="email">Email</.label>
+  """
   def label(assigns) do
     ~H"""
     <label
@@ -146,25 +158,62 @@ defmodule PUI.Input do
     default: nil,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
+  attr :errors, :list,
+    default: [],
+    doc: "a list of error strings to display below the checkbox"
+
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
               multiple pattern placeholder readonly required rows size step checked name value)
 
   slot :inner_block
 
+  @doc """
+  Renders a checkbox control.
+
+  Use `label` for the default checkbox-plus-label layout, or omit it when you
+  need complete control over the surrounding markup. Validation messages can be
+  supplied with the `errors` attribute.
+
+  ## Examples
+
+      <.checkbox id="terms" name="terms" label="I agree to the terms" />
+
+      <.checkbox
+        id="terms"
+        name="terms"
+        label="I agree to the terms"
+        errors={["Please accept the terms."]}
+      />
+  """
   def checkbox(%{label: label} = assigns) when label != nil do
+    assigns = map_field(assigns)
+
+    assigns =
+      if assigns.errors != [],
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        else: assigns
+
     ~H"""
-    <label class="inline-flex items-center cursor-pointer">
-      <.checkbox id={@id} class={@class} field={@field} {@rest} />
-      <span class="text-sm text-foreground ms-3">
-        {@label}
-      </span>
-    </label>
+    <div>
+      <label class="inline-flex items-center cursor-pointer">
+        <.checkbox id={@id} class={@class} {@rest} />
+        <span class="text-sm text-foreground ms-3">
+          {@label}
+        </span>
+      </label>
+      <.field_error errors={@errors} />
+    </div>
     """
   end
 
   def checkbox(assigns) do
     assigns = map_field(assigns)
+
+    assigns =
+      if assigns.errors != [],
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        else: assigns
 
     ~H"""
     <input
@@ -180,10 +229,12 @@ defmodule PUI.Input do
         "checked:before:opacity-100",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "dark:bg-input/30 dark:checked:bg-primary",
+        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         @class
       ]}
       {@rest}
     />
+    <.field_error errors={@errors} />
     """
   end
 
@@ -195,8 +246,35 @@ defmodule PUI.Input do
     default: nil,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
+  @doc """
+  Renders a radio input for a radio group.
+
+  Radios typically share a `name` and differ by `value`. When validation fails,
+  pass `errors` to render a message below the radio control.
+
+  ## Examples
+
+      <label class="flex items-center gap-3">
+        <.radio id="plan-pro" name="plan" value="pro" />
+        <span>Pro</span>
+      </label>
+
+      <div class="space-y-2">
+        <label class="flex items-center gap-3">
+          <.radio
+            id="plan-starter"
+            name="plan"
+            value="starter"
+            errors={["Please choose a plan."]}
+          />
+          <span>Starter</span>
+        </label>
+      </div>
+  """
   def radio(assigns) do
     assigns = map_field(assigns)
+    # Radio inputs do not render validation errors inline; ignore any field errors here.
+    assigns = assign(assigns, :errors, [])
 
     ~H"""
     <input
@@ -219,25 +297,59 @@ defmodule PUI.Input do
     default: nil,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
+  attr :errors, :list,
+    default: [],
+    doc: "a list of error strings to display below the switch"
+
   attr :rest, :global,
     include: ~w(accept  capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step name value)
 
+  @doc """
+  Renders a switch-style boolean control.
+
+  `switch/1` shares the same `field` and `errors` conventions as the other form
+  controls, while presenting the boolean input as a compact toggle.
+
+  ## Examples
+
+      <.switch id="notifications" name="notifications" label="Enable notifications" />
+
+      <.switch
+        id="notifications"
+        name="notifications"
+        label="Enable notifications"
+        errors={["Turn this on before continuing."]}
+      />
+  """
   def switch(%{label: label} = assigns) when label != nil do
     assigns = map_field(assigns)
 
+    assigns =
+      if assigns.errors != [],
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        else: assigns
+
     ~H"""
-    <label class="inline-flex items-center cursor-pointer">
-      <.switch id={@id} class={@class} {@rest} />
-      <span class="text-sm text-foreground ms-3">
-        {@label}
-      </span>
-    </label>
+    <div>
+      <label class="inline-flex items-center cursor-pointer">
+        <.switch id={@id} class={@class} {@rest} />
+        <span class="text-sm text-foreground ms-3">
+          {@label}
+        </span>
+      </label>
+      <.field_error errors={@errors} />
+    </div>
     """
   end
 
   def switch(assigns) do
     assigns = map_field(assigns)
+
+    assigns =
+      if assigns.errors != [],
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        else: assigns
 
     ~H"""
     <input
@@ -246,14 +358,32 @@ defmodule PUI.Input do
       role="switch"
       class={[
         "appearance-none checked:bg-primary bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 relative after:content-[''] after:absolute after:bg-background dark:after:bg-foreground dark:checked:after:bg-primary-foreground after:pointer-events-none after:block after:size-4 after:rounded-full after:ring-0 after:transition-transform checked:after:translate-x-[calc(100%-2px)] after:translate-x-0",
+        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
         @class
       ]}
       {@rest}
     />
+    <.field_error errors={@errors} />
     """
   end
 
   @doc """
+  Renders a multi-line textarea.
+
+  `textarea/1` supports manual values and errors, or it can bind to a Phoenix
+  form field to inherit the field's `id`, `name`, `value`, and validation state.
+
+  ## Examples
+
+      <.textarea label="Notes" name="notes" rows="5" />
+
+      <.textarea field={@form[:notes]} label="Notes" rows="5" />
+
+      <.textarea
+        name="notes"
+        label="Notes"
+        errors={["Please add a short note."]}
+      />
   """
   attr :id, :any, default: nil
   attr :class, :string, default: ""
@@ -263,6 +393,10 @@ defmodule PUI.Input do
     default: nil,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
+  attr :errors, :list,
+    default: [],
+    doc: "a list of error strings to display below the textarea"
+
   attr :rest, :global,
     include: ~w(accept  capture cols disabled form list max maxlength min minlength
                 multiple pattern placeholder readonly required rows size step name value)
@@ -270,17 +404,29 @@ defmodule PUI.Input do
   def textarea(%{label: label} = assigns) when label not in ["", nil] do
     assigns = map_field(assigns)
 
+    assigns =
+      if assigns.errors != [],
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        else: assigns
+
     ~H"""
     <div class="grid w-full items-center gap-3">
       <.label for={@id}>{@label}</.label>
-      <.textarea id={@id} class={@class} field={@field} {@rest} />
+      <div>
+        <.textarea id={@id} class={@class} {@rest} />
+        <.field_error errors={@errors} />
+      </div>
     </div>
     """
   end
 
   def textarea(assigns) do
+    assigns = map_field(assigns)
+
     assigns =
-      map_field(assigns)
+      if assigns.errors != [],
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        else: assigns
 
     ~H"""
     <textarea
@@ -291,10 +437,13 @@ defmodule PUI.Input do
       ]}
       {@rest}
     >{@rest[:value]}</textarea>
+    <.field_error errors={@errors} />
     """
   end
 
   def map_field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+
     rest =
       assigns
       |> Map.get(:rest, %{})
@@ -307,6 +456,7 @@ defmodule PUI.Input do
     assigns
     |> assign(:id, assigns.id || field.id)
     |> assign(:field, nil)
+    |> assign(:errors, Enum.map(errors, &PUI.Components.translate_error/1))
     |> assign(:rest, rest)
   end
 

@@ -5,7 +5,7 @@ defmodule AppWeb.Live.ComponentHarness do
   alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
-    form = to_form(%{"name" => "John Doe", "choice" => "beta", "notes" => "hello"})
+    form = build_harness_form(%{"name" => "John Doe", "choice" => "beta", "notes" => "hello"})
     seo = harness_seo(socket.assigns.live_action)
 
     {:ok,
@@ -26,7 +26,7 @@ defmodule AppWeb.Live.ComponentHarness do
   end
 
   def handle_event("validate_inputs", params, socket) do
-    {:noreply, assign(socket, :form, to_form(params))}
+    {:noreply, assign(socket, :form, build_harness_form(params["demo"] || %{}, validate?: true))}
   end
 
   def handle_event("dropdown_action", %{"action" => action}, socket) do
@@ -41,12 +41,14 @@ defmodule AppWeb.Live.ComponentHarness do
     {:noreply, assign(socket, :dialog_open?, false)}
   end
 
-  def handle_event("select_changed", %{"choice" => choice} = params, socket) do
+  def handle_event("select_changed", %{"demo" => params}, socket) do
+    choice = Map.get(params, "choice", socket.assigns.selected_choice)
+
     form =
       params
       |> Map.put("name", Map.get(params, "name", socket.assigns.form[:name].value))
       |> Map.put("notes", Map.get(params, "notes", socket.assigns.form[:notes].value))
-      |> to_form()
+      |> build_harness_form(validate?: true)
 
     {:noreply, socket |> assign(:selected_choice, choice) |> assign(:form, form)}
   end
@@ -267,4 +269,27 @@ defmodule AppWeb.Live.ComponentHarness do
   end
 
   defp harness_path(action), do: "/__test__/components/#{action}"
+
+  defp build_harness_form(params, opts \\ []) do
+    errors =
+      []
+      |> maybe_error(:name, blank?(params["name"]), "Please enter your full name.")
+      |> maybe_error(:notes, blank?(params["notes"]), "Please add a few notes.")
+      |> maybe_error(:choice, blank?(params["choice"]), "Please select an option.")
+
+    form_opts =
+      [as: :demo]
+      |> maybe_put_option(:errors, errors, errors != [])
+      |> maybe_put_option(:action, :validate, Keyword.get(opts, :validate?, false))
+
+    to_form(params, form_opts)
+  end
+
+  defp maybe_error(errors, field, true, message), do: [{field, {message, []}} | errors]
+  defp maybe_error(errors, _field, false, _message), do: errors
+
+  defp maybe_put_option(opts, key, value, true), do: Keyword.put(opts, key, value)
+  defp maybe_put_option(opts, _key, _value, false), do: opts
+
+  defp blank?(value), do: value in [nil, ""]
 end

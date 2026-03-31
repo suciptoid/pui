@@ -64,6 +64,26 @@ Wrap related options in a `fieldset` when the set needs a shared label or descri
 </fieldset>
 ```
 
+## Errors
+
+Radio inputs do not render validation errors inline because error placement for
+radio groups varies depending on layout. Instead, surface group-level errors
+outside the individual radio controls — for example below a `fieldset` or as a
+separate paragraph beneath the options.
+
+```heex
+<fieldset class="space-y-3">
+  <legend class="text-sm font-medium text-foreground">Choose a plan</legend>
+
+  <label class="flex items-center gap-3">
+    <.radio id="starter" name="plan" value="starter" checked />
+    <span>Starter</span>
+  </label>
+
+  <p class="text-destructive text-sm mt-1">Please choose a plan.</p>
+</fieldset>
+```
+
 ## API Reference
 
 ### Attributes
@@ -72,6 +92,7 @@ Wrap related options in a `fieldset` when the set needs a shared label or descri
 |------|------|---------|-------------|
 | `id` | `any` | `nil` | Element ID |
 | `class` | `string` | `""` | Additional CSS classes |
+| `field` | `FormField` | `nil` | Phoenix form field |
 | `checked` | `boolean` | — | Render the radio as selected |
 | `disabled` | `boolean` | `false` | Disable the radio |
 | `name` | `string` | — | Shared group name |

@@ -1,6 +1,6 @@
 defmodule PUI.Select do
   @moduledoc """
-  A customizable select dropdown component with search and grouping support.
+  A customizable select dropdown with search, grouping, and form-aware errors.
 
   ## Basic Usage
 
@@ -46,6 +46,20 @@ defmodule PUI.Select do
         <.select field={@form[:category]} options={@categories} />
       </.form>
 
+  When `field` is provided, the component derives `id`, `name`, `value`, and
+  validation errors from the form field and renders those errors below the
+  trigger once the field has been used.
+
+  ## Manual Errors
+
+      <.select
+        id="category"
+        name="category"
+        label="Category"
+        errors={["Please choose a category."]}
+        options={["Design", "Engineering", "Marketing"]}
+      />
+
   ## With Icons
 
       <.select id="food" name="food">
@@ -83,6 +97,7 @@ defmodule PUI.Select do
   | `class` | `string` | `"w-fit"` | Additional CSS classes |
   | `label` | `string` | `nil` | Label text |
   | `field` | `FormField` | `nil` | Phoenix form field struct |
+  | `errors` | `list` | `[]` | Error messages shown below the select |
 
   ## Slots
 
@@ -95,6 +110,7 @@ defmodule PUI.Select do
 
   use Phoenix.Component
   import PUI.Input, only: [label: 1]
+  import PUI.Components, only: [field_error: 1]
 
   attr :id, :string, default: nil
   attr :name, :string, default: nil
@@ -110,10 +126,45 @@ defmodule PUI.Select do
     default: nil,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
+  attr :errors, :list,
+    default: [],
+    doc: "a list of error strings to display below the select"
+
   slot :inner_block
   slot :header
   slot :footer
 
+  @doc """
+  Renders the select trigger and option list.
+
+  Use `options` for the common tuple/string-based API, or provide custom
+  `select_item/1` entries through the default slot. Both manual `errors` and
+  field-derived validation errors are rendered below the component.
+
+  ## Examples
+
+      <.select
+        id="food"
+        name="food"
+        label="Favorite Food"
+        options={["Pizza", "Pasta", "Sushi"]}
+      />
+
+      <.select
+        field={@form[:category]}
+        label="Category"
+        searchable={true}
+        options={["Design", "Engineering", "Marketing"]}
+      />
+
+      <.select
+        id="category"
+        name="category"
+        label="Category"
+        errors={["Please choose a category."]}
+        options={["Design", "Engineering", "Marketing"]}
+      />
+  """
   def select(%{label: label} = assigns) when label not in ["", nil] do
     assigns =
       assigns
@@ -123,7 +174,10 @@ defmodule PUI.Select do
     ~H"""
     <div class="grid w-full items-center gap-3">
       <.label for={@label_target_id}>{@label}</.label>
-      <.select {assigns |> Map.delete(:label)} />
+      <div>
+        <.select {assigns |> Map.delete(:label) |> Map.put(:errors, [])} />
+        <.field_error errors={@errors} />
+      </div>
     </div>
     """
   end
@@ -144,6 +198,7 @@ defmodule PUI.Select do
       placeholder={@placeholder}
       searchable={@searchable}
       variant={@variant}
+      errors={@errors}
     >
       <%= for opt <- @options do %>
         <%= case opt do %>
@@ -168,6 +223,7 @@ defmodule PUI.Select do
       |> assign(:is_unstyled, is_unstyled)
       |> assign(:listbox_id, listbox_id)
       |> assign(:trigger_id, trigger_id)
+      |> assign(:has_errors, assigns.errors != [])
 
     ~H"""
     <div
@@ -185,6 +241,7 @@ defmodule PUI.Select do
         aria-expanded="false"
         aria-controls={@listbox_id}
         aria-autocomplete={if @searchable, do: "list", else: nil}
+        aria-invalid={@has_errors || nil}
         class={
           if @is_unstyled do
             [@class]
@@ -233,6 +290,7 @@ defmodule PUI.Select do
         {render_slot(@footer)}
       </div>
     </div>
+    <.field_error errors={@errors} />
     """
   end
 
@@ -277,6 +335,15 @@ defmodule PUI.Select do
   attr :variant, :string, default: "default", values: ["default", "unstyled"]
   slot :inner_block
 
+  @doc """
+  Renders a custom option inside `select/1`.
+
+  ## Examples
+
+      <.select_item value="edit">
+        <.icon name="hero-pencil" class="size-4" /> Edit
+      </.select_item>
+  """
   def select_item(%{variant: variant} = assigns) do
     is_unstyled = variant == "unstyled"
 
@@ -401,11 +468,14 @@ defmodule PUI.Select do
   end
 
   def map_field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+
     assigns
     |> assign(:id, assigns.id || field.id)
     |> assign(:name, assigns.name || field.name)
     |> assign(:value, assigns.value || field.value)
     |> assign(:field, nil)
+    |> assign(:errors, Enum.map(errors, &PUI.Components.translate_error/1))
   end
 
   def map_field(assigns) do
