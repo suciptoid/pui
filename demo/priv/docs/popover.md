@@ -37,6 +37,8 @@ The `popover_base` component is a low-level building block with `trigger` and `p
 </.popover_base>
 ```
 
+<AppWeb.DocsDemo.popover_demo />
+
 ## Unstyled / Headless
 
 Use `variant="unstyled"` for complete styling control:

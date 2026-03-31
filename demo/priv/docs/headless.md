@@ -7,7 +7,7 @@
 }
 ---
 
-PUI supports three usage levels, so you can choose how much styling or markup it owns. Use the interactive examples above to explore the behavior, then use this guide as a reference for wiring it into your own design system.
+PUI supports three usage levels, so you can choose how much styling or markup it owns. Use this guide as a reference for wiring it into your own design system.
 
 ## Usage Levels
 
@@ -24,6 +24,8 @@ Use low-level primitives such as `popover_base` when you want to own the trigger
 </.popover_base>
 ```
 
+<AppWeb.DocsDemo.headless_popover_demo />
+
 ### Level 2: Unstyled Components
 
 Use `variant="unstyled"` when you want PUI to keep the component behavior and accessibility, but you want full control over the classes applied to the trigger, content, or slots.
@@ -39,6 +41,8 @@ Use `variant="unstyled"` when you want PUI to keep the component behavior and ac
   <:item class="my-menu-item">Settings</:item>
 </.menu_button>
 ```
+
+<AppWeb.DocsDemo.headless_unstyled_demo />
 
 ### Level 3: Styled Components
 

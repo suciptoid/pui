@@ -52,6 +52,8 @@ def handle_info({:progress, value}, socket) do
 end
 ```
 
+<AppWeb.DocsDemo.progress_badges_demo progress_value={@progress_value} />
+
 ## Badge
 
 Badges are small labels for categorization and counts:

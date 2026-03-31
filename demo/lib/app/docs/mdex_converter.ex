@@ -1,24 +1,10 @@
 defmodule App.Docs.MDExConverter do
   @moduledoc """
-  Custom HTML converter for NimblePublisher using MDEx.
+  Pass-through converter for docs content.
 
-  Converts markdown to HTML with syntax highlighting and header IDs.
+  The docs pages render markdown through `MDEx.to_heex!/2` at request time so
+  inline Phoenix components can be embedded directly inside the markdown body.
   """
 
-  def convert(_filepath, body, _attrs, _opts) do
-    body
-    |> MDEx.to_html!(
-      extension: [
-        strikethrough: true,
-        table: true,
-        autolink: true,
-        tasklist: true,
-        header_ids: ""
-      ],
-      render: [
-        # Safe: content comes only from trusted priv/docs/*.md at compile time
-        unsafe_: true
-      ]
-    )
-  end
+  def convert(_filepath, body, _attrs, _opts), do: body
 end

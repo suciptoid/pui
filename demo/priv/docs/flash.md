@@ -68,6 +68,8 @@ Flash groups support six positions:
 <.flash_group flash={@flash} position="bottom-right" />
 ```
 
+<AppWeb.DocsDemo.flash_demo flash_position={@flash_position} toast_count={@toast_count} />
+
 ## Auto-Dismiss
 
 Control auto-dismiss timing (in milliseconds):

@@ -29,6 +29,8 @@ Provide `label` to render the switch and label together.
 />
 ```
 
+<AppWeb.DocsDemo.switch_basic_demo />
+
 ## In Settings Screens
 
 Switches work well for preferences and feature flags.
@@ -51,6 +53,8 @@ Use `disabled` when a setting is read-only or temporarily unavailable.
 />
 ```
 
+<AppWeb.DocsDemo.switch_disabled_demo />
+
 ## Errors
 
 Use `errors` to show validation feedback below the switch.
@@ -63,6 +67,8 @@ Use `errors` to show validation feedback below the switch.
   errors={["Turn this on before continuing."]}
 />
 ```
+
+<AppWeb.DocsDemo.switch_errors_demo />
 
 ## API Reference
 

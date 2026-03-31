@@ -33,6 +33,8 @@ Give each option the same `name` and a different `value`.
 </label>
 ```
 
+<AppWeb.DocsDemo.radio_group_demo />
+
 ## Default Selection
 
 Use `checked` on the option that should start selected.
@@ -83,6 +85,8 @@ separate paragraph beneath the options.
   <p class="text-destructive text-sm mt-1">Please choose a plan.</p>
 </fieldset>
 ```
+
+<AppWeb.DocsDemo.radio_errors_demo />
 
 ## API Reference
 

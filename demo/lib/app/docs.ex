@@ -3,7 +3,8 @@ defmodule App.Docs do
   Documentation context powered by NimblePublisher.
 
   Compiles markdown files from `priv/docs/` into Doc structs at build time.
-  Uses MDEx for markdown rendering with syntax highlighting.
+  Markdown bodies are rendered through MDEx at request time so docs pages can
+  embed Phoenix components inline.
   """
 
   alias App.Docs.Doc

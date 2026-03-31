@@ -39,6 +39,8 @@ The `type` attribute accepts any standard HTML input type:
 <.input type="date" label="Date" name="date" />
 ```
 
+<AppWeb.DocsDemo.input_demo form={@form} />
+
 ## Labels and Placeholders
 
 Pass `label` when you want PUI to render the label wrapper for you. You can also provide placeholder text and any other standard input attributes.

@@ -43,6 +43,8 @@ Dialogs require an `id` and can be shown/hidden programmatically:
 </.dialog>
 ```
 
+<AppWeb.DocsDemo.dialog_basic_demo />
+
 ## Server-Controlled
 
 Control dialog visibility from the server with the `show` attribute:
@@ -72,6 +74,8 @@ Dialogs come in four sizes:
 <.dialog id="xl-dialog" size="xl">...</.dialog>
 ```
 
+<AppWeb.DocsDemo.dialog_sizes_demo />
+
 ## Alert Dialog
 
 Alert dialogs require explicit user action and cannot be dismissed by clicking the backdrop:
@@ -95,6 +99,8 @@ Alert dialogs require explicit user action and cannot be dismissed by clicking t
   </:content>
 </.dialog>
 ```
+
+<AppWeb.DocsDemo.dialog_alert_demo />
 
 ## With Trigger Slot
 

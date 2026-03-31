@@ -25,6 +25,8 @@ Add the topbar to your root layout (typically in `root.html.heex`):
 <PUI.Loading.topbar />
 ```
 
+<AppWeb.DocsDemo.loading_topbar_demo />
+
 The progress bar will automatically show during:
 - LiveView navigation (page transitions)
 - `phx-click` events while processing

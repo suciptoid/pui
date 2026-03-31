@@ -61,6 +61,8 @@ them manually:
 />
 ```
 
+<AppWeb.DocsDemo.textarea_demo form={@form} />
+
 ## API Reference
 
 ### Attributes

@@ -54,6 +54,8 @@ Tooltips support four placement options:
 </.tooltip>
 ```
 
+<AppWeb.DocsDemo.tooltip_demo />
+
 ## Rich Content
 
 Tooltips can contain short formatted content:
@@ -79,9 +81,7 @@ Use `variant="unstyled"` when you want to provide all tooltip classes yourself:
 ```heex
 <.tooltip
   variant="unstyled"
-  class="rounded bg-zinc-950 px-3 py-1.5 text-sm text-white
-    aria-hidden:pointer-events-none aria-hidden:opacity-0
-    invisible not-aria-hidden:visible not-aria-hidden:opacity-100"
+  class="rounded bg-zinc-950 px-3 py-1.5 text-sm text-white aria-hidden:pointer-events-none aria-hidden:opacity-0 invisible not-aria-hidden:visible not-aria-hidden:opacity-100"
 >
   <button type="button" class="underline">Hover me</button>
   <:tooltip>Custom tooltip styling</:tooltip>

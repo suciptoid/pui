@@ -1,6 +1,14 @@
 defmodule AppWeb.DocsFeatureTest do
   use AppWeb.FeatureCase, async: false
 
+  feature "button docs render inline demo content inside the article body", %{session: session} do
+    session
+    |> visit("/docs/button")
+    |> assert_has(css("article", text: "Interactive Playground"))
+    |> assert_has(css("article", text: "Rendered Variants"))
+    |> assert_has(css("article", text: "Rendered Sizes"))
+  end
+
   feature "popover docs demo opens the basic popover", %{session: session} do
     session
     |> visit("/docs/popover")

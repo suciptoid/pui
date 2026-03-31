@@ -23,6 +23,8 @@ import PUI.Button
 <.button>Click me</.button>
 ```
 
+<AppWeb.DocsDemo.button_playground_demo btn_variant={@btn_variant} btn_size={@btn_size} />
+
 ## Variants
 
 Buttons come in several visual styles to communicate different levels of emphasis and intent.
@@ -45,6 +47,8 @@ Buttons come in several visual styles to communicate different levels of emphasi
 <.button variant="link">Link</.button>
 ```
 
+<AppWeb.DocsDemo.button_variants_demo />
+
 ## Sizes
 
 Control the button size using the `size` attribute.
@@ -55,6 +59,8 @@ Control the button size using the `size` attribute.
 <.button size="lg">Large</.button>
 <.button size="icon">🔔</.button>
 ```
+
+<AppWeb.DocsDemo.button_sizes_demo />
 
 ## Navigation
 
@@ -78,6 +84,8 @@ Buttons can act as navigation links using Phoenix's built-in attributes:
 <.button variant="destructive" disabled>Can't Delete</.button>
 ```
 
+<AppWeb.DocsDemo.button_disabled_demo />
+
 ## With Icons
 
 Combine buttons with icon components for rich visual cues:
@@ -95,6 +103,8 @@ Combine buttons with icon components for rich visual cues:
   <.icon name="hero-cog-6-tooth" class="size-5" />
 </.button>
 ```
+
+<AppWeb.DocsDemo.button_icons_demo />
 
 ## Unstyled / Headless
 

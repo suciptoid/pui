@@ -37,6 +37,8 @@ The Card is a versatile container with multiple sub-components for structured co
 </.card>
 ```
 
+<AppWeb.DocsDemo.container_card_demo />
+
 ## Card with Actions
 
 Add action buttons to the card header:
@@ -57,6 +59,8 @@ Add action buttons to the card header:
   </.card_content>
 </.card>
 ```
+
+<AppWeb.DocsDemo.container_card_action_demo />
 
 ## Simple Card
 

@@ -30,6 +30,8 @@ The simplest dropdown uses the `item` slot:
 </.menu_button>
 ```
 
+<AppWeb.DocsDemo.dropdown_basic_demo />
+
 ## With Shortcuts
 
 Display keyboard shortcuts alongside menu items:
@@ -42,6 +44,8 @@ Display keyboard shortcuts alongside menu items:
   <:item shortcut="⌘S">Save</:item>
 </.menu_button>
 ```
+
+<AppWeb.DocsDemo.dropdown_shortcuts_demo />
 
 ## Destructive Items
 
@@ -56,6 +60,8 @@ Mark dangerous actions with the destructive variant:
 </.menu_button>
 ```
 
+<AppWeb.DocsDemo.dropdown_destructive_demo />
+
 ## Button Variants
 
 The trigger button supports all button variants:
@@ -65,6 +71,8 @@ The trigger button supports all button variants:
 <.menu_button variant="ghost">More</.menu_button>
 <.menu_button variant="destructive">Danger</.menu_button>
 ```
+
+<AppWeb.DocsDemo.dropdown_variants_demo />
 
 ## With Navigation
 

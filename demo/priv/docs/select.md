@@ -30,6 +30,8 @@ The simplest select takes an `options` list of strings:
 />
 ```
 
+<AppWeb.DocsDemo.select_basic_demo />
+
 ## Custom Items
 
 Use `select_item` for full control over each option's rendering:
@@ -45,6 +47,8 @@ Use `select_item` for full control over each option's rendering:
 </.select>
 ```
 
+<AppWeb.DocsDemo.select_custom_items_demo />
+
 ## Searchable
 
 Enable filtering by setting `searchable={true}`:
@@ -59,6 +63,8 @@ Enable filtering by setting `searchable={true}`:
   options={["Argentina", "Brazil", "Canada", "Denmark", "Egypt"]}
 />
 ```
+
+<AppWeb.DocsDemo.select_searchable_demo />
 
 ## Default Value
 
@@ -106,6 +112,8 @@ Organize options into categories:
 />
 ```
 
+<AppWeb.DocsDemo.select_grouped_demo />
+
 ## Header and Footer Slots
 
 Add custom content above or below the options list:
@@ -124,6 +132,8 @@ Add custom content above or below the options list:
   </:footer>
 </.select>
 ```
+
+<AppWeb.DocsDemo.select_footer_demo />
 
 ## Form Integration
 
@@ -153,6 +163,8 @@ select, and you can also provide them manually:
   options={["Technology", "Design", "Business"]}
 />
 ```
+
+<AppWeb.DocsDemo.select_form_demo form={@form} />
 
 ## Unstyled / Headless
 

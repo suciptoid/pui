@@ -25,6 +25,8 @@ Pass `label` to let PUI render the checkbox and text together.
 <.checkbox id="terms" name="terms" label="I agree to the terms" />
 ```
 
+<AppWeb.DocsDemo.checkbox_states_demo />
+
 ## Checked State
 
 Use the standard `checked` attribute when you want the checkbox to render selected.
@@ -63,6 +65,8 @@ Use `errors` to render validation feedback below the checkbox.
   errors={["Please accept the terms before continuing."]}
 />
 ```
+
+<AppWeb.DocsDemo.checkbox_errors_demo />
 
 ## API Reference
 

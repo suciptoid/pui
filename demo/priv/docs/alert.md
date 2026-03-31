@@ -26,6 +26,8 @@ import PUI.Alert
 </.alert>
 ```
 
+<AppWeb.DocsDemo.alert_demo />
+
 ## With Icon
 
 Add an icon to draw attention:

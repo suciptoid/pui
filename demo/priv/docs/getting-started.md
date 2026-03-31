@@ -82,6 +82,8 @@ PUI provides components in several categories:
 | **Layout** | Container, Card, Header |
 | **Data Display** | Progress, Badge |
 
+<AppWeb.DocsDemo.getting_started_quick_demo />
+
 ## Design Principles
 
 - **Accessible** — Built with WAI-ARIA patterns and keyboard navigation
