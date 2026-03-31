@@ -253,6 +253,204 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def accordion_demo(assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
+
+      <.demo_section title="Single Open FAQ" id="accordion-single-open">
+        <.accordion class="max-w-2xl">
+          <.accordion_item name="docs-faq" open>
+            <.accordion_trigger>How does single-open behavior work?</.accordion_trigger>
+            <.accordion_content>
+              Give sibling items the same <code>name</code> attribute to let the
+              browser keep only one item open at a time.
+            </.accordion_content>
+          </.accordion_item>
+
+          <.accordion_item name="docs-faq">
+            <.accordion_trigger>Do I need JavaScript for this component?</.accordion_trigger>
+            <.accordion_content>
+              No. The component is built on native <code>&lt;details&gt;</code>
+              and <code>&lt;summary&gt;</code>
+              elements, so the toggle behavior works
+              without a custom hook.
+            </.accordion_content>
+          </.accordion_item>
+
+          <.accordion_item name="docs-faq">
+            <.accordion_trigger>Can I place rich markup inside the content?</.accordion_trigger>
+            <.accordion_content>
+              <div class="space-y-3">
+                <p>
+                  Yes. Content panels can contain forms, lists, cards, or any
+                  other HEEx markup.
+                </p>
+                <ul class="list-disc space-y-1 pl-5">
+                  <li>Simple FAQ answers</li>
+                  <li>Settings sections</li>
+                  <li>Compact dashboards and inspectors</li>
+                </ul>
+              </div>
+            </.accordion_content>
+          </.accordion_item>
+        </.accordion>
+      </.demo_section>
+
+      <.demo_section title="Multiple Open Items" id="accordion-multiple-open">
+        <.accordion class="max-w-2xl rounded-xl border border-border px-4">
+          <.accordion_item open class="last:border-b-0">
+            <.accordion_trigger>Notifications</.accordion_trigger>
+            <.accordion_content>
+              Configure email digests, product announcements, and incident
+              alerts for your team.
+            </.accordion_content>
+          </.accordion_item>
+
+          <.accordion_item class="last:border-b-0">
+            <.accordion_trigger>Privacy</.accordion_trigger>
+            <.accordion_content>
+              Review audit logs, active sessions, and workspace access policies.
+            </.accordion_content>
+          </.accordion_item>
+
+          <.accordion_item class="last:border-b-0">
+            <.accordion_trigger>Billing</.accordion_trigger>
+            <.accordion_content>
+              Update payment methods, manage invoices, and compare plan limits.
+            </.accordion_content>
+          </.accordion_item>
+        </.accordion>
+      </.demo_section>
+
+      <.demo_section title="Unstyled / Headless" id="accordion-headless-demo">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <.accordion variant="unstyled" class="space-y-3">
+            <.accordion_item
+              variant="unstyled"
+              class="rounded-2xl border border-primary/20 bg-primary/5 shadow-sm"
+              open
+            >
+              <.accordion_trigger
+                variant="unstyled"
+                class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground"
+              >
+                Custom styled item
+                <span class="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+                  Open
+                </span>
+              </.accordion_trigger>
+              <.accordion_content
+                variant="unstyled"
+                class="px-5 pb-5 text-sm leading-6 text-muted-foreground"
+              >
+                PUI keeps the semantic structure while you control spacing,
+                borders, colors, and decorative UI details yourself.
+              </.accordion_content>
+            </.accordion_item>
+          </.accordion>
+
+          <div class="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+            <p class="font-medium text-foreground">What PUI still handles</p>
+            <ul class="mt-3 space-y-2">
+              <li>Accessible native disclosure semantics</li>
+              <li>Composable trigger and content primitives</li>
+              <li>Styled and unstyled usage patterns</li>
+            </ul>
+          </div>
+        </div>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  def accordion_single_demo(assigns) do
+    ~H"""
+    <.demo_section title="Single Open Accordion" id="accordion-single-demo">
+      <.accordion class="max-w-2xl">
+        <.accordion_item name="accordion-single" open>
+          <.accordion_trigger>How do I reset my password?</.accordion_trigger>
+          <.accordion_content>
+            Use the password reset flow from the sign-in page and follow the
+            emailed link to create a new password.
+          </.accordion_content>
+        </.accordion_item>
+        <.accordion_item name="accordion-single">
+          <.accordion_trigger>Can I change my plan later?</.accordion_trigger>
+          <.accordion_content>
+            Yes. You can upgrade or downgrade your plan from billing settings at
+            any time.
+          </.accordion_content>
+        </.accordion_item>
+        <.accordion_item name="accordion-single">
+          <.accordion_trigger>What payment methods are supported?</.accordion_trigger>
+          <.accordion_content>
+            We support major credit cards, invoice billing for larger teams, and
+            regional payment methods where available.
+          </.accordion_content>
+        </.accordion_item>
+      </.accordion>
+    </.demo_section>
+    """
+  end
+
+  def accordion_multiple_demo(assigns) do
+    ~H"""
+    <.demo_section title="Multiple Open Accordion" id="accordion-multiple-demo">
+      <.accordion class="max-w-2xl rounded-xl border border-border px-4">
+        <.accordion_item open class="last:border-b-0">
+          <.accordion_trigger>Notification Settings</.accordion_trigger>
+          <.accordion_content>
+            Manage which updates arrive by email, in-app inbox, or mobile push.
+          </.accordion_content>
+        </.accordion_item>
+        <.accordion_item class="last:border-b-0">
+          <.accordion_trigger>Privacy & Security</.accordion_trigger>
+          <.accordion_content>
+            Configure session policies, 2FA requirements, and export controls.
+          </.accordion_content>
+        </.accordion_item>
+        <.accordion_item class="last:border-b-0">
+          <.accordion_trigger>Billing & Subscription</.accordion_trigger>
+          <.accordion_content>
+            Review invoices, compare plans, and manage workspace billing owners.
+          </.accordion_content>
+        </.accordion_item>
+      </.accordion>
+    </.demo_section>
+    """
+  end
+
+  def accordion_headless_demo(assigns) do
+    ~H"""
+    <.demo_section title="Headless Accordion Demo" id="accordion-headless-demo-card">
+      <.accordion variant="unstyled" class="max-w-2xl space-y-3">
+        <.accordion_item
+          variant="unstyled"
+          class="overflow-hidden rounded-2xl border border-border bg-background shadow-sm"
+          open
+        >
+          <.accordion_trigger
+            variant="unstyled"
+            class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground"
+          >
+            Bring your own layout <.icon name="hero-sparkles" class="size-4 text-primary" />
+          </.accordion_trigger>
+          <.accordion_content
+            variant="unstyled"
+            class="border-t border-border px-5 py-4 text-sm leading-6 text-muted-foreground"
+          >
+            This example drops the default shadcn-like treatment but keeps the
+            composable building blocks for your own design system.
+          </.accordion_content>
+        </.accordion_item>
+      </.accordion>
+    </.demo_section>
+    """
+  end
+
   def headless_demo(assigns) do
     ~H"""
     <section class="space-y-8">
