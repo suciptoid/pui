@@ -99,7 +99,7 @@ defmodule PUI.Components do
     ~H"""
     <p
       :for={msg <- @errors}
-      class="mt-1.5 text-[0.8rem] font-medium text-destructive"
+      class="mt-1.5 text-xs text-destructive"
     >
       {msg}
     </p>
