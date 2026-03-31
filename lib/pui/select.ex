@@ -118,7 +118,7 @@ defmodule PUI.Select do
   attr :placeholder, :string, default: "Select an item"
   attr :options, :list, default: []
   attr :searchable, :boolean, default: false
-  attr :class, :string, default: "w-fit"
+  attr :class, :string, default: "w-full", doc: "Use w-fit for a width that fits the selected item"
   attr :label, :string, default: nil
   attr :variant, :string, default: "default", values: ["default", "unstyled"]
 
@@ -169,7 +169,10 @@ defmodule PUI.Select do
     assigns =
       assigns
       |> map_field()
-      |> assign(:label_target_id, "#{assigns.id}-trigger")
+      |> then(fn assigns ->
+        target = select_target_base(assigns)
+        assign(assigns, :label_target_id, if(target, do: "#{target}-trigger"))
+      end)
 
     ~H"""
     <div class="grid w-full items-center gap-3">
@@ -215,8 +218,9 @@ defmodule PUI.Select do
   def select(%{variant: variant} = assigns) do
     assigns = map_field(assigns)
     is_unstyled = variant == "unstyled"
-    listbox_id = if assigns.id, do: "#{assigns.id}-listbox", else: nil
-    trigger_id = if assigns.id, do: "#{assigns.id}-trigger", else: nil
+    target = select_target_base(assigns)
+    listbox_id = if target, do: "#{target}-listbox", else: nil
+    trigger_id = if target, do: "#{target}-trigger", else: nil
 
     assigns =
       assigns
@@ -241,7 +245,7 @@ defmodule PUI.Select do
         aria-expanded="false"
         aria-controls={@listbox_id}
         aria-autocomplete={if @searchable, do: "list", else: nil}
-        aria-invalid={@has_errors || nil}
+        aria-invalid={if @has_errors, do: "true"}
         class={
           if @is_unstyled do
             [@class]
@@ -480,5 +484,12 @@ defmodule PUI.Select do
 
   def map_field(assigns) do
     assigns
+  end
+
+  defp select_target_base(assigns) do
+    case assigns.id || assigns.name do
+      value when value in [nil, ""] -> nil
+      value -> value
+    end
   end
 end

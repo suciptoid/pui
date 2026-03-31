@@ -1,7 +1,7 @@
 defmodule PUI.SelectTest do
   use ExUnit.Case, async: true
-  import Phoenix.LiveViewTest
   import Phoenix.Component
+  import Phoenix.LiveViewTest
   import PUI.Select
 
   describe "select with variant='unstyled'" do
@@ -77,6 +77,33 @@ defmodule PUI.SelectTest do
         """)
 
       assert html =~ ~s(for="food-trigger")
+    end
+
+    test "label falls back to the field name when the field id is blank" do
+      form = Phoenix.Component.to_form(%{"category" => ""}, as: :user)
+      field = %{form[:category] | id: nil}
+      assigns = %{field: field}
+
+      html =
+        rendered_to_string(~H"""
+        <.select field={@field} label="Category" options={["Option A"]} />
+        """)
+
+      assert html =~ ~s(for="user[category]-trigger")
+      assert html =~ ~s(id="user[category]-trigger")
+    end
+
+    test "renders aria-invalid as an explicit true value when errors exist" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.select id="food" name="food" errors={["Required"]}>
+          <.select_item value="a">Option A</.select_item>
+        </.select>
+        """)
+
+      assert html =~ ~s(aria-invalid="true")
     end
   end
 end
