@@ -92,7 +92,7 @@ export default class Select extends ViewHook {
     this.search = this.el.querySelector(
       "input[type='text'][role='searchbox'], input[type='text'][role='combobox']",
     );
-    this.hiddenInput = this.el.querySelector("input[type='hidden']");
+    this.hiddenInput = this.el.querySelector("input[data-pui='select-value']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
   }
 
