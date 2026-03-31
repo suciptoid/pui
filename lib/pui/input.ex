@@ -86,7 +86,7 @@ defmodule PUI.Input do
 
     assigns =
       if assigns.errors != [],
-        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", "true")),
         else: assigns
 
     ~H"""
@@ -105,7 +105,7 @@ defmodule PUI.Input do
 
     assigns =
       if assigns.errors != [],
-        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", "true")),
         else: assigns
 
     ~H"""
@@ -191,7 +191,7 @@ defmodule PUI.Input do
 
     assigns =
       if assigns.errors != [],
-        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", "true")),
         else: assigns
 
     ~H"""
@@ -212,7 +212,7 @@ defmodule PUI.Input do
 
     assigns =
       if assigns.errors != [],
-        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", "true")),
         else: assigns
 
     ~H"""
@@ -327,7 +327,7 @@ defmodule PUI.Input do
 
     assigns =
       if assigns.errors != [],
-        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", "true")),
         else: assigns
 
     ~H"""
@@ -348,7 +348,7 @@ defmodule PUI.Input do
 
     assigns =
       if assigns.errors != [],
-        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", "true")),
         else: assigns
 
     ~H"""
@@ -406,7 +406,7 @@ defmodule PUI.Input do
 
     assigns =
       if assigns.errors != [],
-        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", "true")),
         else: assigns
 
     ~H"""
@@ -425,7 +425,7 @@ defmodule PUI.Input do
 
     assigns =
       if assigns.errors != [],
-        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", true)),
+        do: update(assigns, :rest, &Map.put(&1, :"aria-invalid", "true")),
         else: assigns
 
     ~H"""
