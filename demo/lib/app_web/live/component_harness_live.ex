@@ -14,6 +14,7 @@ defmodule AppWeb.Live.ComponentHarness do
      |> assign(:dropdown_action, "none")
      |> assign(:dialog_open?, false)
      |> assign(:selected_choice, "beta")
+     |> assign(:active_tab, "overview")
      |> assign(:form, form)
      |> assign(:popover_count, 0)
      |> assign(:flash_position, "top-center")
@@ -51,6 +52,10 @@ defmodule AppWeb.Live.ComponentHarness do
       |> build_harness_form(validate?: true)
 
     {:noreply, socket |> assign(:selected_choice, choice) |> assign(:form, form)}
+  end
+
+  def handle_event("select_tab", %{"tab" => tab}, socket) do
+    {:noreply, assign(socket, :active_tab, tab)}
   end
 
   def handle_event("popover_increment", _params, socket) do
@@ -117,6 +122,49 @@ defmodule AppWeb.Live.ComponentHarness do
       />
       <p id="select-value">Selected: {@selected_choice}</p>
     </.form>
+    """
+  end
+
+  defp render_component(assigns) when assigns.live_action == :tabs do
+    ~H"""
+    <div class="space-y-6">
+      <.tabs id="client-tabs" default_value="overview">
+        <:trigger value="overview">Overview</:trigger>
+        <:trigger value="analytics">Analytics</:trigger>
+        <:trigger value="reports" disabled>Reports</:trigger>
+        <:content value="overview">
+          <div id="client-tab-panel-overview">Overview panel</div>
+        </:content>
+        <:content value="analytics">
+          <div id="client-tab-panel-analytics">Analytics panel</div>
+        </:content>
+        <:content value="reports">
+          <div id="client-tab-panel-reports">Reports panel</div>
+        </:content>
+      </.tabs>
+
+      <.tabs
+        id="server-tabs"
+        value={@active_tab}
+        client_controlled={false}
+        variant="line"
+      >
+        <:trigger value="overview" phx-click="select_tab" phx-value-tab="overview">
+          Overview
+        </:trigger>
+        <:trigger value="settings" phx-click="select_tab" phx-value-tab="settings">
+          Settings
+        </:trigger>
+        <:content value="overview">
+          <div id="server-tab-panel-overview">Server overview</div>
+        </:content>
+        <:content value="settings">
+          <div id="server-tab-panel-settings">Server settings</div>
+        </:content>
+      </.tabs>
+
+      <p id="server-tab-value">Server active: {@active_tab}</p>
+    </div>
     """
   end
 
@@ -256,6 +304,7 @@ defmodule AppWeb.Live.ComponentHarness do
       :flash -> "Flash Harness"
       :container -> "Container Harness"
       :loading -> "Loading Harness"
+      :tabs -> "Tabs Harness"
     end
   end
 

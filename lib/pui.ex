@@ -17,6 +17,7 @@ defmodule PUI do
       import PUI.Alert
       import PUI.Popover
       import PUI.Select
+      import PUI.Tabs
       import PUI.Dialog
       import PUI.Components
     end

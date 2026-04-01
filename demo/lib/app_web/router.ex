@@ -36,6 +36,7 @@ defmodule AppWeb.Router do
     live "/__test__/components/flash", Live.ComponentHarness, :flash
     live "/__test__/components/container", Live.ComponentHarness, :container
     live "/__test__/components/loading", Live.ComponentHarness, :loading
+    live "/__test__/components/tabs", Live.ComponentHarness, :tabs
   end
 
   # Other scopes may use custom stacks.

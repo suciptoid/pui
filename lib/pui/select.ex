@@ -118,7 +118,11 @@ defmodule PUI.Select do
   attr :placeholder, :string, default: "Select an item"
   attr :options, :list, default: []
   attr :searchable, :boolean, default: false
-  attr :class, :string, default: "w-full", doc: "Use w-fit for a width that fits the selected item"
+
+  attr :class, :string,
+    default: "w-full",
+    doc: "Use w-fit for a width that fits the selected item"
+
   attr :label, :string, default: nil
   attr :variant, :string, default: "default", values: ["default", "unstyled"]
 
@@ -177,9 +181,9 @@ defmodule PUI.Select do
       end)
 
     ~H"""
-      <div class="flex flex-col w-full gap-3">
-        <.label for={@label_target_id}>{@label}</.label>
-        <div>
+    <div class="flex flex-col w-full gap-3">
+      <.label for={@label_target_id}>{@label}</.label>
+      <div>
         <.select {assigns |> Map.delete(:label) |> Map.put(:show_errors, false)} />
       </div>
     </div>

@@ -1070,6 +1070,246 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def tabs_demo(assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
+
+      <.demo_section title="Client-Controlled Tabs" id="tabs-client-demo">
+        <.tabs id="docs-tabs-client" default_value="overview" class="max-w-3xl">
+          <:trigger id="docs-tabs-client-overview" value="overview">Overview</:trigger>
+          <:trigger id="docs-tabs-client-analytics" value="analytics">Analytics</:trigger>
+          <:trigger id="docs-tabs-client-reports" value="reports">Reports</:trigger>
+          <:trigger id="docs-tabs-client-settings" value="settings" disabled>Settings</:trigger>
+
+          <:content id="docs-tabs-client-panel-overview" value="overview">
+            <div class="space-y-3">
+              <h3 class="text-base font-semibold text-foreground">Overview</h3>
+              <p class="text-sm text-muted-foreground">
+                Client-controlled tabs switch instantly in the browser while still
+                preserving the correct ARIA attributes and roving focus behavior.
+              </p>
+            </div>
+          </:content>
+
+          <:content id="docs-tabs-client-panel-analytics" value="analytics">
+            <div class="space-y-3">
+              <h3 class="text-base font-semibold text-foreground">Analytics</h3>
+              <p class="text-sm text-muted-foreground">
+                Arrow keys move focus between tabs, and `Space` or `Enter`
+                activates the focused tab in the default manual mode.
+              </p>
+            </div>
+          </:content>
+
+          <:content id="docs-tabs-client-panel-reports" value="reports">
+            <div class="space-y-3">
+              <h3 class="text-base font-semibold text-foreground">Reports</h3>
+              <p class="text-sm text-muted-foreground">
+                Use disabled triggers when a section exists conceptually but is not
+                currently available.
+              </p>
+            </div>
+          </:content>
+
+          <:content id="docs-tabs-client-panel-settings" value="settings">
+            <div class="space-y-3">
+              <h3 class="text-base font-semibold text-foreground">Settings</h3>
+              <p class="text-sm text-muted-foreground">
+                This panel is intentionally disabled in the demo trigger list.
+              </p>
+            </div>
+          </:content>
+        </.tabs>
+      </.demo_section>
+
+      <.demo_section title="Server-Controlled Tabs" id="tabs-server-demo">
+        <div class="space-y-4">
+          <.tabs
+            id="docs-tabs-demo-server"
+            value={@active_tab}
+            client_controlled={false}
+            variant="line"
+            class="max-w-3xl"
+          >
+            <:trigger
+              id="docs-tabs-demo-server-overview"
+              value="overview"
+              phx-click="select_tab"
+              phx-value-tab="overview"
+            >
+              Overview
+            </:trigger>
+
+            <:trigger
+              id="docs-tabs-demo-server-billing"
+              value="billing"
+              phx-click="select_tab"
+              phx-value-tab="billing"
+            >
+              Billing
+            </:trigger>
+
+            <:trigger
+              id="docs-tabs-demo-server-members"
+              value="members"
+              phx-click="select_tab"
+              phx-value-tab="members"
+            >
+              Members
+            </:trigger>
+
+            <:content id="docs-tabs-demo-server-panel-overview" value="overview">
+              <div class="rounded-lg border border-border bg-card p-4">
+                <h3 class="font-semibold text-card-foreground">Overview</h3>
+                <p class="mt-2 text-sm text-muted-foreground">
+                  This panel is driven by LiveView state, so the server decides
+                  which tab is active.
+                </p>
+              </div>
+            </:content>
+
+            <:content id="docs-tabs-demo-server-panel-billing" value="billing">
+              <div class="rounded-lg border border-border bg-card p-4">
+                <h3 class="font-semibold text-card-foreground">Billing</h3>
+                <p class="mt-2 text-sm text-muted-foreground">
+                  Clicking a trigger sends an event to the server, which re-renders
+                  the tabs with the selected value.
+                </p>
+              </div>
+            </:content>
+
+            <:content id="docs-tabs-demo-server-panel-members" value="members">
+              <div class="rounded-lg border border-border bg-card p-4">
+                <h3 class="font-semibold text-card-foreground">Members</h3>
+                <p class="mt-2 text-sm text-muted-foreground">
+                  This mode works in LiveView and in server-rendered dead views as
+                  long as you update the `value` assign on the server.
+                </p>
+              </div>
+            </:content>
+          </.tabs>
+
+          <p id="docs-tabs-demo-server-value" class="text-sm text-muted-foreground">
+            Server active tab: {@active_tab}
+          </p>
+        </div>
+      </.demo_section>
+
+      <.demo_section title="Vertical Tabs" id="tabs-vertical-demo">
+        <.tabs
+          id="docs-tabs-vertical"
+          default_value="account"
+          orientation="vertical"
+          class="max-w-3xl"
+        >
+          <:trigger id="docs-tabs-vertical-account" value="account">Account</:trigger>
+          <:trigger id="docs-tabs-vertical-notifications" value="notifications">
+            Notifications
+          </:trigger>
+          <:trigger id="docs-tabs-vertical-security" value="security">Security</:trigger>
+
+          <:content id="docs-tabs-vertical-panel-account" value="account">
+            <div class="space-y-2">
+              <h3 class="font-semibold text-foreground">Account</h3>
+              <p class="text-sm text-muted-foreground">
+                Vertical tabs are useful for settings sidebars and longer navigation labels.
+              </p>
+            </div>
+          </:content>
+
+          <:content id="docs-tabs-vertical-panel-notifications" value="notifications">
+            <div class="space-y-2">
+              <h3 class="font-semibold text-foreground">Notifications</h3>
+              <p class="text-sm text-muted-foreground">
+                In vertical mode, `ArrowUp` and `ArrowDown` move through the tab list.
+              </p>
+            </div>
+          </:content>
+
+          <:content id="docs-tabs-vertical-panel-security" value="security">
+            <div class="space-y-2">
+              <h3 class="font-semibold text-foreground">Security</h3>
+              <p class="text-sm text-muted-foreground">
+                Use `activation_mode="manual"` if you want focus and selection to be separate.
+              </p>
+            </div>
+          </:content>
+        </.tabs>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  def tabs_client_demo(assigns) do
+    ~H"""
+    <.demo_section title="Client-Controlled Tabs Demo" id="tabs-client-demo-card">
+      <.tabs id="docs-tabs-client-inline" default_value="preview" class="max-w-2xl">
+        <:trigger id="docs-tabs-client-inline-preview" value="preview">Preview</:trigger>
+        <:trigger id="docs-tabs-client-inline-code" value="code">Code</:trigger>
+        <:content id="docs-tabs-client-inline-panel-preview" value="preview">
+          <p class="text-sm text-muted-foreground">Preview content appears here.</p>
+        </:content>
+        <:content id="docs-tabs-client-inline-panel-code" value="code">
+          <p class="text-sm text-muted-foreground">Code content appears here.</p>
+        </:content>
+      </.tabs>
+    </.demo_section>
+    """
+  end
+
+  def tabs_server_demo(assigns) do
+    ~H"""
+    <.demo_section title="Server-Controlled Tabs Demo" id="tabs-server-demo-card">
+      <div class="space-y-4">
+        <.tabs
+          id="docs-tabs-server-inline"
+          value={@active_tab}
+          client_controlled={false}
+          variant="line"
+        >
+          <:trigger
+            id="docs-tabs-server-overview"
+            value="overview"
+            phx-click="select_tab"
+            phx-value-tab="overview"
+          >
+            Overview
+          </:trigger>
+          <:trigger
+            id="docs-tabs-server-billing"
+            value="billing"
+            phx-click="select_tab"
+            phx-value-tab="billing"
+          >
+            Billing
+          </:trigger>
+          <:content value="overview">Overview content.</:content>
+          <:content value="billing">Billing content.</:content>
+        </.tabs>
+        <p id="docs-tabs-server-value" class="text-sm text-muted-foreground">
+          Server active tab: {@active_tab}
+        </p>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def tabs_vertical_demo(assigns) do
+    ~H"""
+    <.demo_section title="Vertical Tabs Demo" id="tabs-vertical-demo-card">
+      <.tabs id="docs-tabs-vertical-inline" default_value="account" orientation="vertical">
+        <:trigger value="account">Account</:trigger>
+        <:trigger value="security">Security</:trigger>
+        <:content value="account">Account content.</:content>
+        <:content value="security">Security content.</:content>
+      </.tabs>
+    </.demo_section>
+    """
+  end
+
   def dialog_demo(assigns) do
     ~H"""
     <section class="space-y-8">

@@ -34,6 +34,7 @@ defmodule AppWeb.Live.DocsLive do
      |> assign(
        btn_variant: "default",
        btn_size: "default",
+       active_tab: "overview",
        show_dialog: false,
        progress_value: 45.0,
        toast_count: 0,
@@ -75,6 +76,10 @@ defmodule AppWeb.Live.DocsLive do
 
   def handle_event("select_size", %{"size" => size}, socket) do
     {:noreply, assign(socket, btn_size: size)}
+  end
+
+  def handle_event("select_tab", %{"tab" => tab}, socket) do
+    {:noreply, assign(socket, active_tab: tab)}
   end
 
   def handle_event("toggle_dialog", _params, socket) do
@@ -340,6 +345,7 @@ defmodule AppWeb.Live.DocsLive do
     Map.take(assigns, [
       :btn_size,
       :btn_variant,
+      :active_tab,
       :flash,
       :flash_position,
       :form,
