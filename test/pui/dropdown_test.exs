@@ -51,4 +51,22 @@ defmodule PUI.DropdownTest do
       assert html =~ "my-menu"
     end
   end
+
+  describe "menu_item layout" do
+    test "default menu items fill the menu width" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.menu_button>
+          Open
+          <:item>Profile</:item>
+        </.menu_button>
+        """)
+
+      assert html =~ ~s(role="menuitem")
+      assert html =~ "flex w-full"
+      assert html =~ "text-left"
+    end
+  end
 end
