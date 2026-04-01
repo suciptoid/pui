@@ -5,6 +5,17 @@ This is a web application written using the Phoenix web framework.
 - Use `mix precommit` alias when you are done with all changes and fix any pending issues
 - Use the already included and available `:req` (`Req`) library for HTTP requests, **avoid** `:httpoison`, `:tesla`, and `:httpc`. Req is included by default and is the preferred HTTP client for Phoenix apps
 
+### Demo documentation guidelines
+
+- When adding a new component, **always** add a demo documentation post under `demo/priv/docs/` using the existing component docs as the reference format
+- Name the demo post after the component, for example `demo/priv/docs/button.md`, and include the frontmatter metadata map used by the existing docs pages
+- Every new component must also have a demo site experience wired into the docs. Do not add a component without adding its matching docs page and interactive demos
+- Structure the docs page into clear sections such as basic usage, variants, sizes, states, and API reference when applicable
+- After every explanatory section with a code example, embed a matching interactive LiveView demo component like `<AppWeb.DocsDemo.button_variants_demo />`
+- Demo pages should have an interactive embedded LiveView demo for **each section** that benefits from hands-on exploration, following the patterns in `demo/priv/docs/button.md` and `demo/priv/docs/dialog.md`
+- Reuse existing `AppWeb.DocsDemo.*` conventions and naming patterns when adding new demos so the docs stay consistent and easy to navigate
+- Before inventing a new docs structure, inspect existing files in `demo/priv/docs/` and mirror their tone, ordering, and demo embedding style
+
 ### Phoenix v1.8 guidelines
 
 - **Always** begin your LiveView templates with `<Layouts.app flash={@flash} ...>` which wraps all inner content

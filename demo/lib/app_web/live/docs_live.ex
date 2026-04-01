@@ -285,7 +285,7 @@ defmodule AppWeb.Live.DocsLive do
           <%!-- TOC --%>
           <aside
             :if={@doc && @doc.toc != []}
-            class="hidden xl:block w-56 shrink-0 self-start border-l border-border bg-background sticky top-8"
+            class="hidden xl:block w-56 shrink-0 self-start border-l border-border bg-background sticky top-12"
           >
             <div class="sticky top-0 max-h-screen overflow-y-auto px-5 py-8">
               <h5 class="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
