@@ -27,5 +27,10 @@ defmodule PUI.InputTest do
 
       assert html =~ ~s(aria-invalid="true")
     end
+
+    test "translates error tuples with charlist placeholders and values" do
+      assert PUI.Components.translate_error({~c"%{count} items for %{field}", [count: ~c"12", field: ~c"name"]}) ==
+               "12 items for name"
+    end
   end
 end

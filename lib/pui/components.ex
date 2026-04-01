@@ -121,8 +121,24 @@ defmodule PUI.Components do
       "should be at least 3 character(s)"
   """
   def translate_error({msg, opts}) do
+    msg = translate_error_text(msg)
+
     Enum.reduce(opts, msg, fn {key, value}, acc ->
-      String.replace(acc, "%{#{key}}", to_string(value))
+      String.replace(acc, "%{#{translate_error_text(key)}}", translate_error_text(value))
     end)
   end
+
+  defp translate_error_text(term) when is_binary(term), do: term
+  defp translate_error_text(term) when is_atom(term), do: Atom.to_string(term)
+  defp translate_error_text(term) when is_integer(term) or is_float(term), do: to_string(term)
+
+  defp translate_error_text(term) when is_list(term) do
+    if Enum.all?(term, &is_integer/1) do
+      List.to_string(term)
+    else
+      inspect(term)
+    end
+  end
+
+  defp translate_error_text(term), do: inspect(term)
 end
