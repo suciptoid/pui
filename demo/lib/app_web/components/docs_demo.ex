@@ -1318,86 +1318,154 @@ defmodule AppWeb.DocsDemo do
       </h2>
 
       <.demo_section title="Basic Dialog" id="basic-dialog">
-        <.dialog :let={%{hide: hide}} id="demo-dialog" size="md">
+        <.dialog id="demo-dialog" size="md" title="Dialog Title">
           <:trigger :let={attr}>
             <.button {attr}>Open Dialog</.button>
           </:trigger>
 
           <div class="space-y-4">
-            <div>
-              <h2 class="text-lg font-semibold">Dialog Title</h2>
-              <p class="mt-1 text-sm text-muted-foreground">
-                This is a demonstration of the PUI dialog component.
-              </p>
-            </div>
+            <p class="text-sm text-muted-foreground">
+              This is a demonstration of the PUI dialog component.
+            </p>
             <p class="text-sm text-muted-foreground">
               Dialogs are useful for confirmations, forms, and complex interactions that require user attention.
             </p>
-            <div class="flex justify-end gap-2 pt-2">
+          </div>
+          <:footer :let={%{hide: hide}}>
+            <div class="flex justify-end gap-2">
               <.button variant="outline" phx-click={hide}>
                 Cancel
               </.button>
               <.button phx-click={hide}>Confirm</.button>
             </div>
+          </:footer>
+        </.dialog>
+      </.demo_section>
+
+      <.demo_section title="Dialog Title Options" id="dialog-title-options">
+        <div class="flex flex-wrap gap-3">
+          <.dialog id="demo-title" size="md" title="Edit profile">
+            <:trigger :let={attr}>
+              <.button variant="outline" {attr}>With title</.button>
+            </:trigger>
+
+            <p class="text-sm text-muted-foreground">
+              The built-in title keeps the header aligned with the close button.
+            </p>
+            <:footer :let={%{hide: hide}}>
+              <div class="flex justify-end gap-2">
+                <.button variant="outline" phx-click={hide}>Cancel</.button>
+                <.button phx-click={hide}>Save</.button>
+              </div>
+            </:footer>
+          </.dialog>
+
+          <.dialog
+            id="demo-no-close"
+            size="md"
+            title="Review order"
+            show_close={false}
+          >
+            <:trigger :let={attr}>
+              <.button variant="outline" {attr}>No close button</.button>
+            </:trigger>
+
+            <p class="text-sm text-muted-foreground">
+              Disable the built-in close button when you want a custom action row only.
+            </p>
+            <:footer :let={%{hide: hide}}>
+              <div class="flex justify-end gap-2">
+                <.button variant="outline" phx-click={hide}>Back</.button>
+                <.button phx-click={hide}>Continue</.button>
+              </div>
+            </:footer>
+          </.dialog>
+        </div>
+      </.demo_section>
+
+      <.demo_section title="Scrollable Body with Footer" id="dialog-scrollable">
+        <.dialog id="demo-scroll" size="lg" title="Recent activity">
+          <:trigger :let={attr}>
+            <.button variant="outline" {attr}>Scrollable dialog</.button>
+          </:trigger>
+
+          <div class="space-y-4">
+            <p :for={index <- 1..12} class="text-sm text-muted-foreground">
+              Activity #{index}: This dialog body scrolls automatically when the content grows taller than the viewport.
+            </p>
           </div>
+
+          <:footer :let={%{hide: hide}}>
+            <div class="flex justify-end gap-2">
+              <.button variant="outline" phx-click={hide}>Close</.button>
+              <.button phx-click={hide}>Save changes</.button>
+            </div>
+          </:footer>
         </.dialog>
       </.demo_section>
 
       <.demo_section title="Dialog Sizes" id="dialog-sizes">
         <div class="flex flex-wrap gap-3">
-          <.dialog :let={%{hide: hide}} id="demo-sm" size="sm">
+          <.dialog id="demo-sm" size="sm" title="Small dialog">
             <:trigger :let={attr}>
               <.button variant="outline" {attr}>Small</.button>
             </:trigger>
 
             <p class="text-sm">This is a small dialog.</p>
-            <div class="mt-4 flex justify-end">
-              <.button size="sm" phx-click={hide}>
-                Close
-              </.button>
-            </div>
+            <:footer :let={%{hide: hide}}>
+              <div class="flex justify-end">
+                <.button size="sm" phx-click={hide}>
+                  Close
+                </.button>
+              </div>
+            </:footer>
           </.dialog>
 
-          <.dialog :let={%{hide: hide}} id="demo-lg" size="lg">
+          <.dialog id="demo-lg" size="lg" title="Large dialog">
             <:trigger :let={attr}>
               <.button variant="outline" {attr}>Large</.button>
             </:trigger>
 
             <p class="text-sm">This is a large dialog with more room for content.</p>
-            <div class="mt-4 flex justify-end">
-              <.button phx-click={hide}>
-                Close
-              </.button>
-            </div>
+            <:footer :let={%{hide: hide}}>
+              <div class="flex justify-end">
+                <.button phx-click={hide}>
+                  Close
+                </.button>
+              </div>
+            </:footer>
           </.dialog>
 
-          <.dialog :let={%{hide: hide}} id="demo-xl" size="xl">
+          <.dialog id="demo-xl" size="xl" title="Extra large dialog">
             <:trigger :let={attr}>
               <.button variant="outline" {attr}>Extra Large</.button>
             </:trigger>
 
             <p class="text-sm">This is an extra large dialog for complex content.</p>
-            <div class="mt-4 flex justify-end">
-              <.button phx-click={hide}>
-                Close
-              </.button>
-            </div>
+            <:footer :let={%{hide: hide}}>
+              <div class="flex justify-end">
+                <.button phx-click={hide}>
+                  Close
+                </.button>
+              </div>
+            </:footer>
           </.dialog>
         </div>
       </.demo_section>
 
       <.demo_section title="Alert Dialog" id="alert-dialog">
-        <.dialog :let={%{hide: hide}} id="demo-alert" alert={true} size="sm">
+        <.dialog id="demo-alert" alert={true} size="sm" title="Are you sure?">
           <:trigger :let={attr}>
             <.button variant="destructive" {attr}>Delete Item</.button>
           </:trigger>
 
           <div class="space-y-3">
-            <h2 class="text-lg font-semibold text-destructive">Are you sure?</h2>
             <p class="text-sm text-muted-foreground">
               This action cannot be undone. This will permanently delete the item.
             </p>
-            <div class="flex justify-end gap-2 pt-2">
+          </div>
+          <:footer :let={%{hide: hide}}>
+            <div class="flex justify-end gap-2">
               <.button variant="outline" phx-click={hide}>
                 Cancel
               </.button>
@@ -1405,7 +1473,7 @@ defmodule AppWeb.DocsDemo do
                 Delete
               </.button>
             </div>
-          </div>
+          </:footer>
         </.dialog>
       </.demo_section>
     </section>
@@ -1415,26 +1483,50 @@ defmodule AppWeb.DocsDemo do
   def dialog_basic_demo(assigns) do
     ~H"""
     <.demo_section title="Basic Dialog Demo" id="dialog-basic-demo">
-      <.dialog :let={%{hide: hide}} id="demo-dialog" size="md">
+      <.dialog id="demo-dialog" size="md" title="Dialog Title">
         <:trigger :let={attr}>
           <.button {attr}>Open Dialog</.button>
         </:trigger>
 
         <div class="space-y-4">
-          <div>
-            <h2 class="text-lg font-semibold">Dialog Title</h2>
-            <p class="mt-1 text-sm text-muted-foreground">
-              This is a demonstration of the PUI dialog component.
-            </p>
-          </div>
+          <p class="text-sm text-muted-foreground">
+            This is a demonstration of the PUI dialog component.
+          </p>
           <p class="text-sm text-muted-foreground">
             Dialogs are useful for confirmations, forms, and complex interactions that require user attention.
           </p>
-          <div class="flex justify-end gap-2 pt-2">
+        </div>
+        <:footer :let={%{hide: hide}}>
+          <div class="flex justify-end gap-2">
             <.button variant="outline" phx-click={hide}>Cancel</.button>
             <.button phx-click={hide}>Confirm</.button>
           </div>
+        </:footer>
+      </.dialog>
+    </.demo_section>
+    """
+  end
+
+  def dialog_scroll_demo(assigns) do
+    ~H"""
+    <.demo_section title="Scrollable Dialog Demo" id="dialog-scroll-demo">
+      <.dialog id="demo-scroll-docs" size="lg" title="Recent activity">
+        <:trigger :let={attr}>
+          <.button variant="outline" {attr}>Open scrollable dialog</.button>
+        </:trigger>
+
+        <div class="space-y-4">
+          <p :for={index <- 1..12} class="text-sm text-muted-foreground">
+            Activity #{index}: The body scrolls while the title and footer stay visible.
+          </p>
         </div>
+
+        <:footer :let={%{hide: hide}}>
+          <div class="flex justify-end gap-2">
+            <.button variant="outline" phx-click={hide}>Close</.button>
+            <.button phx-click={hide}>Save changes</.button>
+          </div>
+        </:footer>
       </.dialog>
     </.demo_section>
     """
@@ -1444,34 +1536,40 @@ defmodule AppWeb.DocsDemo do
     ~H"""
     <.demo_section title="Dialog Sizes Demo" id="dialog-sizes-demo">
       <div class="flex flex-wrap gap-3">
-        <.dialog :let={%{hide: hide}} id="demo-sm" size="sm">
+        <.dialog id="demo-sm" size="sm" title="Small dialog">
           <:trigger :let={attr}>
             <.button variant="outline" {attr}>Small</.button>
           </:trigger>
           <p class="text-sm">This is a small dialog.</p>
-          <div class="mt-4 flex justify-end">
-            <.button size="sm" phx-click={hide}>Close</.button>
-          </div>
+          <:footer :let={%{hide: hide}}>
+            <div class="flex justify-end">
+              <.button size="sm" phx-click={hide}>Close</.button>
+            </div>
+          </:footer>
         </.dialog>
 
-        <.dialog :let={%{hide: hide}} id="demo-lg" size="lg">
+        <.dialog id="demo-lg" size="lg" title="Large dialog">
           <:trigger :let={attr}>
             <.button variant="outline" {attr}>Large</.button>
           </:trigger>
           <p class="text-sm">This is a large dialog with more room for content.</p>
-          <div class="mt-4 flex justify-end">
-            <.button phx-click={hide}>Close</.button>
-          </div>
+          <:footer :let={%{hide: hide}}>
+            <div class="flex justify-end">
+              <.button phx-click={hide}>Close</.button>
+            </div>
+          </:footer>
         </.dialog>
 
-        <.dialog :let={%{hide: hide}} id="demo-xl" size="xl">
+        <.dialog id="demo-xl" size="xl" title="Extra large dialog">
           <:trigger :let={attr}>
             <.button variant="outline" {attr}>Extra Large</.button>
           </:trigger>
           <p class="text-sm">This is an extra large dialog for complex content.</p>
-          <div class="mt-4 flex justify-end">
-            <.button phx-click={hide}>Close</.button>
-          </div>
+          <:footer :let={%{hide: hide}}>
+            <div class="flex justify-end">
+              <.button phx-click={hide}>Close</.button>
+            </div>
+          </:footer>
         </.dialog>
       </div>
     </.demo_section>
@@ -1481,21 +1579,22 @@ defmodule AppWeb.DocsDemo do
   def dialog_alert_demo(assigns) do
     ~H"""
     <.demo_section title="Alert Dialog Demo" id="dialog-alert-demo">
-      <.dialog :let={%{hide: hide}} id="demo-alert" alert={true} size="sm">
+      <.dialog id="demo-alert" alert={true} size="sm" title="Are you sure?">
         <:trigger :let={attr}>
           <.button variant="destructive" {attr}>Delete Item</.button>
         </:trigger>
 
         <div class="space-y-3">
-          <h2 class="text-lg font-semibold text-destructive">Are you sure?</h2>
           <p class="text-sm text-muted-foreground">
             This action cannot be undone. This will permanently delete the item.
           </p>
-          <div class="flex justify-end gap-2 pt-2">
+        </div>
+        <:footer :let={%{hide: hide}}>
+          <div class="flex justify-end gap-2">
             <.button variant="outline" phx-click={hide}>Cancel</.button>
             <.button variant="destructive" phx-click={hide}>Delete</.button>
           </div>
-        </div>
+        </:footer>
       </.dialog>
     </.demo_section>
     """

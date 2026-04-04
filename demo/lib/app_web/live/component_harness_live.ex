@@ -193,6 +193,7 @@ defmodule AppWeb.Live.ComponentHarness do
         aria-label="Harness dialog"
         show={@dialog_open?}
         on_cancel={JS.push("close_dialog")}
+        title="Harness dialog"
       >
         <div id="server-dialog-body" class="space-y-4">
           <p>Dialog content</p>
@@ -205,10 +206,14 @@ defmodule AppWeb.Live.ComponentHarness do
               options={[{"alpha", "Alpha"}, {"beta", "Beta"}, {"gamma", "Gamma"}]}
             />
           </.form>
-          <.button id="server-dialog-close" variant="secondary" phx-click="close_dialog">
-            Close Dialog
-          </.button>
         </div>
+        <:footer>
+          <div class="flex justify-end">
+            <.button id="server-dialog-close" variant="secondary" phx-click="close_dialog">
+              Close Dialog
+            </.button>
+          </div>
+        </:footer>
       </.dialog>
     </div>
     """

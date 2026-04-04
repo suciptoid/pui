@@ -7,7 +7,7 @@
 }
 ---
 
-The Dialog component provides accessible modal dialogs built on the native `<dialog>` element. It supports server-controlled visibility, multiple sizes, alert dialogs, and custom content with backdrop handling.
+The Dialog component provides accessible modal dialogs built on the native `<dialog>` element. It supports built-in titles, an optional close button, fixed footers, server-controlled visibility, multiple sizes, and a scrollable body when content exceeds the viewport.
 
 ## Import
 
@@ -26,24 +26,72 @@ Dialogs require an `id` and can be shown/hidden programmatically:
   Open Dialog
 </.button>
 
-<.dialog id="my-dialog">
-  <:content>
-    <h2 class="text-lg font-semibold">Dialog Title</h2>
-    <p class="mt-2 text-muted-foreground">
-      This is the dialog content.
-    </p>
-    <div class="mt-4 flex justify-end gap-2">
+<.dialog id="my-dialog" title="Dialog Title">
+  <p class="text-muted-foreground">
+    This is the dialog content.
+  </p>
+  <:footer>
+    <div class="flex justify-end gap-2">
       <.button variant="outline"
         phx-click={PUI.Dialog.hide_dialog("my-dialog")}>
         Cancel
       </.button>
       <.button>Confirm</.button>
     </div>
-  </:content>
+  </:footer>
 </.dialog>
 ```
 
 <AppWeb.DocsDemo.dialog_basic_demo />
+
+## Title and Close Button
+
+Use `title` to render a built-in heading and `show_close` to control the header action:
+
+```heex
+<.dialog id="profile-dialog" title="Edit profile">
+  <p>Update your account details.</p>
+  <:footer>
+    <div class="flex justify-end gap-2">
+      <.button variant="outline">Cancel</.button>
+      <.button>Save</.button>
+    </div>
+  </:footer>
+</.dialog>
+
+<.dialog id="checkout-dialog" title="Review order" show_close={false}>
+  <p>Disable the close button when you need a custom action row.</p>
+  <:footer>
+    <div class="flex justify-end gap-2">
+      <.button variant="outline">Back</.button>
+      <.button>Continue</.button>
+    </div>
+  </:footer>
+</.dialog>
+```
+
+## Scrollable Body and Fixed Footer
+
+The default dialog keeps the title and footer visible while the main content scrolls automatically:
+
+```heex
+<.dialog id="activity-dialog" title="Recent activity" size="lg">
+  <div class="space-y-4">
+    <p :for={index <- 1..12}>
+      Activity #{index}: This content scrolls inside the dialog body.
+    </p>
+  </div>
+
+  <:footer>
+    <div class="flex justify-end gap-2">
+      <.button variant="outline">Close</.button>
+      <.button>Save changes</.button>
+    </div>
+  </:footer>
+</.dialog>
+```
+
+<AppWeb.DocsDemo.dialog_scroll_demo />
 
 ## Server-Controlled
 
@@ -51,9 +99,13 @@ Control dialog visibility from the server with the `show` attribute:
 
 ```heex
 <.dialog id="server-dialog" show={@show_dialog}>
-  <:content>
-    <p>This dialog is controlled by server state.</p>
-  </:content>
+  <p>This dialog is controlled by server state.</p>
+  <:footer>
+    <div class="flex justify-end gap-2">
+      <.button variant="outline" phx-click="close">Cancel</.button>
+      <.button>Continue</.button>
+    </div>
+  </:footer>
 </.dialog>
 ```
 
@@ -81,13 +133,10 @@ Dialogs come in four sizes:
 Alert dialogs require explicit user action and cannot be dismissed by clicking the backdrop:
 
 ```heex
-<.dialog id="alert-dialog" alert={true}>
-  <:content>
-    <h2 class="text-lg font-semibold text-destructive">
-      Delete Account?
-    </h2>
-    <p class="mt-2">This action cannot be undone.</p>
-    <div class="mt-4 flex justify-end gap-2">
+<.dialog id="alert-dialog" title="Delete Account?" alert={true}>
+  <p class="mt-2">This action cannot be undone.</p>
+  <:footer>
+    <div class="flex justify-end gap-2">
       <.button variant="outline"
         phx-click={PUI.Dialog.hide_dialog("alert-dialog")}>
         Cancel
@@ -96,7 +145,7 @@ Alert dialogs require explicit user action and cannot be dismissed by clicking t
         Delete
       </.button>
     </div>
-  </:content>
+  </:footer>
 </.dialog>
 ```
 
@@ -111,9 +160,7 @@ Use the `trigger` slot for inline trigger buttons:
   <:trigger>
     <.button>Open</.button>
   </:trigger>
-  <:content>
-    <p>Dialog with trigger slot.</p>
-  </:content>
+  <p>Dialog with trigger slot.</p>
 </.dialog>
 ```
 
@@ -139,6 +186,8 @@ Use the `trigger` slot for inline trigger buttons:
 | `show` | `boolean` | `false` | Server-controlled visibility |
 | `alert` | `boolean` | `false` | Alert dialog mode (no backdrop dismiss) |
 | `size` | `string` | `"md"` | Dialog size: `"sm"`, `"md"`, `"lg"`, `"xl"` |
+| `title` | `string` | `nil` | Optional built-in title for the default dialog header |
+| `show_close` | `boolean` | `true` | Show the built-in close button on default dialogs |
 | `on_cancel` | `JS` | `%JS{}` | JS command to run on cancel |
 | `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `class` | `string` | `""` | Additional CSS classes |
@@ -148,5 +197,6 @@ Use the `trigger` slot for inline trigger buttons:
 | Name | Required | Description |
 |------|----------|-------------|
 | `trigger` | — | Inline trigger element |
-| `content` | — | Dialog content |
-| `inner_block` | — | Alternative to named slots |
+| `footer` | — | Optional fixed footer for actions in the default layout |
+| `content` | — | Override the entire content container |
+| `inner_block` | — | Main dialog body content |
