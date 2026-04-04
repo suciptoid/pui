@@ -175,14 +175,10 @@ defmodule PUI.Select do
     assigns =
       assigns
       |> map_field()
-      |> then(fn assigns ->
-        target = select_target_base(assigns)
-        assign(assigns, :label_target_id, if(target, do: "#{target}-trigger"))
-      end)
 
     ~H"""
-    <div class="flex flex-col w-full gap-3">
-      <.label for={@label_target_id}>{@label}</.label>
+    <div class="flex flex-col w-full gap-3 pb-3">
+      <.label>{@label}</.label>
       <div>
         <.select {assigns |> Map.delete(:label) |> Map.put(:show_errors, false)} />
       </div>

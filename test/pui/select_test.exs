@@ -76,7 +76,7 @@ defmodule PUI.SelectTest do
         </.select>
         """)
 
-      assert html =~ ~s(for="food-trigger")
+      assert html =~ ~s(Select Food\n</label>)
     end
 
     test "label falls back to the field name when the field id is blank" do
@@ -89,7 +89,6 @@ defmodule PUI.SelectTest do
         <.select field={@field} label="Category" options={["Option A"]} />
         """)
 
-      assert html =~ ~s(for="user[category]-trigger")
       assert html =~ ~s(id="user[category]-trigger")
     end
 

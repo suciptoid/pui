@@ -13,7 +13,7 @@ defmodule PUI.InputTest do
         <.input id="email" label="Email" />
         """)
 
-      assert html =~ ~s(class="flex w-full flex-col gap-3")
+      assert html =~ ~s(flex w-full flex-col gap-3 pb-3)
       refute html =~ ~s(class="grid w-full items-center gap-3")
     end
 
@@ -29,7 +29,9 @@ defmodule PUI.InputTest do
     end
 
     test "translates error tuples with charlist placeholders and values" do
-      assert PUI.Components.translate_error({~c"%{count} items for %{field}", [count: ~c"12", field: ~c"name"]}) ==
+      assert PUI.Components.translate_error(
+               {~c"%{count} items for %{field}", [count: ~c"12", field: ~c"name"]}
+             ) ==
                "12 items for name"
     end
   end

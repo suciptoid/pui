@@ -90,7 +90,7 @@ defmodule PUI.Input do
         else: assigns
 
     ~H"""
-    <div class="flex w-full flex-col gap-3">
+    <div class="flex w-full flex-col gap-3 pb-3">
       <.label for={@id}>{@label}</.label>
       <div>
         <.input id={@id} class={@class} type={@type} {@rest} />
@@ -410,7 +410,7 @@ defmodule PUI.Input do
         else: assigns
 
     ~H"""
-    <div class="grid w-full items-center gap-3">
+    <div class="grid w-full items-center gap-3 pb-3">
       <.label for={@id}>{@label}</.label>
       <div>
         <.textarea id={@id} class={@class} {@rest} />
