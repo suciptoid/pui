@@ -12,9 +12,9 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential git \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /maui
+COPY . /pui
 
-WORKDIR /maui/demo
+WORKDIR /pui/demo
 
 # install hex + rebar
 RUN mix local.hex --force \
@@ -61,7 +61,7 @@ RUN chown nobody /app
 ENV MIX_ENV="prod"
 
 # Only copy the final release from the build stage
-COPY --from=builder --chown=nobody:root /maui/demo/_build/${MIX_ENV}/rel/app ./
+COPY --from=builder --chown=nobody:root /pui/demo/_build/${MIX_ENV}/rel/app ./
 
 USER nobody
 
