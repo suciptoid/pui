@@ -111,7 +111,7 @@ defmodule AppWeb.Live.LandingLive do
           </div>
 
           <div class="mt-8 space-y-4">
-            <div class="rounded-3xl border border-border bg-background/90 p-6 shadow-sm">
+            <div class="rounded-3xl bg-background/90 p-6">
               <div class="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
                 <div>
                   <div class="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
@@ -144,7 +144,7 @@ defmodule AppWeb.Live.LandingLive do
               </div>
             </div>
 
-            <div class="rounded-3xl border border-border bg-background/90 p-6 shadow-sm">
+            <div class="rounded-3xl bg-background/90 p-6 ">
               <div class="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
                 <div>
                   <div class="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
@@ -205,7 +205,7 @@ defmodule AppWeb.Live.LandingLive do
               </div>
             </div>
 
-            <div class="rounded-3xl border border-border bg-background/90 p-6 shadow-sm">
+            <div class="rounded-3xl bg-background/90 p-6">
               <div class="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
                 <div>
                   <div class="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
