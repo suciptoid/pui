@@ -3,6 +3,8 @@ import {
   autoUpdate,
   computePosition,
   flip,
+  getOverflowAncestors,
+  hide,
   offset,
   shift,
   size,
@@ -12,7 +14,9 @@ export default class Select extends ViewHook {
   expanded = false;
   placement = "bottom-start";
   activePlacement = "bottom-start";
-  strategy = "absolute";
+  strategy = "auto";
+  defaultStrategy = "absolute";
+  currentStrategy = "absolute";
   currentIndex = -1;
   expandPopover = true;
   focusSelected = false;
@@ -31,6 +35,8 @@ export default class Select extends ViewHook {
   mounted() {
     this.placement = this.el.dataset.placement || this.placement;
     this.activePlacement = this.placement;
+    this.strategy = this.el.dataset.strategy || this.strategy;
+    this.currentStrategy = this.resolveStrategy();
 
     this.cacheElements();
     this.refreshExpanded();
@@ -67,8 +73,8 @@ export default class Select extends ViewHook {
     this.cacheElements();
     this.rebindEventListeners(previousTrigger, previousPopup, previousSearch);
     this.ensureOptionMetadata();
-    this.restoreExpanded();
     this.syncValueFromDataset();
+    this.restoreExpanded();
     this.initFloatingUI();
     this.refreshFloatingUI();
   }
@@ -87,6 +93,7 @@ export default class Select extends ViewHook {
   cacheElements() {
     this.trigger = this.el.querySelector("[aria-haspopup],[role='combobox']");
     this.popup = this.el.querySelector("[role='menu'],[role='listbox']");
+    this.viewport = this.el.querySelector("[data-pui='menu-viewport']") || this.popup;
     this.items =
       this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
     this.search = this.el.querySelector(
@@ -345,7 +352,8 @@ export default class Select extends ViewHook {
     return selectedIndex >= 0 ? selectedIndex : (items.length > 0 ? 0 : -1);
   }
 
-  setCurrentItemByIndex(index, items = this.getNavigableItems()) {
+  setCurrentItemByIndex(index, items = this.getNavigableItems(), options = {}) {
+    const { scrollAlignment = "nearest" } = options;
     const itemCount = items.length;
 
     if (itemCount === 0 || index < 0 || index >= itemCount) {
@@ -363,7 +371,7 @@ export default class Select extends ViewHook {
         if (this.focusSelected) {
           this.focusElement(item);
         }
-        this.scrollItemIntoView(item);
+        this.scrollItemIntoView(item, { alignment: scrollAlignment });
       }
     });
 
@@ -501,11 +509,14 @@ export default class Select extends ViewHook {
     this.activePlacement = options.placement || this.placement;
     this.trigger?.setAttribute("aria-expanded", "true");
     this.popup?.setAttribute("aria-hidden", "false");
+    this.popup?.setAttribute("data-reference-hidden", "false");
 
     this.expanded = true;
     const visibleItems = this.getNavigableItems();
     this.currentIndex = this.getInitialNavigationIndex(visibleItems);
-    this.setCurrentItemByIndex(this.currentIndex, visibleItems);
+    this.setCurrentItemByIndex(this.currentIndex, visibleItems, {
+      scrollAlignment: "none",
+    });
 
     if (this.search) {
       this.search.setAttribute("aria-expanded", "true");
@@ -515,11 +526,20 @@ export default class Select extends ViewHook {
       this.focusElement(this.popup);
     }
 
+    this.initFloatingUI();
     this.listenOutside();
-    this.refreshFloatingUI();
+    this.refreshFloatingUI().then(() => {
+      const currentItems = this.getNavigableItems();
+      this.currentIndex = this.getInitialNavigationIndex(currentItems);
+      this.setCurrentItemByIndex(this.currentIndex, currentItems, {
+        scrollAlignment: "center-if-needed",
+      });
+    });
   }
 
-  closePopover() {
+  closePopover(options = {}) {
+    const { restoreFocus = true } = options;
+
     this.trigger?.setAttribute("aria-expanded", "false");
     this.popup?.setAttribute("aria-hidden", "true");
     this.search?.setAttribute("aria-expanded", "false");
@@ -544,10 +564,17 @@ export default class Select extends ViewHook {
       this.popup?.contains(document.activeElement) ||
       this.trigger?.contains(document.activeElement)
     ) {
-      this.focusElement(this.trigger);
+      if (restoreFocus) {
+        this.focusElement(this.trigger);
+      } else if (typeof document.activeElement?.blur === "function") {
+        document.activeElement.blur();
+      }
     }
 
+    this.popup?.setAttribute("data-reference-hidden", "false");
+    this.popup?.style.removeProperty("--pui-select-content-available-height");
     this.removeOutsideListener();
+    this.initFloatingUI();
   }
 
   initFloatingUI() {
@@ -559,39 +586,83 @@ export default class Select extends ViewHook {
       return;
     }
 
+    if (!this.expanded) {
+      return;
+    }
+
+    this.currentStrategy = this.resolveStrategy();
+
     this.#clearFloating = autoUpdate(this.trigger, this.popup, () => {
       this.refreshFloatingUI();
+    }, {
+      animationFrame: this.currentStrategy === "fixed",
     });
   }
 
   refreshFloatingUI() {
-    if (!this.trigger || !this.popup) {
-      return;
+    if (!this.trigger || !this.popup || !this.expanded) {
+      return Promise.resolve();
     }
 
-    const popup = this.popup;
     const expandPopover = this.expandPopover;
-    computePosition(this.trigger, this.popup, {
+    const collisionPadding = 8;
+    const nextStrategy = this.resolveStrategy();
+
+    if (nextStrategy !== this.currentStrategy) {
+      this.currentStrategy = nextStrategy;
+      this.initFloatingUI();
+    } else {
+      this.currentStrategy = nextStrategy;
+    }
+
+    return computePosition(this.trigger, this.popup, {
       placement: this.activePlacement,
-      strategy: this.strategy,
+      strategy: this.currentStrategy,
       middleware: [
-        offset(8),
-        flip(),
-        shift(),
+        offset(collisionPadding),
+        flip({ padding: collisionPadding }),
+        shift({ padding: collisionPadding }),
         size({
-          apply({ rects }) {
+          padding: collisionPadding,
+          apply({ availableHeight, rects, elements }) {
+            const nextAvailableHeight = `${Math.max(0, Math.floor(availableHeight))}px`;
+            const nextTriggerWidth = `${Math.max(0, Math.floor(rects.reference.width))}px`;
+
+            elements.floating.style.setProperty(
+              "--pui-select-content-available-height",
+              nextAvailableHeight,
+            );
+            elements.floating.style.setProperty(
+              "--pui-select-trigger-width",
+              nextTriggerWidth,
+            );
+            elements.floating.style.minWidth = nextTriggerWidth;
+
             if (expandPopover) {
-              popup.style.width = `${rects.reference.width}px`;
+              elements.floating.style.width = nextTriggerWidth;
+            } else {
+              elements.floating.style.removeProperty("width");
             }
           },
         }),
+        hide({ padding: collisionPadding }),
       ],
-    }).then(({ x, y, strategy }) => {
+    }).then(({ x, y, strategy, placement, middlewareData }) => {
+      const referenceHidden = Boolean(middlewareData.hide?.referenceHidden);
+
       Object.assign(this.popup.style, {
         left: `${x}px`,
         top: `${y}px`,
         position: strategy,
       });
+
+      this.popup.dataset.side = placement.split("-")[0];
+      this.popup.dataset.floatingStrategy = strategy;
+      this.popup.dataset.referenceHidden = String(referenceHidden);
+
+      if (referenceHidden && this.expanded) {
+        this.closePopover({ restoreFocus: false });
+      }
     });
   }
 
@@ -671,18 +742,93 @@ export default class Select extends ViewHook {
     }
   }
 
-  scrollItemIntoView(item) {
-    if (!item || !this.popup) {
+  resolveStrategy() {
+    if (this.strategy === "absolute" || this.strategy === "fixed") {
+      return this.strategy;
+    }
+
+    return this.hasNestedClippingAncestor() ? "fixed" : this.defaultStrategy;
+  }
+
+  hasNestedClippingAncestor() {
+    if (!this.trigger) {
+      return false;
+    }
+
+    return getOverflowAncestors(this.trigger).some((ancestor) =>
+      this.isNestedClippingAncestor(ancestor),
+    );
+  }
+
+  isNestedClippingAncestor(ancestor) {
+    if (!(ancestor instanceof HTMLElement)) {
+      return false;
+    }
+
+    const doc = ancestor.ownerDocument;
+
+    if (
+      !doc ||
+      ancestor === doc.body ||
+      ancestor === doc.documentElement ||
+      ancestor === this.el ||
+      ancestor === this.trigger ||
+      ancestor === this.popup
+    ) {
+      return false;
+    }
+
+    const style = window.getComputedStyle(ancestor);
+
+    return [style.overflow, style.overflowX, style.overflowY].some((value) =>
+      ["auto", "scroll", "hidden", "clip", "overlay"].includes(value),
+    );
+  }
+
+  scrollItemIntoView(item, options = {}) {
+    const scrollContainer = this.viewport || this.popup;
+
+    if (!item || !scrollContainer) {
       return;
     }
 
-    const popupRect = this.popup.getBoundingClientRect();
+    const { alignment = "nearest" } = options;
+    const containerRect = scrollContainer.getBoundingClientRect();
     const itemRect = item.getBoundingClientRect();
+    const itemIsAbove = itemRect.top < containerRect.top;
+    const itemIsBelow = itemRect.bottom > containerRect.bottom;
 
-    if (itemRect.top < popupRect.top) {
-      this.popup.scrollTop -= popupRect.top - itemRect.top;
-    } else if (itemRect.bottom > popupRect.bottom) {
-      this.popup.scrollTop += itemRect.bottom - popupRect.bottom;
+    if (alignment === "none") {
+      return;
+    }
+
+    if (alignment === "center-if-needed") {
+      if (!itemIsAbove && !itemIsBelow) {
+        return;
+      }
+
+      const maxScrollTop = Math.max(
+        0,
+        scrollContainer.scrollHeight - scrollContainer.clientHeight,
+      );
+      const centeredScrollTop =
+        scrollContainer.scrollTop +
+        (itemRect.top - containerRect.top) -
+        scrollContainer.clientHeight / 2 +
+        itemRect.height / 2;
+
+      scrollContainer.scrollTop = Math.min(
+        maxScrollTop,
+        Math.max(0, centeredScrollTop),
+      );
+
+      return;
+    }
+
+    if (itemIsAbove) {
+      scrollContainer.scrollTop -= containerRect.top - itemRect.top;
+    } else if (itemIsBelow) {
+      scrollContainer.scrollTop += itemRect.bottom - containerRect.bottom;
     }
   }
 }

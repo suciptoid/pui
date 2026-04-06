@@ -76,7 +76,9 @@ defmodule PUI.SelectTest do
         </.select>
         """)
 
-      assert html =~ ~s(Select Food\n</label>)
+      assert html =~ ~s(<label)
+      assert html =~ ~s(for="food-trigger")
+      assert html =~ ~s(Select Food)
     end
 
     test "label falls back to the field name when the field id is blank" do
@@ -90,6 +92,7 @@ defmodule PUI.SelectTest do
         """)
 
       assert html =~ ~s(id="user[category]-trigger")
+      assert html =~ ~s(for="user[category]-trigger")
     end
 
     test "renders aria-invalid as an explicit true value when errors exist" do
@@ -103,6 +106,25 @@ defmodule PUI.SelectTest do
         """)
 
       assert html =~ ~s(aria-invalid="true")
+    end
+
+    test "listbox renders floating metadata and a scroll viewport" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.select id="food" name="food">
+          <.select_item value="a">Option A</.select_item>
+        </.select>
+        """)
+
+      assert html =~ ~s(data-side="bottom")
+      assert html =~ ~s(data-floating-strategy="absolute")
+      assert html =~ ~s(data-reference-hidden="false")
+      assert html =~ ~s(data-pui="menu-viewport")
+      assert html =~ "overflow-hidden"
+      assert html =~ "data-[reference-hidden=true]:invisible"
+      assert html =~ "max-h-[min(calc(var(--pui-select-content-available-height)-0.5rem),20rem)]"
     end
   end
 end

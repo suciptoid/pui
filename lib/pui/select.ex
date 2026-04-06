@@ -176,9 +176,11 @@ defmodule PUI.Select do
       assigns
       |> map_field()
 
+    assigns = assign(assigns, :label_for, label_target(assigns))
+
     ~H"""
     <div class="flex flex-col w-full gap-3 pb-3">
-      <.label>{@label}</.label>
+      <.label for={@label_for}>{@label}</.label>
       <div>
         <.select {assigns |> Map.delete(:label) |> Map.put(:show_errors, false)} />
       </div>
@@ -281,6 +283,9 @@ defmodule PUI.Select do
         tabindex="-1"
         aria-labelledby={@trigger_id}
         aria-hidden="true"
+        data-side="bottom"
+        data-floating-strategy="absolute"
+        data-reference-hidden="false"
         class={
           if @is_unstyled do
             [@class]
@@ -289,21 +294,35 @@ defmodule PUI.Select do
               "aria-hidden:hidden block bg-popover text-popover-foreground",
               "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
               "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-              "z-50 min-w-52 overflow-x-hidden overflow-y-auto rounded-md border border-border shadow-md",
-              "max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin)"
+              "z-50 min-w-52 max-h-[min(calc(var(--pui-select-content-available-height)-0.5rem),20rem)] overflow-hidden rounded-md border border-border shadow-md",
+              "flex flex-col origin-top data-[reference-hidden=true]:invisible data-[reference-hidden=true]:pointer-events-none data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom"
             ]
           end
         }
       >
-        {render_slot(@header)}
+        <%= if @is_unstyled do %>
+          {render_slot(@header)}
+          <div data-pui="menu-items">
+            {render_slot(@inner_block)}
+          </div>
+          {render_slot(@footer)}
+        <% else %>
+          <div :if={@header != []} class="shrink-0">
+            {render_slot(@header)}
+          </div>
 
-        <.select_search :if={@searchable and not @is_unstyled} listbox_id={@listbox_id} />
+          <.select_search :if={@searchable} listbox_id={@listbox_id} />
 
-        <div data-pui="menu-items">
-          {render_slot(@inner_block)}
-        </div>
+          <div data-pui="menu-viewport" class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+            <div data-pui="menu-items">
+              {render_slot(@inner_block)}
+            </div>
+          </div>
 
-        {render_slot(@footer)}
+          <div :if={@footer != []} class="shrink-0">
+            {render_slot(@footer)}
+          </div>
+        <% end %>
       </div>
     </div>
     <.field_error :if={@show_errors} errors={@errors} />
@@ -314,7 +333,7 @@ defmodule PUI.Select do
 
   def select_search(assigns) do
     ~H"""
-    <div data-pui="combobox-search" class="flex h-9 items-center gap-2 border-b px-3">
+    <div data-pui="combobox-search" class="shrink-0 flex h-9 items-center gap-2 border-b px-3">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
@@ -496,6 +515,13 @@ defmodule PUI.Select do
 
   def map_field(assigns) do
     assigns
+  end
+
+  defp label_target(assigns) do
+    case select_target_base(assigns) do
+      nil -> nil
+      target -> "#{target}-trigger"
+    end
   end
 
   defp select_target_base(assigns) do

@@ -112,16 +112,41 @@ defmodule AppWeb.Live.ComponentHarness do
 
   defp render_component(assigns = %{live_action: :select}) do
     ~H"""
-    <.form for={@form} id="select-form" phx-change="select_changed" class="space-y-4">
+    <div class="space-y-6">
+      <.form for={@form} id="select-form" phx-change="select_changed" class="space-y-4">
+        <.select
+          id="harness-select"
+          field={@form[:choice]}
+          label="Harness Select"
+          searchable={true}
+          options={[{"alpha", "Alpha"}, {"beta", "Beta"}, {"gamma", "Gamma"}]}
+        />
+        <p id="select-value">Selected: {@selected_choice}</p>
+      </.form>
+
       <.select
-        id="harness-select"
-        field={@form[:choice]}
-        label="Harness Select"
-        searchable={true}
-        options={[{"alpha", "Alpha"}, {"beta", "Beta"}, {"gamma", "Gamma"}]}
+        id="long-harness-select"
+        name="long_choice"
+        value="item-30"
+        label="Long Harness Select"
+        options={long_select_options()}
       />
-      <p id="select-value">Selected: {@selected_choice}</p>
-    </.form>
+
+      <div
+        id="scroll-select-scrollbox"
+        class="h-40 overflow-y-auto rounded-md border border-border p-4"
+      >
+        <div class="h-8 shrink-0"></div>
+        <.select
+          id="scroll-harness-select"
+          name="scroll_choice"
+          value="beta"
+          label="Scrollable Harness Select"
+          options={[{"alpha", "Alpha"}, {"beta", "Beta"}, {"gamma", "Gamma"}]}
+        />
+        <div class="h-40 shrink-0"></div>
+      </div>
+    </div>
     """
   end
 
@@ -344,6 +369,13 @@ defmodule AppWeb.Live.ComponentHarness do
 
   defp maybe_put_option(opts, key, value, true), do: Keyword.put(opts, key, value)
   defp maybe_put_option(opts, _key, _value, false), do: opts
+
+  defp long_select_options do
+    Enum.map(1..40, fn index ->
+      value = "item-#{index}"
+      {value, "Item #{index}"}
+    end)
+  end
 
   defp blank?(value), do: value in [nil, ""]
 end

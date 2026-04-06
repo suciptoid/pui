@@ -957,7 +957,7 @@ defmodule AppWeb.DocsDemo do
           id="demo-basic"
           name="demo-basic"
           label="Favorite Fruit"
-          options={["Apple", "Banana", "Cherry", "Date", "Elderberry"]}
+          options={["Apple", "Banana", "Cherry", "Date", "Elderberry","Pisang", "Melon","Anggur", "Manggis", "Kelapa","Jambu", "Salak", "Semangka", "Alpukat", "Tamarin", "Nangka", "Durian"]}
         />
       </div>
     </.demo_section>

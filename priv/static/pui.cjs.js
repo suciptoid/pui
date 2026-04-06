@@ -33,6 +33,7 @@ module.exports = __toCommonJS(index_exports);
 var import_phoenix_live_view = require("phoenix_live_view");
 
 // node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
+var sides = ["top", "right", "bottom", "left"];
 var min = Math.min;
 var max = Math.max;
 var round = Math.round;
@@ -526,6 +527,66 @@ var flip = function(options) {
         }
       }
       return {};
+    }
+  };
+};
+function getSideOffsets(overflow, rect) {
+  return {
+    top: overflow.top - rect.height,
+    right: overflow.right - rect.width,
+    bottom: overflow.bottom - rect.height,
+    left: overflow.left - rect.width
+  };
+}
+function isAnySideFullyClipped(overflow) {
+  return sides.some((side) => overflow[side] >= 0);
+}
+var hide = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    name: "hide",
+    options,
+    async fn(state) {
+      const {
+        rects
+      } = state;
+      const {
+        strategy = "referenceHidden",
+        ...detectOverflowOptions
+      } = evaluate(options, state);
+      switch (strategy) {
+        case "referenceHidden": {
+          const overflow = await detectOverflow(state, {
+            ...detectOverflowOptions,
+            elementContext: "reference"
+          });
+          const offsets = getSideOffsets(overflow, rects.reference);
+          return {
+            data: {
+              referenceHiddenOffsets: offsets,
+              referenceHidden: isAnySideFullyClipped(offsets)
+            }
+          };
+        }
+        case "escaped": {
+          const overflow = await detectOverflow(state, {
+            ...detectOverflowOptions,
+            altBoundary: true
+          });
+          const offsets = getSideOffsets(overflow, rects.floating);
+          return {
+            data: {
+              escapedOffsets: offsets,
+              escaped: isAnySideFullyClipped(offsets)
+            }
+          };
+        }
+        default: {
+          return {};
+        }
+      }
     }
   };
 };
@@ -1493,6 +1554,7 @@ var offset2 = offset;
 var shift2 = shift;
 var flip2 = flip;
 var size2 = size;
+var hide2 = hide;
 var arrow2 = arrow;
 var computePosition2 = (reference, floating, options) => {
   const cache = /* @__PURE__ */ new Map();
@@ -1867,7 +1929,9 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
   expanded = false;
   placement = "bottom-start";
   activePlacement = "bottom-start";
-  strategy = "absolute";
+  strategy = "auto";
+  defaultStrategy = "absolute";
+  currentStrategy = "absolute";
   currentIndex = -1;
   expandPopover = true;
   focusSelected = false;
@@ -1884,6 +1948,8 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
   mounted() {
     this.placement = this.el.dataset.placement || this.placement;
     this.activePlacement = this.placement;
+    this.strategy = this.el.dataset.strategy || this.strategy;
+    this.currentStrategy = this.resolveStrategy();
     this.cacheElements();
     this.refreshExpanded();
     this.#triggerClickHandler = this.handleTriggerClick.bind(this);
@@ -1912,8 +1978,8 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     this.cacheElements();
     this.rebindEventListeners(previousTrigger, previousPopup, previousSearch);
     this.ensureOptionMetadata();
-    this.restoreExpanded();
     this.syncValueFromDataset();
+    this.restoreExpanded();
     this.initFloatingUI();
     this.refreshFloatingUI();
   }
@@ -1928,6 +1994,7 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
   cacheElements() {
     this.trigger = this.el.querySelector("[aria-haspopup],[role='combobox']");
     this.popup = this.el.querySelector("[role='menu'],[role='listbox']");
+    this.viewport = this.el.querySelector("[data-pui='menu-viewport']") || this.popup;
     this.items = this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
     this.search = this.el.querySelector(
       "input[type='text'][role='searchbox'], input[type='text'][role='combobox']"
@@ -2136,7 +2203,8 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     );
     return selectedIndex >= 0 ? selectedIndex : items.length > 0 ? 0 : -1;
   }
-  setCurrentItemByIndex(index, items = this.getNavigableItems()) {
+  setCurrentItemByIndex(index, items = this.getNavigableItems(), options = {}) {
+    const { scrollAlignment = "nearest" } = options;
     const itemCount = items.length;
     if (itemCount === 0 || index < 0 || index >= itemCount) {
       this.currentIndex = -1;
@@ -2151,7 +2219,7 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
         if (this.focusSelected) {
           this.focusElement(item);
         }
-        this.scrollItemIntoView(item);
+        this.scrollItemIntoView(item, { alignment: scrollAlignment });
       }
     });
     this.currentIndex = index;
@@ -2261,10 +2329,13 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     this.activePlacement = options.placement || this.placement;
     this.trigger?.setAttribute("aria-expanded", "true");
     this.popup?.setAttribute("aria-hidden", "false");
+    this.popup?.setAttribute("data-reference-hidden", "false");
     this.expanded = true;
     const visibleItems = this.getNavigableItems();
     this.currentIndex = this.getInitialNavigationIndex(visibleItems);
-    this.setCurrentItemByIndex(this.currentIndex, visibleItems);
+    this.setCurrentItemByIndex(this.currentIndex, visibleItems, {
+      scrollAlignment: "none"
+    });
     if (this.search) {
       this.search.setAttribute("aria-expanded", "true");
       this.search.addEventListener("input", this.#searchInputHandler);
@@ -2272,10 +2343,18 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     } else {
       this.focusElement(this.popup);
     }
+    this.initFloatingUI();
     this.listenOutside();
-    this.refreshFloatingUI();
+    this.refreshFloatingUI().then(() => {
+      const currentItems = this.getNavigableItems();
+      this.currentIndex = this.getInitialNavigationIndex(currentItems);
+      this.setCurrentItemByIndex(this.currentIndex, currentItems, {
+        scrollAlignment: "center-if-needed"
+      });
+    });
   }
-  closePopover() {
+  closePopover(options = {}) {
+    const { restoreFocus = true } = options;
     this.trigger?.setAttribute("aria-expanded", "false");
     this.popup?.setAttribute("aria-hidden", "true");
     this.search?.setAttribute("aria-expanded", "false");
@@ -2293,9 +2372,16 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
       )
     );
     if (this.popup?.contains(document.activeElement) || this.trigger?.contains(document.activeElement)) {
-      this.focusElement(this.trigger);
+      if (restoreFocus) {
+        this.focusElement(this.trigger);
+      } else if (typeof document.activeElement?.blur === "function") {
+        document.activeElement.blur();
+      }
     }
+    this.popup?.setAttribute("data-reference-hidden", "false");
+    this.popup?.style.removeProperty("--pui-select-content-available-height");
     this.removeOutsideListener();
+    this.initFloatingUI();
   }
   initFloatingUI() {
     if (this.#clearFloating) {
@@ -2304,37 +2390,72 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
     if (!this.trigger || !this.popup) {
       return;
     }
+    if (!this.expanded) {
+      return;
+    }
+    this.currentStrategy = this.resolveStrategy();
     this.#clearFloating = autoUpdate(this.trigger, this.popup, () => {
       this.refreshFloatingUI();
+    }, {
+      animationFrame: this.currentStrategy === "fixed"
     });
   }
   refreshFloatingUI() {
-    if (!this.trigger || !this.popup) {
-      return;
+    if (!this.trigger || !this.popup || !this.expanded) {
+      return Promise.resolve();
     }
-    const popup = this.popup;
     const expandPopover = this.expandPopover;
-    computePosition2(this.trigger, this.popup, {
+    const collisionPadding = 8;
+    const nextStrategy = this.resolveStrategy();
+    if (nextStrategy !== this.currentStrategy) {
+      this.currentStrategy = nextStrategy;
+      this.initFloatingUI();
+    } else {
+      this.currentStrategy = nextStrategy;
+    }
+    return computePosition2(this.trigger, this.popup, {
       placement: this.activePlacement,
-      strategy: this.strategy,
+      strategy: this.currentStrategy,
       middleware: [
-        offset2(8),
-        flip2(),
-        shift2(),
+        offset2(collisionPadding),
+        flip2({ padding: collisionPadding }),
+        shift2({ padding: collisionPadding }),
         size2({
-          apply({ rects }) {
+          padding: collisionPadding,
+          apply({ availableHeight, rects, elements }) {
+            const nextAvailableHeight = `${Math.max(0, Math.floor(availableHeight))}px`;
+            const nextTriggerWidth = `${Math.max(0, Math.floor(rects.reference.width))}px`;
+            elements.floating.style.setProperty(
+              "--pui-select-content-available-height",
+              nextAvailableHeight
+            );
+            elements.floating.style.setProperty(
+              "--pui-select-trigger-width",
+              nextTriggerWidth
+            );
+            elements.floating.style.minWidth = nextTriggerWidth;
             if (expandPopover) {
-              popup.style.width = `${rects.reference.width}px`;
+              elements.floating.style.width = nextTriggerWidth;
+            } else {
+              elements.floating.style.removeProperty("width");
             }
           }
-        })
+        }),
+        hide2({ padding: collisionPadding })
       ]
-    }).then(({ x, y, strategy }) => {
+    }).then(({ x, y, strategy, placement, middlewareData }) => {
+      const referenceHidden = Boolean(middlewareData.hide?.referenceHidden);
       Object.assign(this.popup.style, {
         left: `${x}px`,
         top: `${y}px`,
         position: strategy
       });
+      this.popup.dataset.side = placement.split("-")[0];
+      this.popup.dataset.floatingStrategy = strategy;
+      this.popup.dataset.referenceHidden = String(referenceHidden);
+      if (referenceHidden && this.expanded) {
+        this.closePopover({ restoreFocus: false });
+      }
     });
   }
   listenOutside() {
@@ -2390,16 +2511,65 @@ var Select = class extends import_phoenix_live_view2.ViewHook {
       element.focus();
     }
   }
-  scrollItemIntoView(item) {
-    if (!item || !this.popup) {
+  resolveStrategy() {
+    if (this.strategy === "absolute" || this.strategy === "fixed") {
+      return this.strategy;
+    }
+    return this.hasNestedClippingAncestor() ? "fixed" : this.defaultStrategy;
+  }
+  hasNestedClippingAncestor() {
+    if (!this.trigger) {
+      return false;
+    }
+    return getOverflowAncestors(this.trigger).some(
+      (ancestor) => this.isNestedClippingAncestor(ancestor)
+    );
+  }
+  isNestedClippingAncestor(ancestor) {
+    if (!(ancestor instanceof HTMLElement)) {
+      return false;
+    }
+    const doc = ancestor.ownerDocument;
+    if (!doc || ancestor === doc.body || ancestor === doc.documentElement || ancestor === this.el || ancestor === this.trigger || ancestor === this.popup) {
+      return false;
+    }
+    const style = window.getComputedStyle(ancestor);
+    return [style.overflow, style.overflowX, style.overflowY].some(
+      (value) => ["auto", "scroll", "hidden", "clip", "overlay"].includes(value)
+    );
+  }
+  scrollItemIntoView(item, options = {}) {
+    const scrollContainer = this.viewport || this.popup;
+    if (!item || !scrollContainer) {
       return;
     }
-    const popupRect = this.popup.getBoundingClientRect();
+    const { alignment = "nearest" } = options;
+    const containerRect = scrollContainer.getBoundingClientRect();
     const itemRect = item.getBoundingClientRect();
-    if (itemRect.top < popupRect.top) {
-      this.popup.scrollTop -= popupRect.top - itemRect.top;
-    } else if (itemRect.bottom > popupRect.bottom) {
-      this.popup.scrollTop += itemRect.bottom - popupRect.bottom;
+    const itemIsAbove = itemRect.top < containerRect.top;
+    const itemIsBelow = itemRect.bottom > containerRect.bottom;
+    if (alignment === "none") {
+      return;
+    }
+    if (alignment === "center-if-needed") {
+      if (!itemIsAbove && !itemIsBelow) {
+        return;
+      }
+      const maxScrollTop = Math.max(
+        0,
+        scrollContainer.scrollHeight - scrollContainer.clientHeight
+      );
+      const centeredScrollTop = scrollContainer.scrollTop + (itemRect.top - containerRect.top) - scrollContainer.clientHeight / 2 + itemRect.height / 2;
+      scrollContainer.scrollTop = Math.min(
+        maxScrollTop,
+        Math.max(0, centeredScrollTop)
+      );
+      return;
+    }
+    if (itemIsAbove) {
+      scrollContainer.scrollTop -= containerRect.top - itemRect.top;
+    } else if (itemIsBelow) {
+      scrollContainer.scrollTop += itemRect.bottom - containerRect.bottom;
     }
   }
 };

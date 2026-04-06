@@ -4,6 +4,8 @@ import Config
 # you can enable the server option below.
 config :app, AppWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
+  url: [host: "127.0.0.1"],
+  check_origin: false,
   secret_key_base: "Go+ZRTW/Ne4h6HT3cw6bPZbVLOsyM/WcD6xHNTNvvigWWN7nYYIn1xgiv+dYdVl5",
   server: true
 
