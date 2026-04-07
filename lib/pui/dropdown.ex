@@ -114,7 +114,7 @@ defmodule PUI.Dropdown do
     assigns = assign(assigns, id: id, is_unstyled: is_unstyled)
 
     ~H"""
-    <div id={@id} class="w-fit" phx-hook="PUI.Popover">
+    <div id={@id} class="w-fit" data-strategy="auto" phx-hook="PUI.Popover">
       <PUI.Button.button
         :if={not @is_unstyled}
         id={"#{@id}-trigger"}
@@ -169,6 +169,9 @@ defmodule PUI.Dropdown do
 
     ~H"""
     <div
+      data-side="bottom"
+      data-floating-strategy="absolute"
+      data-reference-hidden="false"
       aria-hidden="true"
       role="menu"
       aria-orientation="vertical"
@@ -182,6 +185,7 @@ defmodule PUI.Dropdown do
             "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
             "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             "z-50  min-w-32 overflow-x-hidden overflow-y-auto rounded-md border border-border p-1 shadow-md",
+            "origin-top data-[reference-hidden=true]:invisible data-[reference-hidden=true]:pointer-events-none data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom",
             @class
           ]
         end

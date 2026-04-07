@@ -68,5 +68,23 @@ defmodule PUI.DropdownTest do
       assert html =~ "flex w-full"
       assert html =~ "text-left"
     end
+
+    test "default menu content renders floating metadata for auto strategy" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.menu_button>
+          Open
+          <:item>Profile</:item>
+        </.menu_button>
+        """)
+
+      assert html =~ ~s(data-strategy="auto")
+      assert html =~ ~s(data-side="bottom")
+      assert html =~ ~s(data-floating-strategy="absolute")
+      assert html =~ ~s(data-reference-hidden="false")
+      assert html =~ "data-[reference-hidden=true]:invisible"
+    end
   end
 end
