@@ -122,6 +122,7 @@ defmodule PUI.Dropdown do
         aria-haspopup="menu"
         aria-expanded="false"
         aria-controls={"#{@id}-listbox"}
+        type="button"
         class={@class}
       >
         {render_slot(@inner_block)}
