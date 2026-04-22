@@ -176,7 +176,7 @@ defmodule PUI.Select do
       assigns
       |> map_field()
 
-    assigns = assign(assigns, :label_for, label_target(assigns))
+    assigns = assign(assigns, :label_for, label_input_id(assigns))
 
     ~H"""
     <div class="flex flex-col w-full gap-3 pb-3">
@@ -224,12 +224,14 @@ defmodule PUI.Select do
     target = select_target_base(assigns)
     listbox_id = if target, do: "#{target}-listbox", else: nil
     trigger_id = if target, do: "#{target}-trigger", else: nil
+    input_id = label_input_id(assigns)
 
     assigns =
       assigns
       |> assign(:is_unstyled, is_unstyled)
       |> assign(:listbox_id, listbox_id)
       |> assign(:trigger_id, trigger_id)
+      |> assign(:input_id, input_id)
       |> assign(:has_errors, assigns.errors != [])
 
     ~H"""
@@ -240,6 +242,7 @@ defmodule PUI.Select do
       class="relative"
     >
       <input
+        id={@input_id}
         data-pui="select-value"
         type="text"
         name={@name}
@@ -502,6 +505,13 @@ defmodule PUI.Select do
     assign(assigns, placeholder: placeholder)
   end
 
+  defp label_input_id(assigns) do
+    case select_target_base(assigns) do
+      nil -> nil
+      target -> "#{target}-input"
+    end
+  end
+
   def map_field(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
@@ -517,12 +527,6 @@ defmodule PUI.Select do
     assigns
   end
 
-  defp label_target(assigns) do
-    case select_target_base(assigns) do
-      nil -> nil
-      target -> "#{target}-trigger"
-    end
-  end
 
   defp select_target_base(assigns) do
     case assigns.id || assigns.name do
