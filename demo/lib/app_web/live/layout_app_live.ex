@@ -14,78 +14,96 @@ defmodule AppWeb.Live.LayoutAppLive do
   end
 
   @impl true
+  def handle_params(params, _uri, socket) do
+    page = page_config(Map.get(params, "params_name", "overview"))
+
+    {:noreply,
+     socket
+     |> assign(:pages, navigation_pages())
+     |> assign(:page, page)
+     |> assign(:page_title, "#{page.title} - App Layout Demo")}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <.app_layout id="demo-app-shell" content_class="bg-muted/20 p-0">
       <:sidebar>
         <.sidebar id="demo-app-sidebar" expanded_width_class="w-72">
           <:header>
-            <div class="flex h-16 items-center border-b border-border px-4 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0">
-              <.link
-                navigate={~p"/docs/layout"}
-                class="flex min-w-0 items-center gap-3 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:gap-0"
-              >
-                <div class="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm">
-                  <.icon name="hero-command-line" class="size-5" />
-                </div>
-                <div class="min-w-0 group-data-[collapsed=true]/pui-layout:hidden">
-                  <p class="truncate text-sm font-semibold text-foreground">PUI Console</p>
-                  <p class="truncate text-xs text-muted-foreground">Reusable app shell</p>
-                </div>
-              </.link>
-            </div>
+            <.org_switcher />
           </:header>
 
           <nav class="flex flex-col gap-3 p-3 group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0">
             <div class="flex flex-col gap-1 group-data-[collapsed=true]/pui-layout:gap-0">
               <p class="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden">
-                Workspace
+                Demo pages
               </p>
-              <.sidebar_menu_item title="Overview" icon="hero-home" href="#" current />
-              <.sidebar_menu_item title="Activity" icon="hero-bolt" href="#">
-                <:trailing>
-                  <span class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    12
+
+              <.sidebar_menu_item
+                :for={item <- @pages}
+                title={item.title}
+                icon={item.icon}
+                patch={item.path}
+                current={item.action == @page.action}
+              >
+                <:trailing :if={item[:badge]}>
+                  <span class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary group-data-[collapsed=true]/pui-layout:hidden">
+                    {item.badge}
                   </span>
                 </:trailing>
               </.sidebar_menu_item>
-              <.sidebar_menu_item title="Reports" icon="hero-chart-bar-square" href="#" />
             </div>
 
             <div class="flex flex-col gap-1 group-data-[collapsed=true]/pui-layout:gap-0">
               <p class="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden">
-                Components
+                Documentation
               </p>
+
               <.sidebar_menu_item
-                title="Library"
+                title="Component Docs"
                 icon="hero-squares-2x2"
                 collapsible
+                expanded
               >
                 <:subitem>
-                  <.sidebar_subitem href={~p"/docs/button"} current>Button</.sidebar_subitem>
+                  <.link
+                    navigate={~p"/docs/button"}
+                    class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Button
+                  </.link>
                 </:subitem>
                 <:subitem>
-                  <.sidebar_subitem href={~p"/docs/dialog"}>Dialog</.sidebar_subitem>
+                  <.link
+                    navigate={~p"/docs/dialog"}
+                    class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Dialog
+                  </.link>
                 </:subitem>
                 <:subitem>
-                  <.sidebar_subitem href={~p"/docs/flash"}>Flash</.sidebar_subitem>
+                  <.link
+                    navigate={~p"/docs/dropdown"}
+                    class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Dropdown
+                  </.link>
+                </:subitem>
+                <:subitem>
+                  <.link
+                    navigate={~p"/docs/tabs"}
+                    class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Tabs
+                  </.link>
                 </:subitem>
               </.sidebar_menu_item>
-              <.sidebar_menu_item title="Settings" icon="hero-cog-6-tooth" href="#" />
             </div>
           </nav>
 
           <:footer>
-            <div class="border-t border-border p-3 group-data-[collapsed=true]/pui-layout:px-0">
-              <.button
-                variant="outline"
-                size="sm"
-                class="w-full justify-start group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
-              >
-                <.icon name="hero-life-buoy" class="size-4" />
-                <span class="group-data-[collapsed=true]/pui-layout:hidden">Support</span>
-              </.button>
-            </div>
+            <.user_menu />
           </:footer>
         </.sidebar>
       </:sidebar>
@@ -93,150 +111,103 @@ defmodule AppWeb.Live.LayoutAppLive do
       <:header>
         <.content_header
           shell_id="demo-app-shell"
-          title="Demo"
-          breadcrumb_parent="PUI Layout"
-          breadcrumb_current="Application Shell"
+          breadcrumb_parent={@page.breadcrumb_parent}
+          breadcrumb_current={@page.breadcrumb_current}
         >
           <:right_actions>
-            <.link
+            <.button
               navigate={~p"/docs/layout"}
-              class="hidden rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-accent hover:text-foreground sm:inline-flex"
+              variant="ghost"
             >
-              Docs
-            </.link>
-            <.link
-              navigate={~p"/"}
-              class="hidden rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-accent hover:text-foreground sm:inline-flex"
-            >
-              Home
-            </.link>
+              Layout docs
+            </.button>
             <Layouts.theme_toggle />
           </:right_actions>
         </.content_header>
       </:header>
 
       <section class="min-h-full p-4 sm:p-6 lg:p-8">
-        <div class="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(20rem,0.8fr)]">
-          <div class="space-y-6">
-            <div class="overflow-hidden rounded-md border border-border bg-background shadow-sm">
-              <div class="border-b border-border bg-gradient-to-br from-primary/10 via-background to-background p-6 sm:p-8">
-                <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                  <div class="max-w-2xl">
-                    <p class="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
-                      Full viewport demo
-                    </p>
-                    <h1 class="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                      App layout shell for Phoenix LiveView
-                    </h1>
-                    <p class="mt-3 text-base leading-7 text-muted-foreground">
-                      This page uses PUI layout primitives directly, not an iframe or constrained docs preview.
-                      Collapse the sidebar and expand the Library menu to test the bundled hook.
-                    </p>
-                  </div>
-                  <div class="flex flex-wrap gap-2">
-                    <.button>New project</.button>
-                    <.button variant="outline">Import</.button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="grid gap-4 p-6 md:grid-cols-3">
-                <.metric_card label="Open tasks" value="128" trend="+14%" icon="hero-check-circle" />
-                <.metric_card label="Deploys" value="42" trend="stable" icon="hero-rocket-launch" />
-                <.metric_card label="Incidents" value="3" trend="-2" icon="hero-shield-check" />
-              </div>
-            </div>
-
-            <.card>
-              <.card_header>
-                <.card_title>Recent component work</.card_title>
-                <.card_description>
-                  Example content stays application-owned while PUI owns reusable shell behavior.
-                </.card_description>
-              </.card_header>
-              <.card_content>
-                <div class="divide-y divide-border">
-                  <.activity_row
-                    title="Migrated generated flash UI"
-                    status="Done"
-                    icon="hero-bell-alert"
-                  />
-                  <.activity_row
-                    title="Moved submenu behavior into PUI hook"
-                    status="Review"
-                    icon="hero-code-bracket-square"
-                  />
-                  <.activity_row title="Added full-page layout demo" status="Live" icon="hero-window" />
-                </div>
-              </.card_content>
-            </.card>
-          </div>
-
-          <aside class="space-y-6">
-            <.card>
-              <.card_header>
-                <.card_title>Shell traits</.card_title>
-                <.card_description>
-                  Reusable, configurable, and app-owned where it should be.
-                </.card_description>
-              </.card_header>
-              <.card_content>
-                <ul class="space-y-3 text-sm text-muted-foreground">
-                  <li class="flex gap-2">
-                    <.icon name="hero-check" class="mt-0.5 size-4 text-primary" />
-                    Root shell owns `data-collapsed`.
-                  </li>
-                  <li class="flex gap-2">
-                    <.icon name="hero-check" class="mt-0.5 size-4 text-primary" />
-                    Sidebar width and content spacing are configurable.
-                  </li>
-                  <li class="flex gap-2">
-                    <.icon name="hero-check" class="mt-0.5 size-4 text-primary" />
-                    Collapsible menu state uses `PUI.Sidebar`.
-                  </li>
-                </ul>
-              </.card_content>
-            </.card>
-
-            <.card class="bg-primary text-primary-foreground">
-              <.card_header>
-                <.card_title>Migration target</.card_title>
-                <.card_description class="text-primary-foreground/75">
-                  Replace generated layout, topbar, flash, and local sidebar code incrementally.
-                </.card_description>
-              </.card_header>
-              <.card_content>
-                <.link
-                  navigate={~p"/docs/migrate-to-pui"}
-                  class="inline-flex rounded-lg bg-primary-foreground px-3 py-2 text-sm font-medium text-primary"
-                >
-                  Read migration guide
-                </.link>
-              </.card_content>
-            </.card>
-          </aside>
+        <div class="mx-auto flex max-w-7xl flex-col gap-6">
+          <%= case @page.action do %>
+            <% :overview -> %>
+              <.overview_page page={@page} />
+            <% :activity -> %>
+              <.activity_page page={@page} />
+            <% :forms -> %>
+              <.forms_page page={@page} />
+            <% :components -> %>
+              <.components_page page={@page} />
+            <% :settings -> %>
+              <.settings_page page={@page} />
+          <% end %>
         </div>
       </section>
     </.app_layout>
     """
   end
 
-  attr :href, :string, required: true
-  attr :current, :boolean, default: false
+  attr :page, :map, required: true
+  slot :action
+
+  defp page_intro(assigns) do
+    ~H"""
+    <section class="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
+      <div class="border-b border-border bg-gradient-to-br from-primary/10 via-background to-background p-6 sm:p-8">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-3xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+              {@page.eyebrow}
+            </p>
+            <h1 class="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              {@page.title}
+            </h1>
+            <p class="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+              {@page.description}
+            </p>
+          </div>
+
+          <%= if @action != [] do %>
+            <div class="flex flex-wrap gap-2">
+              {render_slot(@action)}
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </section>
+    """
+  end
+
+  attr :title, :string, required: true
+  attr :description, :string, default: nil
+  attr :class, :string, default: ""
+  slot :action
   slot :inner_block, required: true
 
-  defp sidebar_subitem(assigns) do
+  defp surface(assigns) do
     ~H"""
-    <.link
-      href={@href}
-      class={[
-        "block rounded-lg px-3 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-        @current && "bg-primary/10 font-medium text-primary",
-        !@current && "text-muted-foreground"
-      ]}
-    >
-      {render_slot(@inner_block)}
-    </.link>
+    <section class={[
+      "overflow-hidden rounded-lg border border-border bg-background shadow-sm",
+      @class
+    ]}>
+      <div class="flex flex-col gap-4 border-b border-border px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
+        <div class="space-y-1">
+          <h2 class="text-base font-semibold text-foreground">{@title}</h2>
+          <p :if={@description} class="max-w-3xl text-sm leading-6 text-muted-foreground">
+            {@description}
+          </p>
+        </div>
+
+        <%= if @action != [] do %>
+          <div class="flex flex-wrap gap-2">
+            {render_slot(@action)}
+          </div>
+        <% end %>
+      </div>
+
+      <div class="p-6">
+        {render_slot(@inner_block)}
+      </div>
+    </section>
     """
   end
 
@@ -247,7 +218,7 @@ defmodule AppWeb.Live.LayoutAppLive do
 
   defp metric_card(assigns) do
     ~H"""
-    <div class="rounded-md border border-border bg-muted/20 p-5">
+    <div class="rounded-lg border border-border bg-muted/20 p-5">
       <div class="flex items-center justify-between">
         <p class="text-sm text-muted-foreground">{@label}</p>
         <.icon name={@icon} class="size-5 text-primary" />
@@ -263,23 +234,971 @@ defmodule AppWeb.Live.LayoutAppLive do
   end
 
   attr :title, :string, required: true
-  attr :status, :string, required: true
+  attr :meta, :string, required: true
+  attr :status, :string, default: nil
   attr :icon, :string, required: true
+  slot :detail
+  slot :action
 
   defp activity_row(assigns) do
     ~H"""
-    <div class="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
-      <div class="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
+    <div class="flex items-start gap-4 py-4 first:pt-0 last:pb-0">
+      <div class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
         <.icon name={@icon} class="size-5" />
       </div>
       <div class="min-w-0 flex-1">
         <p class="truncate text-sm font-medium text-foreground">{@title}</p>
-        <p class="text-xs text-muted-foreground">PUI migration workspace</p>
+        <p class="text-xs text-muted-foreground">{@meta}</p>
+        <%= if @detail != [] do %>
+          <div class="mt-2 text-sm leading-6 text-muted-foreground">
+            {render_slot(@detail)}
+          </div>
+        <% end %>
       </div>
-      <span class="rounded-full border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground">
-        {@status}
-      </span>
+      <div class="flex items-center gap-2">
+        <span
+          :if={@status}
+          class="rounded-full border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground"
+        >
+          {@status}
+        </span>
+        {render_slot(@action)}
+      </div>
     </div>
+    """
+  end
+
+  attr :page, :map, required: true
+
+  defp overview_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.button>
+          <.icon name="hero-plus" class="size-4" /> New workspace
+        </.button>
+      </:action>
+      <:action>
+        <.menu_button variant="outline">
+          Quick actions
+          <:item>Share update</:item>
+          <:item>Export brief</:item>
+          <:item>Sync docs</:item>
+        </.menu_button>
+      </:action>
+    </.page_intro>
+
+    <.surface
+      title="A realistic dashboard surface"
+      description="The content area now spans the full shell width and shows buttons, alerts, list items, tabs, and menus in ordinary application patterns."
+    >
+      <div class="grid gap-4 md:grid-cols-3">
+        <.metric_card label="Open tasks" value="128" trend="+14%" icon="hero-check-circle" />
+        <.metric_card label="Deploys" value="42" trend="Stable" icon="hero-rocket-launch" />
+        <.metric_card label="Incidents" value="3" trend="-2" icon="hero-shield-check" />
+      </div>
+
+      <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <div class="space-y-6">
+          <.alert>
+            <:icon>
+              <.icon name="hero-sparkles" class="size-4" />
+            </:icon>
+            <:title>Shell behavior stays reusable, page content stays app-owned.</:title>
+            <:description>
+              The sidebar, header toggle, menus, and breadcrumb are shared primitives while each route showcases its own component composition.
+            </:description>
+          </.alert>
+
+          <div class="divide-y divide-border">
+            <.activity_row
+              title="Launch checklist"
+              meta="Form fields, radios, select, and switches grouped in one flow"
+              status="Ready"
+              icon="hero-clipboard-document-check"
+            >
+              <:detail>
+                Use PUI inputs for basic data capture, then pair them with alerts and buttons for guided submission flows.
+              </:detail>
+              <:action>
+                <.menu_button variant="ghost" class="h-8 w-8 px-0">
+                  <.icon name="hero-ellipsis-horizontal" class="size-4" />
+                  <:item>Open form</:item>
+                  <:item>Duplicate flow</:item>
+                </.menu_button>
+              </:action>
+            </.activity_row>
+
+            <.activity_row
+              title="Component review queue"
+              meta="Dropdown actions attached to list items without extra layout wrappers"
+              status="12 open"
+              icon="hero-rectangle-stack"
+            >
+              <:detail>
+                Menu buttons, hover states, and status chips sit directly inside each list row so the examples feel like actual product UI.
+              </:detail>
+              <:action>
+                <.menu_button variant="ghost" class="h-8 w-8 px-0">
+                  <.icon name="hero-ellipsis-horizontal" class="size-4" />
+                  <:item>Assign reviewer</:item>
+                  <:item>Archive row</:item>
+                </.menu_button>
+              </:action>
+            </.activity_row>
+
+            <.activity_row
+              title="Release prep"
+              meta="Tabs for context switching and alerts for stateful status messaging"
+              status="Live"
+              icon="hero-window"
+            >
+              <:detail>
+                The same primitives work in summary cards, content panels, and sticky headers without changing the shell theme.
+              </:detail>
+            </.activity_row>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-border bg-muted/20 p-4">
+          <.tabs id="overview-pattern-tabs" default_value="handoff">
+            <:trigger value="handoff">Handoff</:trigger>
+            <:trigger value="list-item">List item</:trigger>
+            <:trigger value="feedback">Feedback</:trigger>
+            <:content value="handoff" class="pt-4">
+              <div class="space-y-4">
+                <p class="text-sm leading-6 text-muted-foreground">
+                  Use tabs when one workspace needs multiple dense panels without sending the user to another route.
+                </p>
+                <div class="rounded-lg border border-border bg-background p-4">
+                  <p class="text-sm font-medium text-foreground">Primary handoff</p>
+                  <p class="mt-1 text-sm text-muted-foreground">
+                    Pair one primary button with a quieter outline action to keep hierarchy clear.
+                  </p>
+                  <div class="mt-4 flex flex-wrap gap-2">
+                    <.button size="sm">Approve layout</.button>
+                    <.button variant="outline" size="sm">Leave note</.button>
+                  </div>
+                </div>
+              </div>
+            </:content>
+            <:content value="list-item" class="pt-4">
+              <div class="rounded-lg border border-border bg-background p-4">
+                <.activity_row
+                  title="Sidebar navigation"
+                  meta="Patch-based route changes keep the LiveView mounted"
+                  status="Patched"
+                  icon="hero-bars-3-bottom-left"
+                >
+                  <:detail>
+                    Each sidebar item now points to its own `live_action`, updates the breadcrumb, and swaps in a new content composition.
+                  </:detail>
+                </.activity_row>
+              </div>
+            </:content>
+            <:content value="feedback" class="pt-4">
+              <.alert>
+                <:icon>
+                  <.icon name="hero-information-circle" class="size-4" />
+                </:icon>
+                <:title>Feedback surfaces should stay close to the work.</:title>
+                <:description>
+                  Use inline alerts for context, not detached sidebars that compete with the page content.
+                </:description>
+              </.alert>
+            </:content>
+          </.tabs>
+        </div>
+      </div>
+    </.surface>
+    """
+  end
+
+  attr :page, :map, required: true
+
+  defp activity_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.menu_button variant="outline">
+          Filter stream
+          <:item>Everything</:item>
+          <:item>Comments</:item>
+          <:item>Approvals</:item>
+        </.menu_button>
+      </:action>
+      <:action>
+        <.button variant="secondary">
+          <.icon name="hero-arrow-path" class="size-4" /> Refresh
+        </.button>
+      </:action>
+    </.page_intro>
+
+    <.surface
+      title="Event feed"
+      description="This page leans on list items, dropdown menus, tooltip triggers, and alerts to show how PUI behaves inside busy operational content."
+    >
+      <.alert>
+        <:icon>
+          <.icon name="hero-bolt" class="size-4" />
+        </:icon>
+        <:title>12 new events need attention.</:title>
+        <:description>
+          Activity views are a good place to mix dense metadata, hover help, and per-row actions without introducing a second sidebar.
+        </:description>
+      </.alert>
+
+      <div class="mt-6 divide-y divide-border">
+        <.activity_row
+          title="Comment added to launch brief"
+          meta="3 minutes ago - Product design"
+          status="Unread"
+          icon="hero-chat-bubble-left-right"
+        >
+          <:detail>
+            "Let's keep the neutral palette and move the quick actions into the full-width content lane."
+          </:detail>
+          <:action>
+            <.tooltip id="activity-row-tooltip-1" placement="top">
+              <.button variant="ghost" size="icon">
+                <.icon name="hero-eye" class="size-4" />
+              </.button>
+              <:tooltip>Preview comment thread</:tooltip>
+            </.tooltip>
+          </:action>
+          <:action>
+            <.menu_button variant="ghost" class="h-8 w-8 px-0">
+              <.icon name="hero-ellipsis-horizontal" class="size-4" />
+              <:item>Open thread</:item>
+              <:item>Assign owner</:item>
+              <:item>Mute row</:item>
+            </.menu_button>
+          </:action>
+        </.activity_row>
+
+        <.activity_row
+          title="Prototype approved"
+          meta="26 minutes ago - Growth squad"
+          status="Done"
+          icon="hero-check-badge"
+        >
+          <:detail>
+            Approvals read cleanly with a small status chip and a quiet ghost action for drill-down.
+          </:detail>
+          <:action>
+            <.tooltip id="activity-row-tooltip-2" placement="top">
+              <.button variant="ghost" size="icon">
+                <.icon name="hero-document-text" class="size-4" />
+              </.button>
+              <:tooltip>Open decision log</:tooltip>
+            </.tooltip>
+          </:action>
+        </.activity_row>
+
+        <.activity_row
+          title="Release notes updated"
+          meta="1 hour ago - Engineering"
+          status="Review"
+          icon="hero-pencil-square"
+        >
+          <:detail>
+            Buttons, menu items, and tooltip triggers can all sit on the same row when spacing stays tight and consistent.
+          </:detail>
+          <:action>
+            <.menu_button variant="ghost" class="h-8 w-8 px-0">
+              <.icon name="hero-ellipsis-horizontal" class="size-4" />
+              <:item>Edit note</:item>
+              <:item>Pin update</:item>
+            </.menu_button>
+          </:action>
+        </.activity_row>
+      </div>
+    </.surface>
+
+    <.surface
+      title="Drill into one thread"
+      description="Accordions and popovers are useful when activity pages need more depth without leaving the route."
+    >
+      <div class="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <.accordion class="rounded-lg border border-border px-4">
+          <.accordion_item name="activity-review" open>
+            <.accordion_trigger>What changed in this iteration?</.accordion_trigger>
+            <.accordion_content>
+              <p class="pb-4 text-sm leading-6 text-muted-foreground">
+                The right-side column is gone, content spans the remaining width, and navigation now patches between route-backed demo pages.
+              </p>
+            </.accordion_content>
+          </.accordion_item>
+          <.accordion_item name="activity-review">
+            <.accordion_trigger>Which components are represented here?</.accordion_trigger>
+            <.accordion_content>
+              <p class="pb-4 text-sm leading-6 text-muted-foreground">
+                Alerts, list rows, dropdown menus, tooltips, accordions, buttons, and the shared shell header all appear in one flow.
+              </p>
+            </.accordion_content>
+          </.accordion_item>
+          <.accordion_item name="activity-review">
+            <.accordion_trigger>Why keep the design restrained?</.accordion_trigger>
+            <.accordion_content>
+              <p class="pb-4 text-sm leading-6 text-muted-foreground">
+                The goal is a believable product shell that stays aligned with the existing monochrome PUI aesthetic and corner radius scale.
+              </p>
+            </.accordion_content>
+          </.accordion_item>
+        </.accordion>
+
+        <div class="rounded-lg border border-border bg-muted/20 p-5">
+          <p class="text-sm font-medium text-foreground">Popover usage</p>
+          <p class="mt-1 text-sm leading-6 text-muted-foreground">
+            Use a popover for compact context, especially when you do not want a full dialog to interrupt the stream.
+          </p>
+
+          <div class="mt-5">
+            <.popover_base
+              id="activity-page-popover"
+              class="w-fit"
+              phx-hook="PUI.Popover"
+              data-placement="bottom-start"
+            >
+              <:trigger class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground shadow-xs transition hover:bg-accent">
+                <.icon name="hero-funnel" class="size-4" /> Inspect filter summary
+              </:trigger>
+              <:popup class="aria-hidden:hidden block z-50 w-72 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
+                <div class="space-y-3">
+                  <p class="text-sm font-medium">Active filters</p>
+                  <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-center justify-between">
+                      <span>Owners</span>
+                      <span class="font-medium text-foreground">Design + Eng</span>
+                    </li>
+                    <li class="flex items-center justify-between">
+                      <span>State</span>
+                      <span class="font-medium text-foreground">Unread</span>
+                    </li>
+                    <li class="flex items-center justify-between">
+                      <span>Range</span>
+                      <span class="font-medium text-foreground">Last 24h</span>
+                    </li>
+                  </ul>
+                </div>
+              </:popup>
+            </.popover_base>
+          </div>
+        </div>
+      </div>
+    </.surface>
+    """
+  end
+
+  attr :page, :map, required: true
+
+  defp forms_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.button>
+          <.icon name="hero-paper-airplane" class="size-4" /> Submit request
+        </.button>
+      </:action>
+      <:action>
+        <.button variant="outline">Save draft</.button>
+      </:action>
+    </.page_intro>
+
+    <.surface
+      title="Forms with richer surrounding UI"
+      description="The examples below mix inputs, textarea, select, radio, checkbox, switch, alerts, and action buttons inside one believable request flow."
+    >
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+        <form class="space-y-1">
+          <div class="grid gap-4 md:grid-cols-2">
+            <.input id="layout-project-name" label="Project name" placeholder="Command center" />
+            <.input id="layout-owner" label="Owner" placeholder="Maya Chen" />
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <.input
+              id="layout-owner-email"
+              type="email"
+              label="Owner email"
+              placeholder="maya@acme.test"
+            />
+            <.select
+              id="layout-project-stage"
+              label="Stage"
+              options={["Discovery", "Build", "Launch"]}
+            />
+          </div>
+
+          <.textarea
+            id="layout-brief"
+            label="Brief"
+            rows="5"
+            placeholder="Describe what the team needs from this workspace."
+          />
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <div class="space-y-3 rounded-lg border border-border p-4">
+              <p class="text-sm font-medium text-foreground">Timeline</p>
+              <label class="flex items-center gap-3 text-sm text-muted-foreground">
+                <.radio id="timeline-now" name="timeline" value="now" /> Launch this week
+              </label>
+              <label class="flex items-center gap-3 text-sm text-muted-foreground">
+                <.radio id="timeline-next" name="timeline" value="next" /> Ship next sprint
+              </label>
+              <label class="flex items-center gap-3 text-sm text-muted-foreground">
+                <.radio id="timeline-later" name="timeline" value="later" /> Track for later
+              </label>
+            </div>
+
+            <div class="space-y-3 rounded-lg border border-border p-4">
+              <p class="text-sm font-medium text-foreground">Delivery preferences</p>
+              <.checkbox id="weekly-digest" name="weekly_digest" label="Send weekly digest" />
+              <.checkbox id="share-preview" name="share_preview" label="Share preview link" />
+              <.switch id="require-review" name="require_review" label="Require design review" />
+            </div>
+          </div>
+
+          <div class="pt-3">
+            <.select
+              id="layout-squad"
+              label="Squad"
+              searchable={true}
+              options={[
+                {"Design", ["Product design", "Brand design"]},
+                {"Engineering", ["Platform", "Frontend"]}
+              ]}
+            />
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-2">
+            <.button>Submit request</.button>
+            <.button variant="outline">Preview summary</.button>
+          </div>
+        </form>
+
+        <div class="space-y-6">
+          <.alert>
+            <:icon>
+              <.icon name="hero-information-circle" class="size-4" />
+            </:icon>
+            <:title>Forms benefit from nearby feedback.</:title>
+            <:description>
+              Keep guidance, previews, and next actions in the same lane as the inputs instead of pushing them into a detached sidebar.
+            </:description>
+          </.alert>
+
+          <div class="rounded-lg border border-border bg-muted/20 p-5">
+            <p class="text-sm font-medium text-foreground">Request preview</p>
+            <div class="mt-4 space-y-4">
+              <div class="rounded-lg border border-border bg-background p-4">
+                <p class="text-sm font-medium text-foreground">Command center</p>
+                <p class="mt-1 text-sm text-muted-foreground">
+                  Workspace shell for launch planning, approvals, and live component examples.
+                </p>
+              </div>
+
+              <div class="divide-y divide-border rounded-lg border border-border bg-background px-4">
+                <.activity_row
+                  title="Assigned squad"
+                  meta="Select component with grouped options"
+                  status="Pending"
+                  icon="hero-user-group"
+                />
+                <.activity_row
+                  title="Review workflow"
+                  meta="Checkboxes and switches keep binary choices compact"
+                  status="Needs owner"
+                  icon="hero-adjustments-horizontal"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </.surface>
+    """
+  end
+
+  attr :page, :map, required: true
+
+  defp components_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.menu_button variant="outline">
+          Export examples
+          <:item>Copy snippet</:item>
+          <:item>Open docs</:item>
+        </.menu_button>
+      </:action>
+      <:action>
+        <.button variant="secondary">Pin canvas</.button>
+      </:action>
+    </.page_intro>
+
+    <.surface
+      title="Interactive component canvas"
+      description="This route groups tabs, dropdowns, popovers, dialogs, buttons, and alerts into the kind of exploratory workspace you would ship in a demo app."
+    >
+      <div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div class="rounded-lg border border-border bg-muted/20 p-4">
+          <.tabs id="component-canvas-tabs" default_value="navigation">
+            <:trigger value="navigation">Navigation</:trigger>
+            <:trigger value="feedback">Feedback</:trigger>
+            <:trigger value="patterns">Patterns</:trigger>
+            <:content value="navigation" class="pt-4">
+              <div class="space-y-4">
+                <p class="text-sm leading-6 text-muted-foreground">
+                  A sidebar page can still use in-content navigation patterns like tabs when the content is dense and related.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <.button size="sm">Primary action</.button>
+                  <.button variant="outline" size="sm">Secondary action</.button>
+                  <.menu_button variant="ghost" class="h-8 px-3">
+                    More
+                    <:item>Duplicate</:item>
+                    <:item>Archive</:item>
+                  </.menu_button>
+                </div>
+              </div>
+            </:content>
+            <:content value="feedback" class="pt-4">
+              <div class="space-y-4">
+                <.alert>
+                  <:icon>
+                    <.icon name="hero-check-circle" class="size-4" />
+                  </:icon>
+                  <:title>Success feedback stays close to the panel.</:title>
+                  <:description>
+                    Alerts work well inside tabs when users need confirmation without leaving context.
+                  </:description>
+                </.alert>
+                <div class="rounded-lg border border-border bg-background p-4 text-sm text-muted-foreground">
+                  You can mix static guidance and interactive actions inside the same tab panel without losing the shell hierarchy.
+                </div>
+              </div>
+            </:content>
+            <:content value="patterns" class="pt-4">
+              <div class="space-y-4">
+                <p class="text-sm leading-6 text-muted-foreground">
+                  Real demos should show components behaving inside patterns like task rows, approvals, and settings blocks, not only in isolated docs frames.
+                </p>
+                <.accordion>
+                  <.accordion_item name="component-patterns" open>
+                    <.accordion_trigger>Pattern 1 - Dense list rows</.accordion_trigger>
+                    <.accordion_content>
+                      <p class="pb-4 text-sm text-muted-foreground">
+                        Pair a list row with status chips and ghost menus for operational pages.
+                      </p>
+                    </.accordion_content>
+                  </.accordion_item>
+                  <.accordion_item name="component-patterns">
+                    <.accordion_trigger>Pattern 2 - Context popovers</.accordion_trigger>
+                    <.accordion_content>
+                      <p class="pb-4 text-sm text-muted-foreground">
+                        Use popovers for filter summaries and quick read-only context.
+                      </p>
+                    </.accordion_content>
+                  </.accordion_item>
+                </.accordion>
+              </div>
+            </:content>
+          </.tabs>
+        </div>
+
+        <div class="space-y-6">
+          <div class="rounded-lg border border-border bg-muted/20 p-5">
+            <p class="text-sm font-medium text-foreground">Popover example</p>
+            <div class="mt-4">
+              <.popover_base
+                id="components-page-popover"
+                class="w-fit"
+                phx-hook="PUI.Popover"
+                data-placement="bottom-start"
+              >
+                <:trigger class="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 text-sm font-medium text-foreground shadow-xs transition hover:bg-accent">
+                  <.icon name="hero-eye-dropper" class="size-4" /> Inspect spacing notes
+                </:trigger>
+                <:popup class="aria-hidden:hidden block z-50 w-72 rounded-lg border border-border bg-popover p-4 text-popover-foreground shadow-lg">
+                  <div class="space-y-2">
+                    <p class="text-sm font-medium">Spacing guidance</p>
+                    <p class="text-sm leading-6 text-muted-foreground">
+                      Use one content column, stronger section rhythm, and component groupings that feel like product UI rather than isolated docs blocks.
+                    </p>
+                  </div>
+                </:popup>
+              </.popover_base>
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-border bg-muted/20 p-5">
+            <p class="text-sm font-medium text-foreground">Dialog example</p>
+            <p class="mt-1 text-sm leading-6 text-muted-foreground">
+              Dialogs are still useful for previewing a compact flow when the content needs focus.
+            </p>
+
+            <div class="mt-4">
+              <.dialog id="components-preview-dialog" title="Component preview">
+                <:trigger :let={attrs}>
+                  <.button variant="outline" {attrs}>Open preview dialog</.button>
+                </:trigger>
+
+                <div class="space-y-4 text-sm text-muted-foreground">
+                  <p>
+                    This preview keeps the existing PUI design language while demonstrating a tighter, route-driven layout shell.
+                  </p>
+                  <div class="rounded-lg border border-border bg-muted/20 p-4">
+                    <p class="font-medium text-foreground">Shown inside the dialog</p>
+                    <p class="mt-1">
+                      Buttons, body copy, and footer actions stay on the same radius and border scale as the rest of the demo.
+                    </p>
+                  </div>
+                </div>
+
+                <:footer :let={%{hide: hide}}>
+                  <div class="flex justify-end gap-2">
+                    <.button variant="outline" phx-click={hide}>Close</.button>
+                    <.button>Apply pattern</.button>
+                  </div>
+                </:footer>
+              </.dialog>
+            </div>
+          </div>
+        </div>
+      </div>
+    </.surface>
+    """
+  end
+
+  attr :page, :map, required: true
+
+  defp settings_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.button>Save changes</.button>
+      </:action>
+      <:action>
+        <.button variant="outline">Reset</.button>
+      </:action>
+    </.page_intro>
+
+    <.surface
+      title="Workspace preferences"
+      description="Settings pages are a natural place to combine form controls, tabs, alerts, and dialog actions while keeping the shell calm and structured."
+    >
+      <div class="grid gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+        <div class="space-y-6">
+          <div class="grid gap-4 md:grid-cols-2">
+            <.input id="settings-workspace-name" label="Workspace name" placeholder="PUI Console" />
+            <.select
+              id="settings-timezone"
+              label="Timezone"
+              options={["UTC", "WIB", "PST", "CET"]}
+            />
+          </div>
+
+          <div class="rounded-lg border border-border p-5">
+            <p class="text-sm font-medium text-foreground">Notifications</p>
+            <div class="mt-4 space-y-4">
+              <.switch id="settings-digest" name="digest" label="Weekly summary email" />
+              <.switch id="settings-mentions" name="mentions" label="Mention alerts" />
+              <.checkbox id="settings-ops" name="ops" label="Escalate critical incidents" />
+            </div>
+          </div>
+
+          <div class="rounded-lg border border-border p-5">
+            <p class="text-sm font-medium text-foreground">Approval defaults</p>
+            <div class="mt-4 grid gap-4 md:grid-cols-2">
+              <label class="flex items-center gap-3 text-sm text-muted-foreground">
+                <.radio id="approval-strict" name="approval-mode" value="strict" />
+                Require two reviewers
+              </label>
+              <label class="flex items-center gap-3 text-sm text-muted-foreground">
+                <.radio id="approval-light" name="approval-mode" value="light" /> Allow one reviewer
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <.tabs id="settings-tabs" default_value="guidance" variant="line">
+            <:trigger value="guidance">Guidance</:trigger>
+            <:trigger value="ownership">Ownership</:trigger>
+            <:content value="guidance" class="pt-4">
+              <.alert>
+                <:icon>
+                  <.icon name="hero-information-circle" class="size-4" />
+                </:icon>
+                <:title>Use line tabs for compact supporting content.</:title>
+                <:description>
+                  They work well in settings side panels where users need supporting guidance without leaving the form.
+                </:description>
+              </.alert>
+            </:content>
+            <:content value="ownership" class="pt-4">
+              <div class="rounded-lg border border-border bg-muted/20 p-4 text-sm text-muted-foreground">
+                Keep workspace ownership nearby so settings, alerts, and destructive actions all feel part of the same decision surface.
+              </div>
+            </:content>
+          </.tabs>
+
+          <div class="rounded-lg border border-border bg-muted/20 p-5">
+            <p class="text-sm font-medium text-foreground">Danger zone</p>
+            <p class="mt-1 text-sm leading-6 text-muted-foreground">
+              Destructive actions should be obvious, isolated, and confirmed with a dialog.
+            </p>
+
+            <div class="mt-4 space-y-4">
+              <.alert variant="destructive">
+                <:icon>
+                  <.icon name="hero-exclamation-triangle" class="size-4" />
+                </:icon>
+                <:title>Deleting this workspace removes its saved views.</:title>
+                <:description>
+                  Use a destructive alert to set context before the confirmation dialog opens.
+                </:description>
+              </.alert>
+
+              <.dialog id="settings-delete-dialog" title="Delete workspace" alert={true}>
+                <:trigger :let={attrs}>
+                  <.button variant="destructive" {attrs}>Delete workspace</.button>
+                </:trigger>
+
+                <p class="text-sm leading-6 text-muted-foreground">
+                  This demo action shows how a destructive flow can stay aligned with the same border, spacing, and radius system as the rest of the shell.
+                </p>
+
+                <:footer :let={%{hide: hide}}>
+                  <div class="flex justify-end gap-2">
+                    <.button variant="outline" phx-click={hide}>Cancel</.button>
+                    <.button variant="destructive">Delete</.button>
+                  </div>
+                </:footer>
+              </.dialog>
+            </div>
+          </div>
+        </div>
+      </div>
+    </.surface>
+    """
+  end
+
+  defp navigation_pages do
+    Enum.map([:overview, :activity, :forms, :components, :settings], &page_config/1)
+  end
+
+  defp page_config(action) do
+    action = normalize_page_action(action)
+    path = page_path(action)
+
+    case action do
+      :overview ->
+        %{
+          action: :overview,
+          title: "Overview",
+          eyebrow: "Layout overview",
+          description:
+            "A full-width dashboard page that demonstrates how the PUI shell can host lists, tabs, alerts, menus, and action groups without leaning on a secondary sidebar.",
+          breadcrumb_parent: "Layout showcase",
+          breadcrumb_current: "Overview",
+          icon: "hero-home",
+          path: path
+        }
+
+      :activity ->
+        %{
+          action: :activity,
+          title: "Activity",
+          eyebrow: "Operational feed",
+          description:
+            "A route dedicated to list items, tooltip triggers, dropdown actions, accordions, and popovers so activity-heavy interfaces feel like a real product surface.",
+          breadcrumb_parent: "Layout showcase",
+          breadcrumb_current: "Activity",
+          icon: "hero-bolt",
+          path: path,
+          badge: "12"
+        }
+
+      :forms ->
+        %{
+          action: :forms,
+          title: "Forms",
+          eyebrow: "Input patterns",
+          description:
+            "Form fields, selects, radios, toggles, alerts, and preview cards grouped together to show how PUI components behave in submission flows.",
+          breadcrumb_parent: "Layout showcase",
+          breadcrumb_current: "Forms",
+          icon: "hero-pencil-square",
+          path: path
+        }
+
+      :components ->
+        %{
+          action: :components,
+          title: "Components",
+          eyebrow: "Interactive canvas",
+          description:
+            "Tabs, popovers, dialogs, alerts, dropdowns, and accordions arranged as a compact component lab instead of isolated documentation snippets.",
+          breadcrumb_parent: "Layout showcase",
+          breadcrumb_current: "Components",
+          icon: "hero-squares-2x2",
+          path: path
+        }
+
+      :settings ->
+        %{
+          action: :settings,
+          title: "Settings",
+          eyebrow: "Preference surfaces",
+          description:
+            "A settings page that combines form controls, guidance tabs, and destructive confirmation patterns while staying inside the same shell language.",
+          breadcrumb_parent: "Layout showcase",
+          breadcrumb_current: "Settings",
+          icon: "hero-cog-6-tooth",
+          path: path
+        }
+
+      _ ->
+        page_config(:overview)
+    end
+  end
+
+  defp normalize_page_action("overview"), do: :overview
+  defp normalize_page_action("activity"), do: :activity
+  defp normalize_page_action("forms"), do: :forms
+  defp normalize_page_action("components"), do: :components
+  defp normalize_page_action("settings"), do: :settings
+
+  defp normalize_page_action(action)
+       when action in [:overview, :activity, :forms, :components, :settings], do: action
+
+  defp normalize_page_action(_), do: :overview
+
+  defp page_path(:overview), do: ~p"/demo/layout/overview"
+  defp page_path(:activity), do: ~p"/demo/layout/activity"
+  defp page_path(:forms), do: ~p"/demo/layout/forms"
+  defp page_path(:components), do: ~p"/demo/layout/components"
+  defp page_path(:settings), do: ~p"/demo/layout/settings"
+
+  defp org_options do
+    [
+      %{name: "Suka Cipta", short: "SC", members: "12 members", current: true},
+      %{name: "Pring Studio", short: "PS", members: "8 members", current: false},
+      %{name: "Personal", short: "P", members: "1 members", current: false}
+    ]
+  end
+
+  defp user_actions do
+    [
+      %{label: "Setting", icon: "hero-cog-6-tooth"},
+      %{label: "Help", icon: "hero-question-mark-circle"},
+      %{label: "Logout", icon: "hero-arrow-left-on-rectangle", variant: "destructive"}
+    ]
+  end
+
+  defp org_switcher(assigns) do
+    ~H"""
+    <.menu_button
+      id="layout-org-switcher"
+      variant="unstyled"
+      wrapper_class="block border-b border-border px-1 py-2"
+      class="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background px-2 py-1.5 text-left shadow-xs transition hover:bg-accent/60 group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
+      content_class="z-[60] min-w-64 rounded-lg border border-border bg-background p-1 shadow-lg"
+    >
+      <div class="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
+        SC
+      </div>
+      <div class="min-w-0 flex-1 group-data-[collapsed=true]/pui-layout:hidden">
+        <p class="truncate text-sm font-semibold text-foreground">Suka Cipta</p>
+      </div>
+      <.icon
+        name="hero-chevron-up-down"
+        class="size-4 text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden"
+      />
+
+      <:items>
+        <div class="space-y-1">
+          <p class="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Organizations
+          </p>
+
+          <.menu_item
+            :for={org <- org_options()}
+            class="rounded-lg"
+          >
+            <span class="flex w-full items-center gap-3">
+              <span class={[
+                "grid h-7 w-7 shrink-0 place-items-center rounded-md text-[11px] font-semibold",
+                org.current && "bg-primary text-primary-foreground",
+                !org.current && "bg-muted text-foreground/80"
+              ]}>
+                {org.short}
+              </span>
+              <span class="min-w-0 flex-1 text-left">
+                <span class="block truncate text-sm font-medium text-foreground">{org.name}</span>
+                <span class="block truncate text-xs text-muted-foreground">{org.members}</span>
+              </span>
+              <.icon :if={org.current} name="hero-check" class="size-4 text-primary" />
+            </span>
+          </.menu_item>
+
+          <.menu_separator />
+
+          <button
+            type="button"
+            class="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-primary transition hover:bg-accent"
+          >
+            <.icon name="hero-plus" class="size-4" /> Create new Org
+          </button>
+        </div>
+      </:items>
+    </.menu_button>
+    """
+  end
+
+  defp user_menu(assigns) do
+    ~H"""
+    <.menu_button
+      id="layout-user-menu"
+      variant="unstyled"
+      wrapper_class="block border-t border-border px-1 py-2 group-data-[collapsed=true]/pui-layout:px-1"
+      class="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background px-2 py-1.5 text-left shadow-xs transition hover:bg-accent/60 group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
+      content_class="z-[60] min-w-56 rounded-lg border border-border bg-background p-1 shadow-lg"
+    >
+      <div class="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-muted text-xs font-semibold text-foreground">
+        S
+      </div>
+      <div class="min-w-0 flex-1 group-data-[collapsed=true]/pui-layout:hidden">
+        <p class="truncate text-sm font-semibold text-foreground">Sucipto</p>
+        <p class="truncate text-xs text-muted-foreground">Developer</p>
+      </div>
+      <.icon
+        name="hero-chevron-up-down"
+        class="size-4 text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden"
+      />
+
+      <:items>
+        <div class="space-y-1">
+          <div class="rounded-lg px-2 py-2">
+            <p class="text-sm font-medium text-foreground">Sucipto</p>
+            <p class="text-xs text-muted-foreground">sucipto@sukacipta.com</p>
+          </div>
+
+          <.menu_separator />
+
+          <.menu_item
+            :for={action <- user_actions()}
+            variant={action[:variant] || "default"}
+            class="rounded-lg"
+          >
+            <.icon name={action.icon} class="size-4" />
+            {action.label}
+          </.menu_item>
+        </div>
+      </:items>
+    </.menu_button>
     """
   end
 end

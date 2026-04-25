@@ -253,11 +253,12 @@ defmodule PUI.Layout do
 
       <.menu_button
         id={"#{@id}-collapsed-menu"}
+        trigger="hover"
         variant="unstyled"
         placement="right-start"
         wrapper_class="hidden group-data-[collapsed=true]/pui-layout:block"
         class={sidebar_menu_item_class(@current, @class)}
-        content_class="min-w-48 rounded-md border border-border bg-background p-1 shadow-lg"
+        content_class="z-[60] min-w-48 rounded-md border border-border bg-background p-1 shadow-lg"
       >
         <span class="flex h-4 w-4 shrink-0 items-center justify-center">
           <PUI.Container.icon name={@icon} class="h-4 w-4 shrink-0" />

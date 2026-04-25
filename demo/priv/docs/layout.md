@@ -64,4 +64,4 @@ use PUI
 The application shell needs real viewport space to be evaluated properly. Open
 the dedicated demo page instead of viewing it inside a constrained docs frame:
 
-[Open app layout demo](/demo/layout-app)
+[Open app layout demo](/demo/layout/overview)

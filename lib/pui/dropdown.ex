@@ -109,6 +109,7 @@ defmodule PUI.Dropdown do
   attr :wrapper_class, :string, default: "w-fit"
   attr :content_class, :string, default: ""
   attr :class, :string, default: ""
+  attr :trigger, :string, default: "click"
 
   slot :item do
     attr :variant, :string
@@ -135,6 +136,7 @@ defmodule PUI.Dropdown do
       id={@id}
       class={@wrapper_class}
       data-strategy="auto"
+      data-trigger={@trigger}
       data-placement={@placement}
       phx-hook="PUI.Popover"
     >

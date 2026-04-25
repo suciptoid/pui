@@ -5,6 +5,6 @@ defmodule AppWeb.LayoutDocsFeatureTest do
     session
     |> visit("/docs/layout")
     |> assert_has(css("h1", text: "Layout"))
-    |> assert_has(css("a[href='/demo/layout-app']", text: "Open app layout demo"))
+    |> assert_has(css("a[href='/demo/layout/overview']", text: "Open app layout demo"))
   end
 end

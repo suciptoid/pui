@@ -24,7 +24,7 @@ defmodule AppWeb.Router do
 
     live "/docs", Live.DocsLive, :index
     live "/docs/:slug", Live.DocsLive, :show
-    live "/demo/layout-app", Live.LayoutAppLive, :index
+    live "/demo/layout/:params_name", Live.LayoutAppLive, :show
 
     live "/", Live.LandingLive, :index
     live "/__test__/components/button", Live.ComponentHarness, :button

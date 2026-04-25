@@ -3,9 +3,9 @@ defmodule AppWeb.LayoutAppFeatureTest do
 
   feature "layout app demo renders a full-page shell", %{session: session} do
     session
-    |> visit("/demo/layout-app")
+    |> visit("/demo/layout/overview")
     |> assert_has(css("#demo-app-shell"))
     |> assert_has(css("#demo-app-shell[data-collapsed='false']"))
-    |> assert_has(css("h1", text: "App layout shell for Phoenix LiveView"))
+    |> assert_has(css("h1", text: "Overview"))
   end
 end
