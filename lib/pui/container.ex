@@ -133,11 +133,12 @@ defmodule PUI.Container do
     """
   end
 
+  attr :class, :string, default: ""
   slot :inner_block
 
   def card_description(assigns) do
     ~H"""
-    <div class="text-muted-foreground text-sm">
+    <div class={["text-muted-foreground text-sm", @class]}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -195,10 +196,11 @@ defmodule PUI.Container do
   """
   attr :name, :string, required: true
   attr :class, :string, default: "size-4"
+  attr :rest, :global
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
-    <span class={[@name, @class]} />
+    <span class={[@name, @class]} {@rest} />
     """
   end
 end

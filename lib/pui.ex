@@ -19,6 +19,8 @@ defmodule PUI do
       import PUI.Select
       import PUI.Tabs
       import PUI.Dialog
+      import PUI.Layout
+      import PUI.Container, except: [icon: 1]
       import PUI.Components
     end
   end

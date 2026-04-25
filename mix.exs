@@ -58,10 +58,17 @@ defmodule PUI.MixProject do
       extras: [
         "README.md",
         "guides/usage.md",
-        "guides/headless-usage.md"
+        "guides/headless-usage.md",
+        "guides/layouts.md",
+        "guides/migrate-to-pui.md"
       ],
       groups_for_extras: [
-        Guides: ["guides/usage.md", "guides/headless-usage.md"]
+        Guides: [
+          "guides/usage.md",
+          "guides/headless-usage.md",
+          "guides/layouts.md",
+          "guides/migrate-to-pui.md"
+        ]
       ]
     ]
   end
