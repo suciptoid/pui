@@ -527,7 +527,6 @@ defmodule PUI.Select do
     assigns
   end
 
-
   defp select_target_base(assigns) do
     case assigns.id || assigns.name do
       value when value in [nil, ""] -> nil

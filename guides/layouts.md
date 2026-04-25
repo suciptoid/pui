@@ -76,6 +76,6 @@ end
 
 ## JavaScript Hook
 
-`sidebar_menu_item/1` uses the bundled `PUI.SidebarMenuItemCollapse` hook for
-submenu expand/collapse behavior. If you already register `PUIHooks` in your
+`sidebar_menu_item/1` uses the bundled `PUI.Sidebar` hook for submenu
+expand/collapse behavior. If you already register `PUIHooks` in your
 LiveSocket, no additional setup is required.

@@ -34,7 +34,7 @@ Use `variant="unstyled"` when you want PUI to keep the component behavior and ac
 <.menu_button
   variant="unstyled"
   class="my-trigger"
-  content_class="aria-hidden:hidden block my-menu"
+  content_class="aria-hidden:hidden not-aria-hidden:block my-menu"
 >
   Actions
   <:item class="my-menu-item">Profile</:item>
@@ -73,7 +73,7 @@ Buttons support `variant="unstyled"` so you can provide your own utility classes
 <.menu_button
   variant="unstyled"
   class="inline-flex items-center gap-2 rounded-xl border px-4 py-2"
-  content_class="aria-hidden:hidden block min-w-48 rounded-xl border bg-background p-1 shadow-xl"
+  content_class="aria-hidden:hidden not-aria-hidden:block min-w-48 rounded-xl border bg-background p-1 shadow-xl"
 >
   Custom Menu
   <:item class="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-accent">
@@ -117,8 +117,12 @@ Headless and unstyled components still need a visibility strategy that matches t
 Popovers, dropdowns, and select menus toggle `aria-hidden`. Add `aria-hidden:hidden` to hide content when it is closed, plus your normal open-state display classes.
 
 ```heex
-content_class="aria-hidden:hidden block rounded-xl border bg-background p-1 shadow-xl"
+content_class="aria-hidden:hidden not-aria-hidden:block rounded-xl border bg-background p-1 shadow-xl"
 ```
+
+When using `variant="unstyled"`, the same rule still applies. PUI preserves the
+ARIA state, but you still need to provide the display classes that map that
+state to visible and hidden content.
 
 ### Tooltips
 

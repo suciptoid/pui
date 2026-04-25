@@ -63,6 +63,7 @@ defmodule PUI.LayoutTest do
     assert html =~ ~s(id="sidebar-item-overview")
     assert html =~ ~s(href="/overview")
     assert html =~ ~s(title="Overview")
+    assert html =~ ~s(phx-hook="PUI.Tooltip")
     assert html =~ "hero-home"
     assert html =~ "3"
   end
@@ -77,7 +78,7 @@ defmodule PUI.LayoutTest do
       </.sidebar_menu_item>
       """)
 
-    assert html =~ ~s(phx-hook="PUI.SidebarMenuItemCollapse")
+    assert html =~ ~s(phx-hook="PUI.Sidebar")
     assert html =~ ~s(aria-expanded="true")
     assert html =~ ~s(aria-controls="sidebar-item-components-submenu")
     assert html =~ ~s(id="sidebar-item-components-submenu")

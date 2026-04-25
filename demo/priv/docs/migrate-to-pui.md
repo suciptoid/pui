@@ -60,8 +60,8 @@ render controller templates should use the default non-live flash group.
 ### 4. Remove app-local submenu hooks
 
 If you were relying on a colocated sidebar collapse hook, move to
-`sidebar_menu_item/1` and the bundled `PUI.SidebarMenuItemCollapse` hook by
-registering `PUIHooks` in your LiveSocket.
+`sidebar_menu_item/1` and the bundled `PUI.Sidebar` hook by registering
+`PUIHooks` in your LiveSocket.
 
 ## Example target
 

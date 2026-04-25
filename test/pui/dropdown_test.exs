@@ -49,6 +49,8 @@ defmodule PUI.DropdownTest do
         """)
 
       assert html =~ "my-menu"
+      assert html =~ "aria-hidden:hidden"
+      assert html =~ "not-aria-hidden:block"
     end
   end
 

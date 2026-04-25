@@ -156,7 +156,7 @@ Popovers use `aria-hidden` for visibility control. Your custom classes must incl
 ```elixir
 <.menu_button 
   variant="unstyled" 
-  content_class="aria-hidden:hidden block bg-white border rounded shadow"
+  content_class="aria-hidden:hidden not-aria-hidden:block bg-white border rounded shadow"
 >
   Open
   <:item class="px-4 py-2 hover:bg-gray-100">Item</:item>
@@ -166,6 +166,10 @@ Popovers use `aria-hidden` for visibility control. Your custom classes must incl
 **Required visibility classes:**
 - `aria-hidden:hidden` - Hides content when `aria-hidden="true"`
 - `block` - Makes content visible when shown (or your preferred display)
+
+For `variant="unstyled"`, keep both the hidden and open-state display classes.
+If you only hide on `aria-hidden`, the popup can remain visible when the hook
+switches state.
 
 **With animations:**
 ```elixir

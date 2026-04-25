@@ -3146,29 +3146,59 @@ var Tabs = class extends ViewHook6 {
   }
 };
 
-// js/sidebar_menu_item_collapse.js
-var SidebarMenuItemCollapse = {
+// js/sidebar.js
+var Sidebar = {
   mounted() {
-    this.targetId = this.el.dataset.target;
-    this.trigger = this.el.querySelector("button");
-    this.chevron = this.el.querySelector(".sidebar-collapsible-chevron");
-    this.onClick = () => this.toggle();
-    this.sync(this.el.dataset.expanded !== "false");
-    if (this.trigger) this.trigger.addEventListener("click", this.onClick);
+    if (this.el.dataset.target) {
+      this.initMenuItem();
+    } else {
+      this.initShell();
+    }
   },
   updated() {
-    this.sync(this.el.dataset.expanded !== "false");
+    if (this.el.dataset.target) {
+      this.syncMenuItem(this.el.dataset.expanded !== "false");
+    } else {
+      this.syncShell(this.el.dataset.collapsed === "true");
+    }
   },
   destroyed() {
     if (this.trigger && this.onClick) {
       this.trigger.removeEventListener("click", this.onClick);
     }
+    if (this.toggleButton && this.onToggleClick) {
+      this.toggleButton.removeEventListener("click", this.onToggleClick);
+    }
   },
-  toggle() {
+  initMenuItem() {
+    this.targetId = this.el.dataset.target;
+    this.trigger = this.el.querySelector("button");
+    this.chevron = this.el.querySelector(".sidebar-collapsible-chevron");
+    this.onClick = () => this.toggleMenuItem();
+    this.syncMenuItem(this.el.dataset.expanded !== "false");
+    if (this.trigger) this.trigger.addEventListener("click", this.onClick);
+  },
+  initShell() {
+    this.toggleButton = document.getElementById(`${this.el.id}-sidebar-collapse-toggle`);
+    this.onToggleClick = () => this.toggleShell();
+    this.syncShell(this.el.dataset.collapsed === "true");
+    if (this.toggleButton) {
+      this.toggleButton.addEventListener("click", this.onToggleClick);
+    }
+  },
+  toggleMenuItem() {
     const expanded = this.el.dataset.expanded !== "false";
-    this.sync(!expanded);
+    this.syncMenuItem(!expanded);
   },
-  sync(expanded) {
+  toggleShell() {
+    const collapsed = this.el.dataset.collapsed === "true";
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.syncShell(!collapsed);
+      });
+    });
+  },
+  syncMenuItem(expanded) {
     const value = expanded ? "true" : "false";
     const target = this.targetId ? document.getElementById(this.targetId) : null;
     this.el.dataset.expanded = value;
@@ -3178,9 +3208,12 @@ var SidebarMenuItemCollapse = {
       target.dataset.expanded = value;
       target.setAttribute("aria-hidden", expanded ? "false" : "true");
     }
+  },
+  syncShell(collapsed) {
+    this.el.dataset.collapsed = collapsed ? "true" : "false";
   }
 };
-var sidebar_menu_item_collapse_default = SidebarMenuItemCollapse;
+var sidebar_default = Sidebar;
 
 // js/index.js
 var Hooks = {
@@ -3190,7 +3223,7 @@ var Hooks = {
   "PUI.Tabs": Tabs,
   "PUI.Tooltip": Tooltip,
   "PUI.FlashGroup": FlashGroup,
-  "PUI.SidebarMenuItemCollapse": sidebar_menu_item_collapse_default
+  "PUI.Sidebar": sidebar_default
 };
 export {
   FlashGroup,
@@ -3198,7 +3231,7 @@ export {
   LoadingBar,
   Popover,
   Select,
-  sidebar_menu_item_collapse_default as SidebarMenuItemCollapse,
+  sidebar_default as Sidebar,
   Tabs,
   Tooltip
 };

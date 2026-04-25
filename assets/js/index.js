@@ -4,7 +4,7 @@ import LoadingBar from "./loading";
 import Tooltip from "./tooltip";
 import FlashGroup from "./flash";
 import Tabs from "./tabs";
-import SidebarMenuItemCollapse from "./sidebar_menu_item_collapse";
+import Sidebar from "./sidebar";
 
 export const Hooks = {
   "PUI.LoadingBar": LoadingBar,
@@ -13,7 +13,7 @@ export const Hooks = {
   "PUI.Tabs": Tabs,
   "PUI.Tooltip": Tooltip,
   "PUI.FlashGroup": FlashGroup,
-  "PUI.SidebarMenuItemCollapse": SidebarMenuItemCollapse,
+  "PUI.Sidebar": Sidebar,
 };
 
-export { Popover, Select, LoadingBar, Tabs, Tooltip, FlashGroup, SidebarMenuItemCollapse };
+export { Popover, Select, LoadingBar, Tabs, Tooltip, FlashGroup, Sidebar };

@@ -135,3 +135,9 @@ Use `menu_content`, `menu_item`, and `menu_separator` for full control:
 | `shortcut` | `string` | `nil` | Keyboard shortcut display text |
 | `class` | `string` | `""` | Additional CSS classes |
 | `is_unstyled` | `boolean` | `false` | Remove default styles |
+
+### Unstyled Popups
+
+When `variant="unstyled"` is used on `menu_button`, the popup still toggles
+`aria-hidden`. Include both the hidden and visible display classes in
+`content_class`, for example `aria-hidden:hidden not-aria-hidden:block`.

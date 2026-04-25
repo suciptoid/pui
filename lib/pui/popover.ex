@@ -145,6 +145,7 @@ defmodule PUI.Popover do
   """
   attr :id, :string
   attr :class, :string, default: ""
+  attr :container_class, :string, default: ""
   attr :variant, :string, default: "default", values: ["default", "unstyled"]
   attr :placement, :string, values: ["top", "bottom", "left", "right"], default: "top"
   slot :inner_block
@@ -165,7 +166,7 @@ defmodule PUI.Popover do
     ~H"""
     <div
       id={@id}
-      class="w-fit group"
+      class={["group", @container_class, @container_class == "" && "w-fit"]}
       data-placement={@placement}
       phx-hook="PUI.Tooltip"
       aria-describedby={@tooltip_id}

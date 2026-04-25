@@ -60,6 +60,8 @@ defmodule PUI.Dropdown do
   | Attribute | Type | Default | Description |
   |-----------|------|---------|-------------|
   | `variant` | `string` | `"secondary"` | Button variant style |
+  | `placement` | `string` | `"bottom-start"` | Popup placement for Floating UI |
+  | `wrapper_class` | `string` | `"w-fit"` | Classes for the outer wrapper |
   | `content_class` | `string` | `""` | CSS classes for dropdown content |
   | `class` | `string` | `""` | Additional CSS classes for button |
 
@@ -80,6 +82,19 @@ defmodule PUI.Dropdown do
   | `href` | `string` | Link URL |
   | `navigate` | `string` | Phoenix navigate path |
   | `patch` | `string` | Phoenix patch path |
+
+  ## Unstyled Mode
+
+  When `variant="unstyled"`, PUI still toggles `aria-hidden` on the popup.
+  Your `content_class` should include both the hidden and visible selectors,
+  for example:
+
+      <.menu_button
+        variant="unstyled"
+        content_class="aria-hidden:hidden not-aria-hidden:block min-w-48"
+      >
+        ...
+      </.menu_button>
   """
 
   use Phoenix.Component
@@ -90,6 +105,8 @@ defmodule PUI.Dropdown do
     doc: "see Button variant. Use 'unstyled' for headless mode"
 
   attr :rest, :global
+  attr :placement, :string, default: "bottom-start"
+  attr :wrapper_class, :string, default: "w-fit"
   attr :content_class, :string, default: ""
   attr :class, :string, default: ""
 
@@ -114,7 +131,13 @@ defmodule PUI.Dropdown do
     assigns = assign(assigns, id: id, is_unstyled: is_unstyled)
 
     ~H"""
-    <div id={@id} class="w-fit" data-strategy="auto" phx-hook="PUI.Popover">
+    <div
+      id={@id}
+      class={@wrapper_class}
+      data-strategy="auto"
+      data-placement={@placement}
+      phx-hook="PUI.Popover"
+    >
       <PUI.Button.button
         :if={not @is_unstyled}
         id={"#{@id}-trigger"}
@@ -178,7 +201,10 @@ defmodule PUI.Dropdown do
       tabindex="-1"
       class={
         if @is_unstyled do
-          [@class]
+          [
+            "hidden aria-hidden:hidden not-aria-hidden:block",
+            @class
+          ]
         else
           [
             "aria-hidden:hidden block bg-popover text-popover-foreground",

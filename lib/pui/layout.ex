@@ -31,8 +31,7 @@ defmodule PUI.Layout do
   ## Collapsible Navigation
 
   Use `collapsible={true}` on `sidebar_menu_item/1` when an item owns nested
-  links. The submenu state is handled by the bundled
-  `PUI.SidebarMenuItemCollapse` hook.
+  links. The submenu state is handled by the bundled `PUI.Sidebar` hook.
 
       <.sidebar_menu_item
         title="Components"
@@ -56,8 +55,8 @@ defmodule PUI.Layout do
   """
 
   use Phoenix.Component
-
-  alias Phoenix.LiveView.JS
+  import PUI.Popover, only: [tooltip: 1]
+  import PUI.Dropdown, only: [menu_button: 1]
 
   @doc """
   Renders a two-pane application shell.
@@ -91,6 +90,7 @@ defmodule PUI.Layout do
     <div
       id={@id}
       data-collapsed="false"
+      phx-hook="PUI.Sidebar"
       class={[
         "group/pui-layout flex h-dvh overflow-hidden bg-background text-foreground",
         @class
@@ -121,7 +121,7 @@ defmodule PUI.Layout do
   | `id` | `string` | `"app-sidebar"` | Sidebar DOM id |
   | `class` | `string` | `""` | Additional classes for the sidebar |
   | `expanded_width_class` | `string` | `"w-72"` | Width class when the shell is expanded |
-  | `collapsed_width_class` | `string` | `"group-data-[collapsed=true]/pui-layout:w-14"` | Width class when collapsed |
+  | `collapsed_width_class` | `string` | `"group-data-[collapsed=true]/pui-layout:w-12"` | Width class when collapsed |
 
   ## Slots
 
@@ -134,7 +134,7 @@ defmodule PUI.Layout do
   attr :id, :string, default: "app-sidebar"
   attr :class, :string, default: ""
   attr :expanded_width_class, :string, default: "w-72"
-  attr :collapsed_width_class, :string, default: "group-data-[collapsed=true]/pui-layout:w-14"
+  attr :collapsed_width_class, :string, default: "group-data-[collapsed=true]/pui-layout:w-12"
 
   slot :header
   slot :inner_block, required: true
@@ -222,7 +222,7 @@ defmodule PUI.Layout do
     <div
       :if={@collapsible}
       id={"#{@id}-collapsible"}
-      phx-hook="PUI.SidebarMenuItemCollapse"
+      phx-hook="PUI.Sidebar"
       data-target={"#{@id}-submenu"}
       data-expanded={to_string(@expanded)}
       class="space-y-1"
@@ -233,29 +233,44 @@ defmodule PUI.Layout do
         aria-controls={"#{@id}-submenu"}
         aria-expanded={to_string(@expanded)}
         title={@title}
-        class={[
-          "group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-          "text-foreground/75 hover:bg-accent hover:text-accent-foreground",
-          "group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0",
-          @current && "bg-primary/10 text-primary",
-          @class
-        ]}
+        class={sidebar_menu_item_class(@current, @class) <> " w-full group-data-[collapsed=true]/pui-layout:hidden"}
       >
         <span class="flex h-4 w-4 shrink-0 items-center justify-center">
           <PUI.Container.icon name={@icon} class="h-4 w-4 shrink-0" />
         </span>
-        <span class="truncate group-data-[collapsed=true]/pui-layout:hidden">{@title}</span>
+        <span class="truncate">{@title}</span>
         <%= if @trailing != [] do %>
-          <span class="ml-auto group-data-[collapsed=true]/pui-layout:hidden">
+          <span class="ml-auto">
             {render_slot(@trailing)}
           </span>
         <% end %>
         <PUI.Container.icon
           name="hero-chevron-down"
-          class="sidebar-collapsible-chevron ml-auto h-4 w-4 shrink-0 transition-transform duration-200 data-[expanded=true]:rotate-180 group-data-[collapsed=true]/pui-layout:hidden"
+          class="sidebar-collapsible-chevron ml-auto h-4 w-4 shrink-0 transition-transform duration-200 data-[expanded=true]:rotate-180"
           data-expanded={to_string(@expanded)}
         />
       </button>
+
+      <.menu_button
+        id={"#{@id}-collapsed-menu"}
+        variant="unstyled"
+        placement="right-start"
+        wrapper_class="hidden group-data-[collapsed=true]/pui-layout:block"
+        class={sidebar_menu_item_class(@current, @class)}
+        content_class="min-w-48 rounded-md border border-border bg-background p-1 shadow-lg"
+      >
+        <span class="flex h-4 w-4 shrink-0 items-center justify-center">
+          <PUI.Container.icon name={@icon} class="h-4 w-4 shrink-0" />
+        </span>
+        <span class="sr-only">{@title}</span>
+        <:items>
+          <div class="space-y-1">
+            <%= for subitem <- @subitem do %>
+              {render_slot(subitem)}
+            <% end %>
+          </div>
+        </:items>
+      </.menu_button>
 
       <div
         id={"#{@id}-submenu"}
@@ -273,32 +288,47 @@ defmodule PUI.Layout do
       </div>
     </div>
 
-    <.link
+    <.tooltip
       :if={!@collapsible}
-      id={@id}
-      navigate={@navigate}
-      href={@href}
-      patch={@patch}
-      title={@title}
-      class={[
-        "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors",
-        "text-foreground/75 hover:bg-accent hover:text-accent-foreground",
-        "group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0",
-        @current && "bg-primary/10 text-primary",
-        @class
-      ]}
+      id={"#{@id}-tooltip"}
+      placement="right"
+      container_class="w-full"
+      class="hidden group-data-[collapsed=true]/pui-layout:block"
     >
-      <span class="flex h-4 w-4 shrink-0 items-center justify-center">
-        <PUI.Container.icon name={@icon} class="h-4 w-4 shrink-0" />
-      </span>
-      <span class="truncate group-data-[collapsed=true]/pui-layout:hidden">{@title}</span>
-      <%= if @trailing != [] do %>
-        <span class="ml-auto group-data-[collapsed=true]/pui-layout:hidden">
-          {render_slot(@trailing)}
+      <.link
+        id={@id}
+        navigate={@navigate}
+        href={@href}
+        patch={@patch}
+        title={@title}
+        class={sidebar_menu_item_class(@current, @class)}
+      >
+        <span class="flex h-4 w-4 shrink-0 items-center justify-center">
+          <PUI.Container.icon name={@icon} class="h-4 w-4 shrink-0" />
         </span>
-      <% end %>
-    </.link>
+        <span class="truncate group-data-[collapsed=true]/pui-layout:hidden">{@title}</span>
+        <%= if @trailing != [] do %>
+          <span class="ml-auto group-data-[collapsed=true]/pui-layout:hidden">
+            {render_slot(@trailing)}
+          </span>
+        <% end %>
+      </.link>
+
+      <:tooltip>{@title}</:tooltip>
+    </.tooltip>
     """
+  end
+
+  defp sidebar_menu_item_class(current, class) do
+    [
+      "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+      "text-foreground/75 hover:bg-accent hover:text-accent-foreground",
+      "group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0",
+      current && "bg-primary/10 text-primary",
+      class
+    ]
+    |> Enum.reject(&(&1 in [nil, ""]))
+    |> Enum.join(" ")
   end
 
   @doc """
@@ -340,7 +370,6 @@ defmodule PUI.Layout do
         <button
           id={"#{@shell_id}-sidebar-collapse-toggle"}
           type="button"
-          phx-click={JS.toggle_attribute({"data-collapsed", "true", "false"}, to: "##{@shell_id}")}
           class={[
             "grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-transparent text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
             @toggle_class

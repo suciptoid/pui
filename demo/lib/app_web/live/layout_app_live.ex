@@ -20,9 +20,12 @@ defmodule AppWeb.Live.LayoutAppLive do
       <:sidebar>
         <.sidebar id="demo-app-sidebar" expanded_width_class="w-72">
           <:header>
-            <div class="flex h-16 items-center border-b border-border px-4">
-              <.link navigate={~p"/docs/layout"} class="flex min-w-0 items-center gap-3">
-                <div class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+            <div class="flex h-16 items-center border-b border-border px-4 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0">
+              <.link
+                navigate={~p"/docs/layout"}
+                class="flex min-w-0 items-center gap-3 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:gap-0"
+              >
+                <div class="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm">
                   <.icon name="hero-command-line" class="size-5" />
                 </div>
                 <div class="min-w-0 group-data-[collapsed=true]/pui-layout:hidden">
@@ -33,8 +36,8 @@ defmodule AppWeb.Live.LayoutAppLive do
             </div>
           </:header>
 
-          <nav class="space-y-5 p-3">
-            <div class="space-y-1">
+          <nav class="flex flex-col gap-3 p-3 group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0">
+            <div class="flex flex-col gap-1 group-data-[collapsed=true]/pui-layout:gap-0">
               <p class="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden">
                 Workspace
               </p>
@@ -49,7 +52,7 @@ defmodule AppWeb.Live.LayoutAppLive do
               <.sidebar_menu_item title="Reports" icon="hero-chart-bar-square" href="#" />
             </div>
 
-            <div class="space-y-1">
+            <div class="flex flex-col gap-1 group-data-[collapsed=true]/pui-layout:gap-0">
               <p class="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden">
                 Components
               </p>
@@ -57,7 +60,6 @@ defmodule AppWeb.Live.LayoutAppLive do
                 title="Library"
                 icon="hero-squares-2x2"
                 collapsible
-                expanded
               >
                 <:subitem>
                   <.sidebar_subitem href={~p"/docs/button"} current>Button</.sidebar_subitem>
@@ -74,8 +76,12 @@ defmodule AppWeb.Live.LayoutAppLive do
           </nav>
 
           <:footer>
-            <div class="border-t border-border p-3">
-              <.button variant="outline" size="sm" class="w-full justify-start group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0">
+            <div class="border-t border-border p-3 group-data-[collapsed=true]/pui-layout:px-0">
+              <.button
+                variant="outline"
+                size="sm"
+                class="w-full justify-start group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
+              >
                 <.icon name="hero-life-buoy" class="size-4" />
                 <span class="group-data-[collapsed=true]/pui-layout:hidden">Support</span>
               </.button>
@@ -112,7 +118,7 @@ defmodule AppWeb.Live.LayoutAppLive do
       <section class="min-h-full p-4 sm:p-6 lg:p-8">
         <div class="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(20rem,0.8fr)]">
           <div class="space-y-6">
-            <div class="overflow-hidden rounded-3xl border border-border bg-background shadow-sm">
+            <div class="overflow-hidden rounded-md border border-border bg-background shadow-sm">
               <div class="border-b border-border bg-gradient-to-br from-primary/10 via-background to-background p-6 sm:p-8">
                 <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                   <div class="max-w-2xl">
@@ -150,8 +156,16 @@ defmodule AppWeb.Live.LayoutAppLive do
               </.card_header>
               <.card_content>
                 <div class="divide-y divide-border">
-                  <.activity_row title="Migrated generated flash UI" status="Done" icon="hero-bell-alert" />
-                  <.activity_row title="Moved submenu behavior into PUI hook" status="Review" icon="hero-code-bracket-square" />
+                  <.activity_row
+                    title="Migrated generated flash UI"
+                    status="Done"
+                    icon="hero-bell-alert"
+                  />
+                  <.activity_row
+                    title="Moved submenu behavior into PUI hook"
+                    status="Review"
+                    icon="hero-code-bracket-square"
+                  />
                   <.activity_row title="Added full-page layout demo" status="Live" icon="hero-window" />
                 </div>
               </.card_content>
@@ -162,7 +176,9 @@ defmodule AppWeb.Live.LayoutAppLive do
             <.card>
               <.card_header>
                 <.card_title>Shell traits</.card_title>
-                <.card_description>Reusable, configurable, and app-owned where it should be.</.card_description>
+                <.card_description>
+                  Reusable, configurable, and app-owned where it should be.
+                </.card_description>
               </.card_header>
               <.card_content>
                 <ul class="space-y-3 text-sm text-muted-foreground">
@@ -176,7 +192,7 @@ defmodule AppWeb.Live.LayoutAppLive do
                   </li>
                   <li class="flex gap-2">
                     <.icon name="hero-check" class="mt-0.5 size-4 text-primary" />
-                    Collapsible menu state uses `PUI.SidebarMenuItemCollapse`.
+                    Collapsible menu state uses `PUI.Sidebar`.
                   </li>
                 </ul>
               </.card_content>
@@ -231,7 +247,7 @@ defmodule AppWeb.Live.LayoutAppLive do
 
   defp metric_card(assigns) do
     ~H"""
-    <div class="rounded-2xl border border-border bg-muted/20 p-5">
+    <div class="rounded-md border border-border bg-muted/20 p-5">
       <div class="flex items-center justify-between">
         <p class="text-sm text-muted-foreground">{@label}</p>
         <.icon name={@icon} class="size-5 text-primary" />
@@ -253,7 +269,7 @@ defmodule AppWeb.Live.LayoutAppLive do
   defp activity_row(assigns) do
     ~H"""
     <div class="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
-      <div class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+      <div class="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
         <.icon name={@icon} class="size-5" />
       </div>
       <div class="min-w-0 flex-1">
