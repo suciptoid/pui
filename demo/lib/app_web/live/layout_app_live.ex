@@ -717,6 +717,49 @@ defmodule AppWeb.Live.LayoutAppLive do
         </div>
       </div>
     </.surface>
+
+    <.surface
+      title="Form inside a dialog"
+      description="Collect structured input through a modal overlay. The dialog keeps focus trapped and preserves form state while open."
+    >
+      <div class="flex items-center gap-4">
+        <.dialog id="form-dialog" title="Create new project" size="lg">
+          <:trigger :let={attr}>
+            <.button {attr}>
+              <.icon name="hero-plus" class="size-4" /> New project
+            </.button>
+          </:trigger>
+          <form class="space-y-1">
+            <.input
+              id="dialog-project-name"
+              label="Project name"
+              placeholder="My new project"
+            />
+            <.textarea
+              id="dialog-project-description"
+              label="Description"
+              rows="4"
+              placeholder="What is this project about?"
+            />
+            <.select
+              id="dialog-project-category"
+              label="Category"
+              options={["Engineering", "Design", "Marketing", "Operations"]}
+            />
+          </form>
+          <:footer :let={%{hide: hide}}>
+            <div class="flex justify-end gap-2">
+              <.button variant="outline" phx-click={hide}>Cancel</.button>
+              <.button>Create project</.button>
+            </div>
+          </:footer>
+        </.dialog>
+
+        <p class="text-sm text-muted-foreground">
+          Click the button above to open a dialog containing a text input, textarea, and select.
+        </p>
+      </div>
+    </.surface>
     """
   end
 
