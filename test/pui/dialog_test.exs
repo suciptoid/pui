@@ -18,7 +18,7 @@ defmodule PUI.DialogTest do
       assert html =~ "Dialog Title"
       assert html =~ ~s(aria-label="Close dialog")
       assert html =~ "hero-x-mark"
-      assert html =~ ~s(class="flex items-center gap-4")
+      assert html =~ ~s(class="shrink-0 flex items-center gap-4 px-6 pt-4 pb-2")
       assert html =~ ~s(class="flex-1 text-lg font-semibold leading-none tracking-tight")
       assert html =~ ~s(class="hero-x-mark size-5")
       refute html =~ "<h2"
@@ -53,9 +53,24 @@ defmodule PUI.DialogTest do
 
       assert html =~ "max-h-[calc(100vh-2rem)]"
       assert html =~ "overflow-hidden"
-      assert html =~ ~s(class="min-h-0 flex-1 overflow-y-auto")
-      assert html =~ ~s(class="shrink-0")
+      assert html =~ ~s(class="min-h-0 flex-1 overflow-y-auto px-6 pt-2 pb-2")
+      assert html =~ ~s(class="shrink-0 px-6 pt-2 pb-4")
+      refute html =~ "border px-6 py-3 shadow-lg"
       assert html =~ "Save"
+    end
+
+    test "applies body padding when there is no header or footer" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.dialog id="test" show_close={false}>
+          <p>Content</p>
+        </.dialog>
+        """)
+
+      assert html =~ ~s(class="min-h-0 flex-1 overflow-y-auto px-6 pt-4 pb-4")
+      refute html =~ ~s(class="shrink-0 px-6 pt-2 pb-4")
     end
   end
 

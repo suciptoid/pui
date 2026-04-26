@@ -227,7 +227,7 @@ defmodule PUI.Dialog do
         else
           [
             "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 [hidden]:zoom-out-95 not-[hidden]:zoom-in-95",
-            "bg-background fixed top-[50%] left-[50%] z-50 flex w-full max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg border px-6 py-3 shadow-lg duration-200 sm:max-w-lg",
+            "bg-background fixed top-[50%] left-[50%] z-50 flex w-full max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg border shadow-lg duration-200 sm:max-w-lg",
             @class
           ]
         end
@@ -236,13 +236,13 @@ defmodule PUI.Dialog do
     >
       <.focus_wrap
         id={"#{@id}-focus"}
-        class={if @is_unstyled, do: nil, else: "flex min-h-0 flex-1 flex-col gap-4"}
+        class={if @is_unstyled, do: nil, else: "flex min-h-0 flex-1 flex-col"}
       >
         <%= if @is_unstyled do %>
           {render_slot(@inner_block)}
           {render_slot(@footer)}
         <% else %>
-          <div :if={@show_close or @title} class="flex items-center gap-4">
+          <div :if={@show_close or @title} class="shrink-0 flex items-center gap-4 px-6 pt-4 pb-2">
             <div class="flex-1 text-lg font-semibold leading-none tracking-tight">{@title || ""}</div>
             <button
               :if={@show_close}
@@ -254,10 +254,14 @@ defmodule PUI.Dialog do
               <span class="hero-x-mark size-5" />
             </button>
           </div>
-          <div class="min-h-0 flex-1 overflow-y-auto">
+          <div class={[
+            "min-h-0 flex-1 overflow-y-auto px-6",
+            if(@show_close or @title, do: "pt-2", else: "pt-4"),
+            if(@footer != [], do: "pb-2", else: "pb-4")
+          ]}>
             {render_slot(@inner_block)}
           </div>
-          <div :if={@footer != []} class="shrink-0">
+          <div :if={@footer != []} class="shrink-0 px-6 pt-2 pb-4">
             {render_slot(@footer)}
           </div>
         <% end %>
@@ -355,7 +359,7 @@ defmodule PUI.Dialog do
           hide: JS.exec("data-cancel", to: "##{@id}"),
           show: show_dialog(@id)
         })}
-        <:footer>
+        <:footer :if={@footer != []}>
           {render_slot(@footer, %{
             hide: JS.exec("data-cancel", to: "##{@id}"),
             show: show_dialog(@id)

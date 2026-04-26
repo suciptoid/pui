@@ -957,7 +957,25 @@ defmodule AppWeb.DocsDemo do
           id="demo-basic"
           name="demo-basic"
           label="Favorite Fruit"
-          options={["Apple", "Banana", "Cherry", "Date", "Elderberry","Pisang", "Melon","Anggur", "Manggis", "Kelapa","Jambu", "Salak", "Semangka", "Alpukat", "Tamarin", "Nangka", "Durian"]}
+          options={[
+            "Apple",
+            "Banana",
+            "Cherry",
+            "Date",
+            "Elderberry",
+            "Pisang",
+            "Melon",
+            "Anggur",
+            "Manggis",
+            "Kelapa",
+            "Jambu",
+            "Salak",
+            "Semangka",
+            "Alpukat",
+            "Tamarin",
+            "Nangka",
+            "Durian"
+          ]}
         />
       </div>
     </.demo_section>
@@ -1516,7 +1534,7 @@ defmodule AppWeb.DocsDemo do
         </:trigger>
 
         <div class="space-y-4">
-          <p :for={index <- 1..12} class="text-sm text-muted-foreground">
+          <p :for={index <- 1..30} class="text-sm text-muted-foreground">
             Activity #{index}: The body scrolls while the title and footer stay visible.
           </p>
         </div>
