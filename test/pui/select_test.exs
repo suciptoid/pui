@@ -77,7 +77,7 @@ defmodule PUI.SelectTest do
         """)
 
       assert html =~ ~s(<label)
-      assert html =~ ~s(for="food-trigger")
+      assert html =~ ~s(for="food-input")
       assert html =~ ~s(Select Food)
     end
 
@@ -92,7 +92,7 @@ defmodule PUI.SelectTest do
         """)
 
       assert html =~ ~s(id="user[category]-trigger")
-      assert html =~ ~s(for="user[category]-trigger")
+      assert html =~ ~s(for="user[category]-input")
     end
 
     test "renders aria-invalid as an explicit true value when errors exist" do

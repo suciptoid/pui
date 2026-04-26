@@ -38,6 +38,7 @@ defmodule AppWeb.Router do
     live "/__test__/components/container", Live.ComponentHarness, :container
     live "/__test__/components/loading", Live.ComponentHarness, :loading
     live "/__test__/components/tabs", Live.ComponentHarness, :tabs
+    live "/__test__/components/dependent-select", Live.DependentSelectLive, :index
   end
 
   # Other scopes may use custom stacks.

@@ -206,12 +206,12 @@ defmodule PUI.Select do
       variant={@variant}
       errors={@errors}
     >
-      <%= for opt <- @options do %>
+      <%= for {opt, index} <- Enum.with_index(@options) do %>
         <%= case opt do %>
           <% {:group, group_label} -> %>
             <div class="px-2 py-1 text-xs font-semibold text-muted-foreground">{group_label}</div>
           <% {val, label} -> %>
-            <.select_item value={val}>{label}</.select_item>
+            <.select_item id={"#{@id}-option-#{index}"} value={val}>{label}</.select_item>
         <% end %>
       <% end %>
     </.select>
@@ -274,7 +274,7 @@ defmodule PUI.Select do
           end
         }
       >
-        <span data-pui="selected-label">
+        <span data-pui="selected-label" data-placeholder={@placeholder}>
           {@placeholder}
         </span>
         <.select_icon :if={not @is_unstyled} class="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -369,6 +369,7 @@ defmodule PUI.Select do
   end
 
   attr :value, :string, required: true
+  attr :id, :string, default: nil
   attr :class, :string, default: ""
   attr :variant, :string, default: "default", values: ["default", "unstyled"]
   slot :inner_block
@@ -389,6 +390,7 @@ defmodule PUI.Select do
 
     ~H"""
     <div
+      id={@id}
       role="option"
       aria-selected="false"
       tabindex="-1"
