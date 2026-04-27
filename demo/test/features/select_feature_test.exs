@@ -4,15 +4,70 @@ defmodule AppWeb.SelectFeatureTest do
   feature "select components support labeling, search, and selection", %{session: session} do
     session
     |> visit("/__test__/components/select")
-    |> assert_has(css("label[for='harness-select-trigger']"))
+    |> assert_has(css("label[for='harness-select-input']"))
     |> assert_has(
       css("#harness-select-trigger[role='combobox'][aria-controls='harness-select-listbox']")
     )
     |> assert_has(css("#harness-select-trigger", text: "Beta"))
     |> assert_has(css("#harness-select [role='searchbox']", visible: false))
-    |> assert_has(css("label[for='long-harness-select-trigger']"))
-    |> assert_has(css("label[for='scroll-harness-select-trigger']"))
+    |> assert_has(css("label[for='long-harness-select-input']"))
+    |> assert_has(css("label[for='scroll-harness-select-input']"))
     |> assert_has(css("#select-value", text: "Selected: beta"))
+  end
+
+  feature "select trigger truncates long text before it can overlap the icon", %{
+    session: session
+  } do
+    session
+    |> visit("/__test__/components/select")
+    |> assert_has(css("#narrow-harness-select-trigger", text: "A very long selected option"))
+    |> execute_script_async(
+      """
+      const done = arguments[arguments.length - 1];
+      let attempts = 0;
+
+      const poll = () => {
+        const trigger = document.querySelector("#narrow-harness-select-trigger");
+        const label = trigger?.querySelector("[data-pui='selected-label']");
+        const icon = trigger?.querySelector("svg");
+        const labelRect = label?.getBoundingClientRect();
+        const iconRect = icon?.getBoundingClientRect();
+        const style = label ? getComputedStyle(label) : null;
+        const state = {
+          labelClientWidth: label?.clientWidth || 0,
+          labelScrollWidth: label?.scrollWidth || 0,
+          labelMinWidth: style?.minWidth || "",
+          labelOverflow: style?.overflow || "",
+          labelTextOverflow: style?.textOverflow || "",
+          labelWhiteSpace: style?.whiteSpace || "",
+          noOverlap: Boolean(labelRect && iconRect && labelRect.right <= iconRect.left)
+        };
+
+        if (state.labelClientWidth > 0 && state.noOverlap && state.labelScrollWidth > state.labelClientWidth) {
+          done(JSON.stringify(state));
+          return;
+        }
+
+        if (attempts++ > 100) {
+          done(JSON.stringify(state));
+          return;
+        }
+
+        window.setTimeout(poll, 20);
+      };
+
+      poll();
+      """,
+      fn result ->
+        state = Jason.decode!(result)
+        assert state["noOverlap"]
+        assert state["labelScrollWidth"] > state["labelClientWidth"]
+        assert state["labelMinWidth"] == "0px"
+        assert state["labelOverflow"] == "hidden"
+        assert state["labelTextOverflow"] == "ellipsis"
+        assert state["labelWhiteSpace"] == "nowrap"
+      end
+    )
   end
 
   feature "long select keeps the selected option visible when opened", %{session: session} do

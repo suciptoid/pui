@@ -132,6 +132,18 @@ defmodule AppWeb.Live.ComponentHarness do
         options={long_select_options()}
       />
 
+      <div style="width: 7rem">
+        <.select
+          id="narrow-harness-select"
+          name="narrow_choice"
+          value="long"
+          options={[
+            {"long", "A very long selected option label that should truncate cleanly"},
+            {"short", "Short"}
+          ]}
+        />
+      </div>
+
       <div
         id="scroll-select-scrollbox"
         class="h-40 overflow-y-auto rounded-md border border-border p-4"

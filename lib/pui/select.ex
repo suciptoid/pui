@@ -112,6 +112,8 @@ defmodule PUI.Select do
   import PUI.Input, only: [label: 1]
   import PUI.Components, only: [field_error: 1]
 
+  @popup_min_width 208
+
   attr :id, :string, default: nil
   attr :name, :string, default: nil
   attr :value, :string, default: nil
@@ -233,6 +235,7 @@ defmodule PUI.Select do
       |> assign(:trigger_id, trigger_id)
       |> assign(:input_id, input_id)
       |> assign(:has_errors, assigns.errors != [])
+      |> assign(:popup_min_width, @popup_min_width)
 
     ~H"""
     <div
@@ -268,13 +271,19 @@ defmodule PUI.Select do
             [
               "border-input data-placeholder:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground",
               "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-              "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring [3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+              "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex min-w-0 items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring [3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
               @class
             ]
           end
         }
       >
-        <span data-pui="selected-label" data-placeholder={@placeholder}>
+        <span
+          data-pui="selected-label"
+          data-slot="select-value"
+          data-placeholder={@placeholder}
+          class="block min-w-0 flex-1 text-left"
+          style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+        >
           {@placeholder}
         </span>
         <.select_icon :if={not @is_unstyled} class="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -286,6 +295,7 @@ defmodule PUI.Select do
         tabindex="-1"
         aria-labelledby={@trigger_id}
         aria-hidden="true"
+        data-popup-min-width={@popup_min_width}
         data-side="bottom"
         data-floating-strategy="absolute"
         data-reference-hidden="false"

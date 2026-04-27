@@ -1981,6 +1981,7 @@ var Select = class extends ViewHook2 {
   currentIndex = -1;
   expandPopover = true;
   focusSelected = false;
+  popupMinWidth = 208;
   #clearFloating;
   #outsideListener;
   #triggerClickHandler;
@@ -2047,6 +2048,7 @@ var Select = class extends ViewHook2 {
     );
     this.hiddenInput = this.el.querySelector("input[data-pui='select-value']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
+    this.popupMinWidth = Number.parseFloat(this.popup?.dataset.popupMinWidth || `${this.popupMinWidth}`) || this.popupMinWidth;
   }
   bindEventListeners() {
     this.el.addEventListener("keydown", this.#containerKeyDownHandler);
@@ -2451,6 +2453,7 @@ var Select = class extends ViewHook2 {
       return Promise.resolve();
     }
     const expandPopover = this.expandPopover;
+    const defaultPopupMinWidth = this.popupMinWidth;
     const collisionPadding = 8;
     const nextStrategy = this.resolveStrategy();
     if (nextStrategy !== this.currentStrategy) {
@@ -2470,18 +2473,25 @@ var Select = class extends ViewHook2 {
           padding: collisionPadding,
           apply({ availableHeight, rects, elements }) {
             const nextAvailableHeight = `${Math.max(0, Math.floor(availableHeight))}px`;
-            const nextTriggerWidth = `${Math.max(0, Math.floor(rects.reference.width))}px`;
+            const nextTriggerWidth = Math.max(0, Math.floor(rects.reference.width));
+            const popupMinWidth = Number.parseFloat(
+              elements.floating.dataset.popupMinWidth || `${defaultPopupMinWidth}`
+            ) || defaultPopupMinWidth;
+            const nextPopupWidth = `${Math.max(
+              popupMinWidth,
+              nextTriggerWidth
+            )}px`;
             elements.floating.style.setProperty(
               "--pui-select-content-available-height",
               nextAvailableHeight
             );
             elements.floating.style.setProperty(
               "--pui-select-trigger-width",
-              nextTriggerWidth
+              `${nextTriggerWidth}px`
             );
-            elements.floating.style.minWidth = nextTriggerWidth;
+            elements.floating.style.minWidth = nextPopupWidth;
             if (expandPopover) {
-              elements.floating.style.width = nextTriggerWidth;
+              elements.floating.style.width = nextPopupWidth;
             } else {
               elements.floating.style.removeProperty("width");
             }

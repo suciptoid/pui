@@ -126,5 +126,19 @@ defmodule PUI.SelectTest do
       assert html =~ "data-[reference-hidden=true]:invisible"
       assert html =~ "max-h-[min(calc(var(--pui-select-content-available-height)-0.5rem),20rem)]"
     end
+
+    test "listbox keeps a minimum popup width contract" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.select id="food" name="food">
+          <.select_item value="a">Option A</.select_item>
+        </.select>
+        """)
+
+      assert html =~ ~s(data-popup-min-width="208")
+      assert html =~ "min-w-52"
+    end
   end
 end
