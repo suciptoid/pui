@@ -762,6 +762,7 @@
     --tw-exit-translate-x: calc(--value(ratio) * 100%);
     --tw-exit-translate-x: --value(--translate-*, [percentage], [length]);
 }
+
 @utility slide-out-to-start {
     &:dir(ltr) {
         --tw-exit-translate-x: -100%;

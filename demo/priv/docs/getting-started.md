@@ -75,7 +75,7 @@ PUI provides components in several categories:
 
 | Category | Components |
 |----------|-----------|
-| **Forms** | Input, Select, Checkbox, Radio, Switch, Textarea |
+| **Forms** | Input, Select, Date Picker, Checkbox, Radio, Switch, Textarea |
 | **Actions** | Button, Dropdown, Menu |
 | **Overlays** | Dialog, Popover, Tooltip |
 | **Feedback** | Alert, Toast/Flash, Loading |

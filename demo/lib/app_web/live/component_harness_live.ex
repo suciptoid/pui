@@ -14,6 +14,9 @@ defmodule AppWeb.Live.ComponentHarness do
      |> assign(:dropdown_action, "none")
      |> assign(:dialog_open?, false)
      |> assign(:selected_choice, "beta")
+     |> assign(:selected_date, nil)
+     |> assign(:range_start, nil)
+     |> assign(:range_end, nil)
      |> assign(:active_tab, "overview")
      |> assign(:form, form)
      |> assign(:popover_count, 0)
@@ -56,6 +59,14 @@ defmodule AppWeb.Live.ComponentHarness do
 
   def handle_event("select_tab", %{"tab" => tab}, socket) do
     {:noreply, assign(socket, :active_tab, tab)}
+  end
+
+  def handle_event("date_picker_changed", params, socket) do
+    {:noreply,
+     socket
+     |> assign(:selected_date, blank_to_nil(params["scheduled_on"]))
+     |> assign(:range_start, blank_to_nil(params["trip_start"]))
+     |> assign(:range_end, blank_to_nil(params["trip_end"]))}
   end
 
   def handle_event("popover_increment", _params, socket) do
@@ -205,6 +216,32 @@ defmodule AppWeb.Live.ComponentHarness do
     """
   end
 
+  defp render_component(assigns) when assigns.live_action == :date_picker do
+    ~H"""
+    <form id="date-picker-form" phx-change="date_picker_changed" class="space-y-6">
+      <.date_picker
+        id="harness-date-picker"
+        name="scheduled_on"
+        value={@selected_date}
+        default_month={~D[2026-04-01]}
+        label="Date Picker"
+      />
+      <p id="date-picker-value">Selected: {@selected_date || "none"}</p>
+
+      <.range_picker
+        id="harness-range-picker"
+        from_name="trip_start"
+        to_name="trip_end"
+        from_value={@range_start}
+        to_value={@range_end}
+        default_month={~D[2026-04-01]}
+        label="Range Picker"
+      />
+      <p id="range-picker-value">Range: {@range_start || "none"} / {@range_end || "none"}</p>
+    </form>
+    """
+  end
+
   defp render_component(assigns) when assigns.live_action == :dropdown do
     ~H"""
     <div class="space-y-4">
@@ -339,6 +376,7 @@ defmodule AppWeb.Live.ComponentHarness do
       :button -> "Button Harness"
       :input -> "Input Harness"
       :select -> "Select Harness"
+      :date_picker -> "Date Picker Harness"
       :dropdown -> "Dropdown Harness"
       :dialog -> "Dialog Harness"
       :popover -> "Popover Harness"
@@ -390,4 +428,6 @@ defmodule AppWeb.Live.ComponentHarness do
   end
 
   defp blank?(value), do: value in [nil, ""]
+  defp blank_to_nil(value) when value in [nil, ""], do: nil
+  defp blank_to_nil(value), do: value
 end

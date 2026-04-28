@@ -1088,6 +1088,96 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def date_picker_basic_demo(assigns) do
+    ~H"""
+    <.demo_section title="Basic Date Picker Demo" id="date-picker-basic-demo">
+      <div class="max-w-sm">
+        <.date_picker
+          id="docs-date-picker-basic"
+          name="docs_date_picker_basic"
+          label="Publish date"
+          default_month={~D[2026-04-01]}
+        />
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def date_picker_range_demo(assigns) do
+    ~H"""
+    <.demo_section title="Range Picker Demo" id="date-picker-range-demo">
+      <div class="max-w-lg">
+        <.range_picker
+          id="docs-date-picker-range"
+          from_name="docs_trip_start"
+          to_name="docs_trip_end"
+          label="Trip dates"
+          default_month={~D[2026-04-01]}
+        />
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def date_picker_bounds_demo(assigns) do
+    ~H"""
+    <.demo_section title="Bounds Demo" id="date-picker-bounds-demo">
+      <div class="max-w-sm">
+        <.date_picker
+          id="docs-date-picker-bounds"
+          name="docs_date_picker_bounds"
+          label="Delivery date"
+          default_month={~D[2026-04-01]}
+          min={~D[2026-04-10]}
+          max={~D[2026-04-22]}
+        />
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def date_picker_footer_demo(assigns) do
+    ~H"""
+    <.demo_section title="Footer Slot Demo" id="date-picker-footer-demo">
+      <div class="max-w-sm">
+        <.date_picker
+          id="docs-date-picker-footer"
+          name="docs_date_picker_footer"
+          label="Reminder"
+          default_month={~D[2026-04-01]}
+        >
+          <:footer>
+            <div class="flex flex-wrap items-center gap-2">
+              <input
+                type="time"
+                value="09:30"
+                class="border-input dark:bg-input/30 h-9 rounded-md border bg-transparent px-3 text-sm shadow-xs outline-none"
+              />
+              <.button type="button" variant="outline" size="sm">Save time</.button>
+            </div>
+          </:footer>
+        </.date_picker>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def date_picker_compact_demo(assigns) do
+    ~H"""
+    <.demo_section title="Compact Header Demo" id="date-picker-compact-demo">
+      <div class="max-w-sm">
+        <.date_picker
+          id="docs-date-picker-compact"
+          name="docs_date_picker_compact"
+          label="Compact header"
+          default_month={~D[2026-04-01]}
+          selectable_month={false}
+        />
+      </div>
+    </.demo_section>
+    """
+  end
+
   def tabs_demo(assigns) do
     ~H"""
     <section class="space-y-8">

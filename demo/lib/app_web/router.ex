@@ -30,6 +30,7 @@ defmodule AppWeb.Router do
     live "/__test__/components/button", Live.ComponentHarness, :button
     live "/__test__/components/input", Live.ComponentHarness, :input
     live "/__test__/components/select", Live.ComponentHarness, :select
+    live "/__test__/components/date-picker", Live.ComponentHarness, :date_picker
     live "/__test__/components/dropdown", Live.ComponentHarness, :dropdown
     live "/__test__/components/dialog", Live.ComponentHarness, :dialog
     live "/__test__/components/popover", Live.ComponentHarness, :popover

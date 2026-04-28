@@ -1599,6 +1599,7 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
   #triggerBlurHandler;
   #containerKeyDownHandler;
   #triggerKeyDownHandler;
+  #externalCloseHandler;
   mounted() {
     this.defaultPlacement = this.el.dataset.placement || this.placement;
     this.activePlacement = this.defaultPlacement;
@@ -1615,7 +1616,9 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
     this.#triggerBlurHandler = this.handleTriggerBlur.bind(this);
     this.#containerKeyDownHandler = this.handleContainerKeyDown.bind(this);
     this.#triggerKeyDownHandler = this.handleTriggerKeyDown.bind(this);
+    this.#externalCloseHandler = this.handleExternalClose.bind(this);
     this.bindEventListeners();
+    this.el.addEventListener("pui:popover-close", this.#externalCloseHandler);
     this.#outside_listener = (event) => {
       const target = event.target;
       const clickedOnTrigger = this.trigger?.contains(target);
@@ -1643,6 +1646,7 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
   destroyed() {
     this.unbindEventListeners(this.trigger);
     document.removeEventListener("click", this.#outside_listener);
+    this.el.removeEventListener("pui:popover-close", this.#externalCloseHandler);
     if (this.#clear_floating) {
       this.#clear_floating();
     }
@@ -1713,6 +1717,11 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
           }
         }
     }
+  }
+  handleExternalClose() {
+    if (!this.expanded) return;
+    this.closePopover();
+    this.refreshExpanded();
   }
   handleKeyEnter(event) {
   }
