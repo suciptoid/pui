@@ -62,6 +62,7 @@ defmodule AppWeb.Live.ComponentHarness do
   end
 
   def handle_event("date_picker_changed", params, socket) do
+    dbg(params)
     {:noreply,
      socket
      |> assign(:selected_date, blank_to_nil(params["scheduled_on"]))

@@ -27,11 +27,27 @@ defmodule PUI.DatePickerComponent do
           resolve_visible_month(mode, default_month, value, from_value, to_value)
 
         mode == "single" and socket.assigns[:value] != value ->
-          resolve_visible_month(mode, default_month, value, from_value, to_value)
+          maybe_preserve_visible_month(
+            mode,
+            socket.assigns.visible_month,
+            default_month,
+            value,
+            from_value,
+            to_value,
+            number_of_months
+          )
 
         mode == "range" and
             (socket.assigns[:from_value] != from_value or socket.assigns[:to_value] != to_value) ->
-          resolve_visible_month(mode, default_month, value, from_value, to_value)
+          maybe_preserve_visible_month(
+            mode,
+            socket.assigns.visible_month,
+            default_month,
+            value,
+            from_value,
+            to_value,
+            number_of_months
+          )
 
         true ->
           socket.assigns.visible_month
@@ -91,7 +107,15 @@ defmodule PUI.DatePickerComponent do
 
     if DatePicker.within_bounds?(value, socket.assigns.min, socket.assigns.max) do
       visible_month =
-        DatePicker.resolve_visible_month(nil, [value])
+        maybe_preserve_visible_month(
+          "single",
+          socket.assigns.visible_month,
+          socket.assigns.default_month,
+          value,
+          nil,
+          nil,
+          socket.assigns.number_of_months
+        )
         |> DatePicker.clamp_visible_month(
           socket.assigns.min,
           socket.assigns.max,
@@ -114,7 +138,15 @@ defmodule PUI.DatePickerComponent do
 
     if range_values_within_bounds?([from_value, to_value], socket.assigns.min, socket.assigns.max) do
       visible_month =
-        DatePicker.resolve_visible_month(socket.assigns.visible_month, [from_value, to_value])
+        maybe_preserve_visible_month(
+          "range",
+          socket.assigns.visible_month,
+          socket.assigns.default_month,
+          nil,
+          from_value,
+          to_value,
+          socket.assigns.number_of_months
+        )
         |> DatePicker.clamp_visible_month(
           socket.assigns.min,
           socket.assigns.max,
@@ -180,7 +212,7 @@ defmodule PUI.DatePickerComponent do
     ~H"""
     <div
       id={@id}
-      phx-hook="PUI.Popover"
+      phx-hook="PUI.DatePicker"
       data-placement="bottom-start"
       class="relative"
     >
@@ -221,6 +253,9 @@ defmodule PUI.DatePickerComponent do
       <div
         id={@popup_id}
         data-pui="date-picker-popup"
+        data-grid-cols="7"
+        data-grid-navigation="calendar"
+        data-focus-date={focus_date("single", @value, nil, nil)}
         role="listbox"
         tabindex="-1"
         aria-label="Calendar"
@@ -230,7 +265,7 @@ defmodule PUI.DatePickerComponent do
         data-reference-hidden="false"
         class={DatePicker.content_classes(@content_class)}
       >
-        <div class="p-2">
+        <div class="p-1.5">
           <.month_grid
             month={hd(@months)}
             mode="single"
@@ -260,7 +295,7 @@ defmodule PUI.DatePickerComponent do
     ~H"""
     <div
       id={@id}
-      phx-hook="PUI.Popover"
+      phx-hook="PUI.DatePicker"
       data-placement="bottom-start"
       class="relative"
     >
@@ -310,6 +345,9 @@ defmodule PUI.DatePickerComponent do
       <div
         id={@popup_id}
         data-pui="date-picker-popup"
+        data-grid-cols="7"
+        data-grid-navigation="calendar"
+        data-focus-date={focus_date("range", nil, @from_value, @to_value)}
         role="listbox"
         tabindex="-1"
         aria-label="Date range calendar"
@@ -319,7 +357,7 @@ defmodule PUI.DatePickerComponent do
         data-reference-hidden="false"
         class={DatePicker.content_classes(@content_class)}
       >
-        <div class="flex flex-col gap-3 p-2 sm:flex-row sm:gap-4">
+        <div class="flex flex-col gap-2 p-1.5 sm:flex-row sm:gap-2">
           <.month_grid
             :for={month <- @months}
             month={month}
@@ -376,7 +414,7 @@ defmodule PUI.DatePickerComponent do
 
   defp month_grid(assigns) do
     ~H"""
-    <section class="min-w-0 flex-1 space-y-2 sm:min-w-64">
+    <section class="min-w-0 flex-1 space-y-1.5 sm:min-w-56">
       <.month_header
         month={@month}
         selectable_month={@selectable_month}
@@ -390,16 +428,16 @@ defmodule PUI.DatePickerComponent do
         myself={@myself}
       />
 
-      <div class="grid grid-cols-7 gap-0.5 text-center text-[0.7rem] font-medium text-muted-foreground">
+      <div class="grid grid-cols-7 gap-0 text-center text-[0.65rem] font-medium text-muted-foreground">
         <span
           :for={weekday <- ~w(Su Mo Tu We Th Fr Sa)}
-          class="inline-flex h-7 items-center justify-center"
+          class="inline-flex h-6 items-center justify-center"
         >
           {weekday}
         </span>
       </div>
 
-      <div class="grid grid-cols-7 gap-0.5">
+      <div class="grid grid-cols-7 gap-0">
         <button
           :for={day <- @month.days}
           id={day.id}
@@ -408,6 +446,7 @@ defmodule PUI.DatePickerComponent do
           tabindex="-1"
           data-pui="day"
           data-date={day.value}
+          data-month-offset={to_string(@month.offset)}
           data-outside-month={to_string(day.outside_month?)}
           aria-selected={to_string(day.selected?)}
           aria-disabled={to_string(day.disabled?)}
@@ -416,7 +455,13 @@ defmodule PUI.DatePickerComponent do
           phx-click={if day.disabled?, do: nil, else: day_click_js(assigns, day)}
           class={day_button_classes(day)}
         >
-          {day.label}
+          <span
+            :if={show_range_background?(day)}
+            aria-hidden="true"
+            class={day_range_background_classes(day)}
+          >
+          </span>
+          <span class={day_label_classes(day)}>{day.label}</span>
         </button>
       </div>
     </section>
@@ -436,11 +481,12 @@ defmodule PUI.DatePickerComponent do
 
   defp month_header(assigns) do
     ~H"""
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1.5">
       <button
         :if={@show_prev?}
         type="button"
         phx-click={JS.push("navigate", target: @myself, value: %{direction: "prev"})}
+        data-pui="calendar-prev"
         class={DatePicker.nav_button_classes()}
         aria-label="Go to previous month"
         disabled={!@can_navigate_prev?}
@@ -453,13 +499,10 @@ defmodule PUI.DatePickerComponent do
         <%= if @selectable_month do %>
           <select
             id={"#{@month.picker_id}-month-select-#{@month.offset}"}
-            form={"#{@month.picker_id}-month-controls"}
-            name="month"
+            data-pui="calendar-month-select"
+            data-offset={@month.offset}
             aria-label="Select month"
-            phx-change="select_month"
-            phx-target={@myself}
-            phx-value-offset={@month.offset}
-            class={[DatePicker.header_select_classes(), "min-w-28"]}
+            class={[DatePicker.header_select_classes(), "min-w-24"]}
           >
             <option
               :for={option <- month_options(@month, @min, @max, @number_of_months)}
@@ -473,13 +516,10 @@ defmodule PUI.DatePickerComponent do
 
           <select
             id={"#{@month.picker_id}-year-select-#{@month.offset}"}
-            form={"#{@month.picker_id}-month-controls"}
-            name="year"
+            data-pui="calendar-year-select"
+            data-offset={@month.offset}
             aria-label="Select year"
-            phx-change="select_year"
-            phx-target={@myself}
-            phx-value-offset={@month.offset}
-            class={[DatePicker.header_select_classes(), "min-w-22"]}
+            class={[DatePicker.header_select_classes(), "min-w-20"]}
           >
             <option
               :for={option <- year_options(@month, @min, @max, @number_of_months)}
@@ -499,6 +539,7 @@ defmodule PUI.DatePickerComponent do
         :if={@show_next?}
         type="button"
         phx-click={JS.push("navigate", target: @myself, value: %{direction: "next"})}
+        data-pui="calendar-next"
         class={DatePicker.nav_button_classes()}
         aria-label="Go to next month"
         disabled={!@can_navigate_next?}
@@ -516,8 +557,7 @@ defmodule PUI.DatePickerComponent do
        ) do
     JS.set_attribute({"value", day.value}, to: "##{input_id}")
     |> JS.dispatch("pui:popover-close", to: "##{picker_id}")
-    |> JS.dispatch("input", to: "##{input_id}")
-    |> JS.dispatch("change", to: "##{input_id}")
+    |> JS.dispatch("pui:date-picker-sync", to: "##{picker_id}", detail: %{input: input_id})
     |> JS.push("select", target: myself, value: %{date: day.value})
   end
 
@@ -542,31 +582,49 @@ defmodule PUI.DatePickerComponent do
     if DatePicker.selection_completes_range?(from_value, to_value, day.value) do
       js
       |> JS.dispatch("pui:popover-close", to: "##{picker_id}")
-      |> JS.dispatch("input", to: "##{from_input_id}")
-      |> JS.dispatch("change", to: "##{from_input_id}")
+      |> JS.dispatch("pui:date-picker-sync", to: "##{picker_id}", detail: %{input: from_input_id})
       |> JS.push("select", target: myself, value: %{from: next_from || "", to: next_to || ""})
     else
       js
-      |> JS.dispatch("input", to: "##{from_input_id}")
-      |> JS.dispatch("change", to: "##{from_input_id}")
+      |> JS.dispatch("pui:date-picker-sync", to: "##{picker_id}", detail: %{input: from_input_id})
       |> JS.push("select", target: myself, value: %{from: next_from || "", to: next_to || ""})
     end
   end
 
   defp day_button_classes(day) do
     [
-      "inline-flex size-8 items-center justify-center rounded-md p-0 text-sm outline-none transition-colors",
-      "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+      "group relative inline-flex h-7 w-full items-center justify-center p-0 outline-none",
+      day.disabled? && "cursor-not-allowed",
+      (not day.disabled? and not day.selected? and not day.in_range?) &&
+        "hover:text-accent-foreground"
+    ]
+  end
+
+  defp day_label_classes(day) do
+    [
+      "relative z-10 inline-flex size-7 items-center justify-center rounded-md text-[0.8125rem] transition-colors",
+      "group-focus-visible:border-ring group-focus-visible:ring-ring/50 group-focus-visible:ring-[3px]",
       (not day.disabled? and day.selected?) &&
         "bg-primary font-medium text-primary-foreground hover:bg-primary/90",
       (not day.disabled? and not day.selected? and day.in_range?) &&
-        "bg-accent text-accent-foreground hover:bg-accent/80",
+        "text-accent-foreground hover:bg-accent/35",
       (not day.disabled? and not day.selected? and not day.in_range?) &&
         "hover:bg-accent hover:text-accent-foreground",
-      day.disabled? && "cursor-not-allowed text-muted-foreground opacity-35 hover:bg-transparent",
+      day.disabled? && "text-muted-foreground opacity-35",
       day.outside_month? && "text-muted-foreground opacity-60",
       (not day.outside_month? and not day.selected? and not day.disabled?) && "text-foreground",
       (day.today? and not day.selected? and not day.disabled?) && "ring-1 ring-ring/60"
+    ]
+  end
+
+  defp show_range_background?(day), do: day.in_range? or day.range_start? or day.range_end?
+
+  defp day_range_background_classes(day) do
+    [
+      "absolute inset-y-0 bg-accent/75",
+      day.in_range? && "inset-x-0",
+      (day.range_start? and not day.range_end?) && "left-1/2 right-0",
+      (day.range_end? and not day.range_start?) && "left-0 right-1/2"
     ]
   end
 
@@ -595,12 +653,13 @@ defmodule PUI.DatePickerComponent do
         month: month_start.month,
         year: month_start.year,
         value: Date.to_iso8601(month_start),
-        days: build_days(picker_id, mode, month_start, value, from_value, to_value, min, max)
+        days:
+          build_days(picker_id, offset, mode, month_start, value, from_value, to_value, min, max)
       }
     end)
   end
 
-  defp build_days(picker_id, mode, month_start, value, from_value, to_value, min, max) do
+  defp build_days(picker_id, offset, mode, month_start, value, from_value, to_value, min, max) do
     start_date =
       Date.add(month_start, 1 - Date.day_of_week(month_start, :sunday))
 
@@ -609,16 +668,20 @@ defmodule PUI.DatePickerComponent do
       value_iso = Date.to_iso8601(date)
       outside_month? = date.month != month_start.month or date.year != month_start.year
       disabled? = not DatePicker.within_bounds?(value_iso, min, max)
+      range_start? = not disabled? and range_start?(mode, value_iso, from_value, to_value)
+      range_end? = not disabled? and range_end?(mode, value_iso, from_value, to_value)
       selected? = not disabled? and selected?(mode, value_iso, value, from_value, to_value)
       in_range? = not disabled? and in_range?(mode, value_iso, from_value, to_value)
       today? = Date.compare(date, Date.utc_today()) == :eq
 
       %{
-        id: "#{picker_id}-day-#{value_iso}",
+        id: "#{picker_id}-month-#{offset}-day-#{value_iso}",
         value: value_iso,
         label: date.day,
         outside_month?: outside_month?,
         disabled?: disabled?,
+        range_start?: range_start?,
+        range_end?: range_end?,
         selected?: selected?,
         in_range?: in_range?,
         today?: today?
@@ -631,18 +694,24 @@ defmodule PUI.DatePickerComponent do
   defp selected?("range", value_iso, _value, from_value, to_value),
     do: value_iso in [from_value, to_value]
 
+  defp range_start?("range", value_iso, from_value, to_value),
+    do: is_binary(to_value) and value_iso == from_value
+
+  defp range_start?("single", _value_iso, _from_value, _to_value), do: false
+
+  defp range_end?("range", value_iso, _from_value, to_value),
+    do: is_binary(to_value) and value_iso == to_value
+
+  defp range_end?("single", _value_iso, _from_value, _to_value), do: false
+
   defp in_range?("single", _value_iso, _from_value, _to_value), do: false
 
   defp in_range?("range", value_iso, from_value, to_value)
        when is_binary(from_value) and is_binary(to_value) do
-    Date.compare(DatePicker.normalize_date!(value_iso), DatePicker.normalize_date!(from_value)) in [
-      :eq,
-      :gt
-    ] and
-      Date.compare(DatePicker.normalize_date!(value_iso), DatePicker.normalize_date!(to_value)) in [
-        :eq,
+    Date.compare(DatePicker.normalize_date!(value_iso), DatePicker.normalize_date!(from_value)) ==
+      :gt and
+      Date.compare(DatePicker.normalize_date!(value_iso), DatePicker.normalize_date!(to_value)) ==
         :lt
-      ]
   end
 
   defp in_range?("range", _value_iso, _from_value, _to_value), do: false
@@ -652,8 +721,38 @@ defmodule PUI.DatePickerComponent do
   end
 
   defp resolve_visible_month("range", default_month, _value, from_value, to_value) do
-    DatePicker.resolve_visible_month(default_month, [from_value, to_value])
+    DatePicker.resolve_visible_month(default_month, [to_value, from_value])
   end
+
+  defp maybe_preserve_visible_month(
+         mode,
+         current_visible_month,
+         default_month,
+         value,
+         from_value,
+         to_value,
+         number_of_months
+       ) do
+    resolved_visible_month =
+      resolve_visible_month(mode, default_month, value, from_value, to_value)
+
+    focus_value = focus_value(mode, value, from_value, to_value)
+
+    if DatePicker.visible_window_contains?(current_visible_month, focus_value, number_of_months) do
+      current_visible_month
+    else
+      resolved_visible_month
+    end
+  end
+
+  defp focus_date("single", value, _from_value, _to_value),
+    do: value || Date.utc_today() |> Date.to_iso8601()
+
+  defp focus_date("range", _value, from_value, to_value),
+    do: to_value || from_value || Date.utc_today() |> Date.to_iso8601()
+
+  defp focus_value("single", value, _from_value, _to_value), do: value
+  defp focus_value("range", _value, from_value, to_value), do: to_value || from_value
 
   defp assign_calendar(socket, overrides) do
     overrides = Map.new(overrides)

@@ -278,7 +278,7 @@ defmodule PUI.DatePicker do
         iso -> iso |> normalize_date!() |> Date.beginning_of_month() |> Date.to_iso8601()
       end
 
-    default_month || selected_month ||
+    selected_month || default_month ||
       Date.utc_today() |> Date.beginning_of_month() |> Date.to_iso8601()
   end
 
@@ -293,6 +293,34 @@ defmodule PUI.DatePicker do
 
   @doc false
   def visible_month_for_offset(value, offset), do: shift_month(value, offset)
+
+  @doc false
+  def visible_window_contains?(visible_month, value, number_of_months) do
+    visible_month = normalize_date_value(visible_month)
+    value = normalize_date_value(value)
+
+    cond do
+      is_nil(visible_month) or is_nil(value) ->
+        false
+
+      true ->
+        first_visible_day =
+          visible_month
+          |> normalize_date!()
+          |> Date.beginning_of_month()
+
+        last_visible_day =
+          visible_month
+          |> shift_month(number_of_months - 1)
+          |> normalize_date!()
+          |> Date.end_of_month()
+
+        date = normalize_date!(value)
+
+        Date.compare(date, first_visible_day) in [:eq, :gt] and
+          Date.compare(date, last_visible_day) in [:eq, :lt]
+    end
+  end
 
   @doc false
   def clamp_visible_month(value, min, max, number_of_months) do
@@ -372,7 +400,7 @@ defmodule PUI.DatePicker do
         {date_value, nil}
 
       Date.compare(normalize_date!(date_value), normalize_date!(from_value)) in [:lt, :eq] ->
-        {date_value, nil}
+        {date_value, from_value}
 
       true ->
         {from_value, date_value}
@@ -387,7 +415,7 @@ defmodule PUI.DatePicker do
 
     not is_nil(from_value) and
       is_nil(to_value) and
-      Date.compare(normalize_date!(date_value), normalize_date!(from_value)) == :gt
+      Date.compare(normalize_date!(date_value), normalize_date!(from_value)) != :eq
   end
 
   @doc false
@@ -412,7 +440,7 @@ defmodule PUI.DatePicker do
       "aria-hidden:hidden block overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground",
       "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
       "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-      "z-50 w-auto min-w-[17rem] origin-top shadow-md data-[reference-hidden=true]:pointer-events-none data-[reference-hidden=true]:invisible data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom",
+      "z-50 w-auto min-w-[15rem] origin-top shadow-md data-[reference-hidden=true]:pointer-events-none data-[reference-hidden=true]:invisible data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom",
       content_class
     ]
   end

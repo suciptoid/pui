@@ -10,9 +10,9 @@ import {
   size,
 } from "@floating-ui/dom";
 
-export default class Popover extends ViewHook {
+export default class DatePicker extends ViewHook {
   expanded = false;
-  name = "popover";
+  name = "date-picker";
   placement = "bottom-start";
   defaultPlacement = "bottom-start";
   activePlacement = "bottom-start";
@@ -23,6 +23,7 @@ export default class Popover extends ViewHook {
   currentIndex = -1;
   expand_popover = false; // expand popover to match width of trigger
   focus_selected = true;
+  pendingCalendarFocusDate = null;
 
   #outside_listener;
   #clear_floating;
@@ -33,6 +34,9 @@ export default class Popover extends ViewHook {
   #triggerBlurHandler;
   #containerKeyDownHandler;
   #triggerKeyDownHandler;
+  #externalCloseHandler;
+  #inputSyncHandler;
+  #selectChangeHandler;
 
   mounted() {
     this.defaultPlacement = this.el.dataset.placement || this.placement;
@@ -52,8 +56,15 @@ export default class Popover extends ViewHook {
     this.#triggerBlurHandler = this.handleTriggerBlur.bind(this);
     this.#containerKeyDownHandler = this.handleContainerKeyDown.bind(this);
     this.#triggerKeyDownHandler = this.handleTriggerKeyDown.bind(this);
+    this.#externalCloseHandler = this.handleExternalClose.bind(this);
+    this.#inputSyncHandler = this.handleInputSync.bind(this);
+    this.#selectChangeHandler = this.handleSelectChange.bind(this);
 
     this.bindEventListeners();
+    this.el.addEventListener("pui:popover-close", this.#externalCloseHandler);
+    this.el.addEventListener("pui:date-picker-sync", this.#inputSyncHandler);
+    this.el.addEventListener("change", this.#selectChangeHandler);
+    this.ignoreHookManagedAttributes();
 
     this.#outside_listener = (event) => {
       const target = event.target;
@@ -79,15 +90,20 @@ export default class Popover extends ViewHook {
     const previousTrigger = this.trigger;
 
     this.cacheElements();
+    this.ignoreHookManagedAttributes();
     this.rebindEventListeners(previousTrigger);
     this.restoreExpanded();
     this.initFloatingUI();
     this.refreshFloatingUI();
+    this.restorePendingCalendarFocus();
   }
 
   destroyed() {
     this.unbindEventListeners(this.trigger);
     document.removeEventListener("click", this.#outside_listener);
+    this.el.removeEventListener("pui:popover-close", this.#externalCloseHandler);
+    this.el.removeEventListener("pui:date-picker-sync", this.#inputSyncHandler);
+    this.el.removeEventListener("change", this.#selectChangeHandler);
 
     if (this.#clear_floating) {
       this.#clear_floating();
@@ -145,6 +161,10 @@ export default class Popover extends ViewHook {
   handleContainerKeyDown(event) {
     if (!this.expanded) return;
 
+    if (["SELECT", "INPUT", "TEXTAREA"].includes(event.target?.tagName)) {
+      return;
+    }
+
     switch (event.key) {
       case "Escape":
         event.preventDefault();
@@ -154,6 +174,8 @@ export default class Popover extends ViewHook {
         break;
       case "ArrowDown":
       case "ArrowUp":
+      case "ArrowLeft":
+      case "ArrowRight":
       case "Home":
       case "End":
         this.handleArrowNavigation(event);
@@ -179,6 +201,52 @@ export default class Popover extends ViewHook {
     // see select.js for example
   }
 
+  handleExternalClose() {
+    if (!this.expanded) return;
+
+    this.closePopover();
+    this.refreshExpanded();
+  }
+
+  handleInputSync(event) {
+    const inputId = event.detail?.input;
+    const input = inputId ? document.getElementById(inputId) : null;
+
+    if (!input) {
+      return;
+    }
+
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  handleSelectChange(event) {
+    const target = event.target;
+
+    if (!(target instanceof HTMLSelectElement)) {
+      return;
+    }
+
+    const offset = target.dataset.offset;
+
+    if (target.dataset.pui === "calendar-month-select") {
+      event.stopPropagation();
+      this.pushEventTo(this.el, "select_month", {
+        month: target.value,
+        offset,
+      });
+      return;
+    }
+
+    if (target.dataset.pui === "calendar-year-select") {
+      event.stopPropagation();
+      this.pushEventTo(this.el, "select_year", {
+        year: target.value,
+        offset,
+      });
+    }
+  }
+
   handleTriggerTypeahead(_event) {
     return false;
   }
@@ -189,6 +257,15 @@ export default class Popover extends ViewHook {
 
   handleArrowNavigation(event) {
     if (!this.expanded) return;
+
+    if (
+      this.popup?.dataset.gridNavigation === "calendar" &&
+      ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)
+    ) {
+      event.preventDefault();
+      this.handleCalendarArrowNavigation(event.key);
+      return;
+    }
 
     const visibleItems = this.getNavigableItems();
     const itemCount = visibleItems.length;
@@ -215,6 +292,52 @@ export default class Popover extends ViewHook {
     }
 
     this.setCurrentItemByIndex(newIndex, visibleItems);
+  }
+
+  handleCalendarArrowNavigation(key) {
+    const items = this.getNavigableItems();
+    const currentIndex =
+      this.currentIndex === -1
+        ? this.getInitialNavigationIndex(items)
+        : this.currentIndex;
+    const currentItem = items[currentIndex];
+    const currentDate = currentItem?.dataset?.date;
+
+    if (!currentDate) {
+      return;
+    }
+
+    const dayOffset =
+      key === "ArrowLeft"
+        ? -1
+        : key === "ArrowRight"
+          ? 1
+          : key === "ArrowUp"
+            ? -7
+            : 7;
+
+    const targetDate = this.addDays(currentDate, dayOffset);
+    const targetIndex = this.findCalendarTargetIndex(
+      items,
+      currentIndex,
+      targetDate,
+      key,
+    );
+
+    if (targetIndex !== -1) {
+      this.setCurrentItemByIndex(targetIndex, items);
+      return;
+    }
+
+    const direction = dayOffset < 0 ? "prev" : "next";
+    const navButton = this.popup?.querySelector(`[data-pui="calendar-${direction}"]`);
+
+    if (!navButton || navButton.disabled) {
+      return;
+    }
+
+    this.pendingCalendarFocusDate = targetDate;
+    this.pushEventTo(this.el, "navigate", { direction });
   }
 
   initFloatingUI() {
@@ -390,6 +513,16 @@ export default class Popover extends ViewHook {
     this.listenOutside();
     this.initFloatingUI();
     this.refreshFloatingUI();
+
+    requestAnimationFrame(() => {
+      if (!this.expanded) return;
+
+      if (this.currentIndex !== -1) {
+        this.setCurrentItemByIndex(this.currentIndex);
+      } else {
+        this.focusElement(this.popup);
+      }
+    });
   }
 
   log(msg, data) {
@@ -415,6 +548,16 @@ export default class Popover extends ViewHook {
       this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
   }
 
+  ignoreHookManagedAttributes() {
+    if (this.trigger) {
+      this.js().ignoreAttributes(this.trigger, ["aria-expanded"]);
+    }
+
+    if (this.popup) {
+      this.js().ignoreAttributes(this.popup, ["aria-*", "data-*", "style"]);
+    }
+  }
+
   getOpenPlacement() {
     return this.defaultPlacement;
   }
@@ -433,6 +576,15 @@ export default class Popover extends ViewHook {
   }
 
   getInitialNavigationIndex(items) {
+    const focusDate = this.popup?.dataset.focusDate;
+
+    if (focusDate) {
+      const focusedIndex = items.findIndex((item) => item.dataset?.date === focusDate);
+      if (focusedIndex !== -1) {
+        return focusedIndex;
+      }
+    }
+
     return items.length > 0 ? 0 : -1;
   }
 
@@ -482,6 +634,92 @@ export default class Popover extends ViewHook {
         element.focus();
       }
     }
+  }
+
+  restorePendingCalendarFocus() {
+    if (!this.pendingCalendarFocusDate || !this.expanded) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      if (!this.expanded) return;
+
+      const items = this.getNavigableItems();
+      const targetIndex = items.findIndex(
+        (item) => item.dataset?.date === this.pendingCalendarFocusDate,
+      );
+
+      if (targetIndex !== -1) {
+        this.setCurrentItemByIndex(targetIndex, items);
+      }
+
+      this.pendingCalendarFocusDate = null;
+    });
+  }
+
+  addDays(value, offset) {
+    const date = this.parseISODate(value);
+    if (!date) {
+      return value;
+    }
+
+    date.setUTCDate(date.getUTCDate() + offset);
+    return this.formatISODate(date);
+  }
+
+  parseISODate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+
+    if (!match) {
+      return null;
+    }
+
+    const [, year, month, day] = match;
+    const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  formatISODate(date) {
+    const year = String(date.getUTCFullYear());
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(date.getUTCDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+  findCalendarTargetIndex(items, currentIndex, targetDate, key) {
+    const candidates = items
+      .map((item, index) => ({ item, index }))
+      .filter(({ item }) => item.dataset?.date === targetDate);
+
+    if (candidates.length === 0) {
+      return -1;
+    }
+
+    const inMonthCandidate = candidates.find(
+      ({ item }) => item.dataset?.outsideMonth !== "true",
+    );
+
+    if (inMonthCandidate) {
+      return inMonthCandidate.index;
+    }
+
+    if (key === "ArrowRight" || key === "ArrowDown") {
+      return (
+        candidates.find(({ index }) => index > currentIndex)?.index ??
+        candidates[candidates.length - 1].index
+      );
+    }
+
+    if (key === "ArrowLeft" || key === "ArrowUp") {
+      return (
+        [...candidates].reverse().find(({ index }) => index < currentIndex)?.index ??
+        candidates[0].index
+      );
+    }
+
+    return candidates[0].index;
   }
 
   resolveStrategy() {

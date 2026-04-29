@@ -7,7 +7,7 @@ defmodule AppWeb.DatePickerFeatureTest do
     session
     |> visit("/__test__/components/date-picker")
     |> assert_has(css("label[for='harness-date-picker-input']"))
-    |> assert_has(css("#harness-date-picker-day-2026-04-18", visible: false))
+    |> assert_has(css("#harness-date-picker-month-0-day-2026-04-18", visible: false))
     |> assert_has(
       css(
         "#harness-date-picker-trigger[aria-controls='harness-date-picker-popover'][aria-expanded='false']"
@@ -36,6 +36,7 @@ defmodule AppWeb.DatePickerFeatureTest do
           return;
         }
 
+        trigger?.click();
         window.setTimeout(poll, 20);
       };
 
@@ -47,7 +48,7 @@ defmodule AppWeb.DatePickerFeatureTest do
         assert state["ariaHidden"] == "false", inspect(state)
       end
     )
-    |> click(css("#harness-date-picker-day-2026-04-18"))
+    |> click(css("#harness-date-picker-month-0-day-2026-04-18"))
     |> assert_has(css("#date-picker-value", text: "Selected: 2026-04-18"))
     |> assert_has(css("#harness-date-picker-trigger", text: "Apr 18, 2026"))
   end
@@ -58,8 +59,8 @@ defmodule AppWeb.DatePickerFeatureTest do
     session
     |> visit("/__test__/components/date-picker")
     |> assert_has(css("label[for='harness-range-picker-from-input']"))
-    |> assert_has(css("#harness-range-picker-day-2026-04-20", visible: false))
-    |> assert_has(css("#harness-range-picker-day-2026-05-10", visible: false))
+    |> assert_has(css("#harness-range-picker-month-0-day-2026-04-20", visible: false))
+    |> assert_has(css("#harness-range-picker-month-1-day-2026-05-10", visible: false))
     |> execute_script(~s|document.querySelector("#harness-range-picker-trigger").click()|)
     |> execute_script_async(
       """
@@ -82,6 +83,7 @@ defmodule AppWeb.DatePickerFeatureTest do
           return;
         }
 
+        trigger?.click();
         window.setTimeout(poll, 20);
       };
 
@@ -93,7 +95,9 @@ defmodule AppWeb.DatePickerFeatureTest do
         assert state["ariaHidden"] == "false", inspect(state)
       end
     )
-    |> execute_script(~s|document.querySelector("#harness-range-picker-day-2026-04-20").click()|)
+    |> execute_script(
+      ~s|document.querySelector("#harness-range-picker-month-0-day-2026-04-20").click()|
+    )
     |> execute_script_async(
       """
       const done = arguments[arguments.length - 1];
@@ -101,7 +105,9 @@ defmodule AppWeb.DatePickerFeatureTest do
       """,
       fn _ -> :ok end
     )
-    |> execute_script(~s|document.querySelector("#harness-range-picker-day-2026-05-10").click()|)
+    |> execute_script(
+      ~s|document.querySelector("#harness-range-picker-month-1-day-2026-05-10").click()|
+    )
     |> assert_has(css("#range-picker-value", text: "Range: 2026-04-20 / 2026-05-10"))
     |> assert_has(css("#harness-range-picker-trigger", text: "Apr 20, 2026 - May 10, 2026"))
   end
