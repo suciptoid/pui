@@ -1,0 +1,4 @@
+interface:
+  display_name: "PUI Migrate"
+  short_description: "Migrate Phoenix generated UI to PUI components and layout."
+  default_prompt: "Use this skill to migrate a Phoenix app from core components and daisyUI to PUI."

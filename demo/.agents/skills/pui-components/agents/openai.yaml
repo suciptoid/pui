@@ -1,0 +1,4 @@
+interface:
+  display_name: "PUI Components"
+  short_description: "Use PUI component APIs and docs correctly in Phoenix apps."
+  default_prompt: "Use this skill when implementing UI with PUI components and reading module docs via IEx.Helpers.h/1."
