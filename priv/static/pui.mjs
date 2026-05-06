@@ -8551,9 +8551,12 @@ var ChartHook = class extends ViewHook8 {
         return null;
       }
       const config = this.payload.series[offset3] || {};
+      const color = this.resolveCssValue(
+        config.color || config.stroke || this.paletteColor(offset3)
+      );
       return {
         label: series.label,
-        color: series.stroke,
+        color,
         value: this.formatSeriesValue(value, config)
       };
     }).filter(Boolean);
@@ -8587,6 +8590,9 @@ var ChartHook = class extends ViewHook8 {
     this.tooltip.replaceChildren(title, list);
   }
   tooltipTitle(chart, idx) {
+    if (this.payload.tooltip?.title) {
+      return this.payload.tooltip.title;
+    }
     const xValue = chart.data[0]?.[idx];
     if (Array.isArray(this.payload.categories) && this.payload.categories[idx] != null) {
       return `${this.payload.categories[idx]}`;

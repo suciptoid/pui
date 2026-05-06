@@ -82,7 +82,7 @@ defmodule PUI.ComposeChart do
         data-chart-tooltip
         phx-update="ignore"
         role="tooltip"
-        class="pui-chart-tooltip pointer-events-none fixed left-0 top-0 z-50 hidden min-w-40 rounded-2xl border border-border/50 bg-popover px-4 py-3 text-popover-foreground shadow-lg"
+        class="pui-chart-tooltip pointer-events-none fixed left-0 top-0 z-50 hidden min-w-36 rounded-lg border border-border/50 bg-popover px-3 py-2.5 text-popover-foreground shadow-md"
       >
       </div>
     </div>

@@ -519,10 +519,13 @@ export class ChartHook extends ViewHook {
         }
 
         const config = this.payload.series[offset] || {};
+        const color = this.resolveCssValue(
+          config.color || config.stroke || this.paletteColor(offset),
+        );
 
         return {
           label: series.label,
-          color: series.stroke,
+          color,
           value: this.formatSeriesValue(value, config),
         };
       })
@@ -568,6 +571,10 @@ export class ChartHook extends ViewHook {
   }
 
   tooltipTitle(chart, idx) {
+    if (this.payload.tooltip?.title) {
+      return this.payload.tooltip.title;
+    }
+
     const xValue = chart.data[0]?.[idx];
 
     if (
