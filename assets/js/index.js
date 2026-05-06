@@ -6,6 +6,9 @@ import Tooltip from "./tooltip";
 import FlashGroup from "./flash";
 import Tabs from "./tabs";
 import Sidebar from "./sidebar";
+import ChartHook from "./chart_hook";
+import BarChart from "./bar_chart";
+import LineChart from "./line_chart";
 
 export const Hooks = {
   "PUI.LoadingBar": LoadingBar,
@@ -16,6 +19,21 @@ export const Hooks = {
   "PUI.Tooltip": Tooltip,
   "PUI.FlashGroup": FlashGroup,
   "PUI.Sidebar": Sidebar,
+  "PUI.Chart": ChartHook,
+  "PUI.BarChart": BarChart,
+  "PUI.LineChart": LineChart,
 };
 
-export { Popover, DatePicker, Select, LoadingBar, Tabs, Tooltip, FlashGroup, Sidebar };
+export {
+  Popover,
+  DatePicker,
+  Select,
+  LoadingBar,
+  Tabs,
+  Tooltip,
+  FlashGroup,
+  Sidebar,
+  ChartHook,
+  BarChart,
+  LineChart,
+};

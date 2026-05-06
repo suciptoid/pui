@@ -18,6 +18,7 @@ defmodule PUI do
       import PUI.Popover
       import PUI.Select
       import PUI.DatePicker
+      import PUI.Chart
       import PUI.Tabs
       import PUI.Dialog
       import PUI.Layout

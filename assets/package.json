@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@floating-ui/dom": "^1.7.4"
+    "@floating-ui/dom": "^1.7.4",
+    "uplot": "^1.6.32"
   }
 }

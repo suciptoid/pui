@@ -819,3 +819,192 @@
         );
     }
 }
+
+.pui-chart .uplot,
+.pui-chart .uplot *,
+.pui-chart .uplot *::before,
+.pui-chart .uplot *::after {
+    box-sizing: border-box;
+}
+
+.pui-chart .uplot {
+    width: min-content;
+    color: var(--foreground);
+    font-family: var(--font-sans, system-ui, sans-serif);
+    line-height: 1.5;
+}
+
+.pui-chart .u-wrap {
+    position: relative;
+    user-select: none;
+}
+
+.pui-chart .u-over,
+.pui-chart .u-under {
+    position: absolute;
+}
+
+.pui-chart .u-under {
+    overflow: hidden;
+}
+
+.pui-chart .uplot canvas {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.pui-chart .u-axis {
+    position: absolute;
+}
+
+.pui-chart .u-legend {
+    margin: 0.875rem auto 0;
+    color: var(--muted-foreground);
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.pui-chart .u-inline {
+    display: block;
+}
+
+.pui-chart .u-inline * {
+    display: inline-block;
+}
+
+.pui-chart .u-inline tr {
+    margin-right: 1rem;
+}
+
+.pui-chart .u-legend th {
+    font-weight: 600;
+}
+
+.pui-chart .u-legend th > * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.pui-chart .u-legend .u-marker {
+    width: 0.875rem;
+    height: 0.875rem;
+    margin-right: 0.375rem;
+    border-radius: 9999px;
+    background-clip: padding-box !important;
+}
+
+.pui-chart .u-inline.u-live th::after {
+    content: ":";
+    vertical-align: middle;
+}
+
+.pui-chart .u-inline:not(.u-live) .u-value {
+    display: none;
+}
+
+.pui-chart .u-series > * {
+    padding: 0.25rem;
+}
+
+.pui-chart .u-series th {
+    cursor: pointer;
+}
+
+.pui-chart .u-legend .u-off > * {
+    opacity: 0.35;
+}
+
+.pui-chart .u-select {
+    position: absolute;
+    pointer-events: none;
+    background: color-mix(in oklab, var(--chart-1) 12%, transparent);
+}
+
+.pui-chart .u-cursor-x,
+.pui-chart .u-cursor-y {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.pui-chart .u-hz .u-cursor-x,
+.pui-chart .u-vt .u-cursor-y {
+    height: 100%;
+    border-right: 1px dashed color-mix(in oklab, var(--border) 82%, transparent);
+}
+
+.pui-chart .u-hz .u-cursor-y,
+.pui-chart .u-vt .u-cursor-x {
+    width: 100%;
+    border-bottom: 1px dashed color-mix(in oklab, var(--border) 82%, transparent);
+}
+
+.pui-chart .u-cursor-pt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border: 0 solid transparent;
+    border-radius: 9999px;
+    pointer-events: none;
+    will-change: transform;
+    background-clip: padding-box !important;
+}
+
+.pui-chart .u-axis.u-off,
+.pui-chart .u-select.u-off,
+.pui-chart .u-cursor-x.u-off,
+.pui-chart .u-cursor-y.u-off,
+.pui-chart .u-cursor-pt.u-off {
+    display: none;
+}
+
+.pui-chart-tooltip {
+    max-width: min(18rem, calc(100vw - 1.5rem));
+}
+
+.pui-chart-tooltip__title {
+    margin-bottom: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.pui-chart-tooltip__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.pui-chart-tooltip__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    white-space: nowrap;
+    font-size: 0.75rem;
+}
+
+.pui-chart-tooltip__label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: color-mix(in oklab, var(--popover-foreground) 80%, transparent);
+}
+
+.pui-chart-tooltip__marker {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+}
+
+.pui-chart-tooltip__value {
+    color: var(--popover-foreground);
+    font-weight: 600;
+}

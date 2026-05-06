@@ -9,6 +9,12 @@ defmodule AppWeb.DocsDemo do
   use AppWeb, :html
   use PUI
 
+  @chart_categories ~w(Jan Feb Mar Apr May Jun)
+  @chart_line_labels ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"]
+  @chart_line_base_a [41.2, 43.8, 46.5, 45.1, 44.6, 42.9]
+  @chart_line_base_b [36.4, 37.8, 39.2, 40.3, 39.4, 38.1]
+  @chart_line_base_c [51.5, 53.0, 54.1, 55.4, 54.0, 52.6]
+
   def button_demo(assigns) do
     ~H"""
     <section class="space-y-8">
@@ -2286,6 +2292,105 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def chart_base_demo(assigns) do
+    ~H"""
+    <.demo_section title="Low-level Chart + Hook" id="chart-base-demo">
+      <div class="space-y-4">
+        <p class="max-w-2xl text-sm text-muted-foreground">
+          This demo uses the generic <code>&lt;.chart&gt;</code> component with the
+          prebuilt <code>PUI.BarChart</code> hook. The LiveView component only sends
+          serializable config; the hook builds the uPlot instance.
+        </p>
+
+        <.chart
+          id="docs-chart-base"
+          hook="PUI.BarChart"
+          height={280}
+          config={chart_base_config()}
+        />
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def chart_bar_demo(assigns) do
+    ~H"""
+    <.demo_section title="Preconfigured Bar Chart" id="chart-bar-demo">
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-foreground">Monthly revenue</p>
+            <p class="text-sm text-muted-foreground">
+              Styled with the default PUI chart palette, axes, and tooltip.
+            </p>
+          </div>
+          <.badge variant="outline">Hook: PUI.BarChart</.badge>
+        </div>
+
+        <.bar_chart
+          id="docs-bar-chart"
+          categories={chart_categories()}
+          height={300}
+          series={[
+            %{label: "Revenue", data: [12.4, 18.7, 15.2, 22.1, 19.8, 25.3], suffix: " jt"},
+            %{label: "Target", data: [10.0, 14.0, 16.0, 18.0, 20.0, 24.0], suffix: " jt"}
+          ]}
+        />
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def chart_line_demo(assigns) do
+    ~H"""
+    <.demo_section title="LiveView Patch Updates" id="chart-line-demo">
+      <div class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap gap-2">
+            <button
+              :for={curve <- ~w(linear stepped spline)}
+              type="button"
+              phx-click="chart_set_curve"
+              phx-value-curve={curve}
+              class={[
+                "rounded-full px-3 py-1 text-xs font-medium transition-all",
+                curve == @chart_curve && "bg-primary text-primary-foreground shadow-sm",
+                curve != @chart_curve &&
+                  "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+              ]}
+            >
+              {curve}
+            </button>
+          </div>
+
+          <.button
+            id="chart-reseed"
+            type="button"
+            variant="outline"
+            size="sm"
+            phx-click="chart_advance_revision"
+          >
+            Refresh dataset
+          </.button>
+        </div>
+
+        <div class="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+          Curve: <span class="font-medium text-foreground">{@chart_curve}</span>
+          · Revision: <span class="font-medium text-foreground">{@chart_revision}</span>
+        </div>
+
+        <.line_chart
+          id="docs-line-chart"
+          curve={@chart_curve}
+          labels={chart_line_labels()}
+          height={320}
+          series={chart_line_series(@chart_revision)}
+        />
+      </div>
+    </.demo_section>
+    """
+  end
+
   def getting_started_demo(assigns) do
     ~H"""
     <section class="space-y-8">
@@ -2318,5 +2423,51 @@ defmodule AppWeb.DocsDemo do
       </div>
     </div>
     """
+  end
+
+  defp chart_base_config do
+    %{
+      preset: "bar",
+      categories: @chart_categories,
+      data: [
+        Enum.to_list(0..(length(@chart_categories) - 1)),
+        [4.2, 6.0, 5.1, 7.3, 6.7, 8.4]
+      ],
+      series: [
+        %{label: "Deploys", suffix: "x"}
+      ],
+      tooltip: %{show: true}
+    }
+  end
+
+  defp chart_categories, do: @chart_categories
+  defp chart_line_labels, do: @chart_line_labels
+
+  defp chart_line_series(revision) do
+    [
+      %{
+        label: "Server A",
+        data: revise_points(@chart_line_base_a, revision, 0.7),
+        suffix: "°C"
+      },
+      %{
+        label: "Server B",
+        data: revise_points(@chart_line_base_b, revision + 1, 0.55),
+        suffix: "°C"
+      },
+      %{
+        label: "Server C",
+        data: revise_points(@chart_line_base_c, revision + 2, 0.45),
+        suffix: "°C"
+      }
+    ]
+  end
+
+  defp revise_points(points, revision, amplitude) do
+    Enum.with_index(points)
+    |> Enum.map(fn {point, index} ->
+      delta = :math.sin((revision + index + 1) / 1.7) * amplitude
+      Float.round(point + delta, 1)
+    end)
   end
 end

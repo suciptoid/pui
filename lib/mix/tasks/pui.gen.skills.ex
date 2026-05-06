@@ -88,8 +88,13 @@ defmodule Mix.Tasks.Pui.Gen.Skills do
         agent = opts[:agent] || "codex"
 
         case Map.fetch(@built_in_targets, agent) do
-          {:ok, target} -> [target]
-          :error -> Mix.raise("Unknown --agent '#{agent}'. Use one of: #{Enum.join(Map.keys(@built_in_targets), ", ")}")
+          {:ok, target} ->
+            [target]
+
+          :error ->
+            Mix.raise(
+              "Unknown --agent '#{agent}'. Use one of: #{Enum.join(Map.keys(@built_in_targets), ", ")}"
+            )
         end
     end
   end
@@ -111,7 +116,9 @@ defmodule Mix.Tasks.Pui.Gen.Skills do
 
       cond do
         File.exists?(dest) and not force? ->
-          Mix.raise("Skill '#{skill_name}' already exists at #{dest}. Re-run with --force to overwrite.")
+          Mix.raise(
+            "Skill '#{skill_name}' already exists at #{dest}. Re-run with --force to overwrite."
+          )
 
         File.exists?(dest) and force? ->
           File.rm_rf!(dest)

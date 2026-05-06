@@ -137,6 +137,8 @@ defmodule AppWeb.Live.LayoutAppLive do
               <.forms_page page={@page} />
             <% :components -> %>
               <.components_page page={@page} />
+            <% :chart -> %>
+              <.chart_page page={@page} />
             <% :settings -> %>
               <.settings_page page={@page} />
           <% end %>
@@ -300,6 +302,19 @@ defmodule AppWeb.Live.LayoutAppLive do
 
       <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
         <div class="space-y-6">
+          <.surface
+            title="Delivery trend"
+            description="A lightweight line chart makes the dashboard feel like a real workspace instead of a stack of disconnected cards."
+          >
+            <.line_chart
+              id="layout-overview-chart"
+              class="border-none bg-transparent p-0 shadow-none"
+              height={280}
+              labels={overview_chart_labels()}
+              series={overview_chart_series()}
+            />
+          </.surface>
+
           <.alert>
             <:icon>
               <.icon name="hero-sparkles" class="size-4" />
@@ -409,6 +424,65 @@ defmodule AppWeb.Live.LayoutAppLive do
             </:content>
           </.tabs>
         </div>
+      </div>
+    </.surface>
+    """
+  end
+
+  attr :page, :map, required: true
+
+  defp chart_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.button variant="outline">
+          <.icon name="hero-arrow-down-tray" class="size-4" /> Export snapshot
+        </.button>
+      </:action>
+      <:action>
+        <.menu_button variant="outline">
+          Chart actions
+          <:item>Share report</:item>
+          <:item>Duplicate dashboard</:item>
+          <:item>Pin to overview</:item>
+        </.menu_button>
+      </:action>
+    </.page_intro>
+
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <.surface
+        title="Throughput by release"
+        description="The dedicated chart page lets the shell host larger analytical views without changing the sidebar, header, or page rhythm."
+      >
+        <.line_chart
+          id="layout-chart-primary"
+          height={320}
+          labels={chart_page_line_labels()}
+          series={chart_page_line_series()}
+        />
+      </.surface>
+
+      <.surface
+        title="Shipments by channel"
+        description="Bar charts fit neatly beside trend panels for compact operational dashboards."
+      >
+        <.bar_chart
+          id="layout-chart-secondary"
+          height={320}
+          categories={chart_page_bar_categories()}
+          series={chart_page_bar_series()}
+        />
+      </.surface>
+    </div>
+
+    <.surface
+      title="How to use this route"
+      description="This page is intentionally simple: a dedicated menu destination for chart-heavy content inside the same reusable shell."
+    >
+      <div class="grid gap-4 md:grid-cols-3">
+        <.metric_card label="Tracked releases" value="18" trend="+3" icon="hero-rocket-launch" />
+        <.metric_card label="Active channels" value="6" trend="Stable" icon="hero-signal" />
+        <.metric_card label="Alerting rules" value="24" trend="+5%" icon="hero-bell-alert" />
       </div>
     </.surface>
     """
@@ -1029,7 +1103,7 @@ defmodule AppWeb.Live.LayoutAppLive do
   end
 
   defp navigation_pages do
-    Enum.map([:overview, :activity, :forms, :components, :settings], &page_config/1)
+    Enum.map([:overview, :activity, :forms, :components, :chart, :settings], &page_config/1)
   end
 
   defp page_config(action) do
@@ -1090,6 +1164,20 @@ defmodule AppWeb.Live.LayoutAppLive do
           path: path
         }
 
+      :chart ->
+        %{
+          action: :chart,
+          title: "Chart",
+          eyebrow: "Chart surfaces",
+          description:
+            "A dedicated layout route for dummy dashboard charts, larger analytical panels, and chart-first content inside the same application shell.",
+          breadcrumb_parent: "Layout showcase",
+          breadcrumb_current: "Chart",
+          icon: "hero-chart-bar",
+          path: path,
+          badge: "New"
+        }
+
       :settings ->
         %{
           action: :settings,
@@ -1112,10 +1200,11 @@ defmodule AppWeb.Live.LayoutAppLive do
   defp normalize_page_action("activity"), do: :activity
   defp normalize_page_action("forms"), do: :forms
   defp normalize_page_action("components"), do: :components
+  defp normalize_page_action("chart"), do: :chart
   defp normalize_page_action("settings"), do: :settings
 
   defp normalize_page_action(action)
-       when action in [:overview, :activity, :forms, :components, :settings], do: action
+       when action in [:overview, :activity, :forms, :components, :chart, :settings], do: action
 
   defp normalize_page_action(_), do: :overview
 
@@ -1123,7 +1212,41 @@ defmodule AppWeb.Live.LayoutAppLive do
   defp page_path(:activity), do: ~p"/demo/layout/activity"
   defp page_path(:forms), do: ~p"/demo/layout/forms"
   defp page_path(:components), do: ~p"/demo/layout/components"
+  defp page_path(:chart), do: ~p"/demo/layout/chart"
   defp page_path(:settings), do: ~p"/demo/layout/settings"
+
+  defp overview_chart_labels do
+    ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  end
+
+  defp overview_chart_series do
+    [
+      %{label: "Completed", data: [28, 34, 31, 39, 42, 37, 45], suffix: " tasks"},
+      %{label: "Queued", data: [18, 21, 19, 24, 26, 22, 25], suffix: " tasks"}
+    ]
+  end
+
+  defp chart_page_line_labels do
+    ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"]
+  end
+
+  defp chart_page_line_series do
+    [
+      %{label: "Web", data: [62, 66, 70, 74, 78, 81], suffix: " req/s"},
+      %{label: "API", data: [48, 51, 55, 57, 60, 64], suffix: " req/s"},
+      %{label: "Worker", data: [29, 32, 34, 38, 41, 43], suffix: " req/s"}
+    ]
+  end
+
+  defp chart_page_bar_categories do
+    ["Direct", "Partners", "Marketplace", "Outbound"]
+  end
+
+  defp chart_page_bar_series do
+    [
+      %{label: "Orders", data: [124, 88, 96, 72], suffix: " orders"}
+    ]
+  end
 
   defp org_options do
     [

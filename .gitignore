@@ -39,3 +39,5 @@ npm-debug.log
 
 # Git worktrees
 /.worktrees/
+
+.DS_Store

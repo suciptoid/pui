@@ -1,0 +1,92 @@
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css">
+<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.iife.min.js"></script>
+
+<h2 class="sr-only">Bar chart penjualan bulanan menggunakan uPlot</h2>
+
+<div style="display:flex;gap:16px;font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;">
+  <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:#3b82f6;"></span>Penjualan (juta)</span>
+</div>
+
+<div id="chart"></div>
+
+<style>
+  .uplot,.uplot *,.uplot canvas{box-sizing:border-box;}
+  .u-wrap{position:relative;user-select:none;}
+  .u-over,.u-under{position:absolute;}
+  .u-cursor-x,.u-cursor-y{display:none!important;}
+  .u-cursor-pt{display:none!important;}
+</style>
+
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor  = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+const axisColor  = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.20)';
+const tickColor  = isDark ? '#9ca3af' : '#6b7280';
+
+const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+const values = [12.4, 18.7, 15.2, 22.1, 19.8, 25.3, 21.0, 28.6, 24.4, 30.1, 27.5, 35.2];
+
+// uPlot butuh timestamp di sumbu x; kita pakai index 0–11 dengan scale non-time
+const xs = labels.map((_, i) => i);
+
+const wrap = document.getElementById('chart');
+const W = wrap.clientWidth || 640;
+
+const opts = {
+  width: W,
+  height: 300,
+  padding: [16, 8, 0, 0],
+  cursor: { show: false },
+  select: { show: false },
+  scales: {
+    x: { time: false, range: [-0.5, 11.5] },
+    y: { auto: true },
+  },
+  axes: [
+    {
+      stroke: axisColor,
+      ticks: { show: false },
+      grid: { show: false },
+      border: { show: false },
+      values: (u, vals) => vals.map(v => {
+        const i = Math.round(v);
+        return (i >= 0 && i < labels.length) ? labels[i] : '';
+      }),
+      font: '13px system-ui',
+      stroke: tickColor,
+      gap: 6,
+    },
+    {
+      stroke: axisColor,
+      ticks: { show: false },
+      grid: { stroke: gridColor, width: 0.5 },
+      border: { show: false },
+      values: (u, vals) => vals.map(v => v > 0 ? v + ' jt' : ''),
+      font: '12px system-ui',
+      stroke: tickColor,
+      size: 52,
+      gap: 6,
+    },
+  ],
+  series: [
+    {},
+    {
+      label: 'Penjualan',
+      fill: isDark ? 'rgba(59,130,246,0.85)' : 'rgba(59,130,246,0.80)',
+      stroke: '#2563eb',
+      paths: uPlot.paths.bars({ size: [0.6, 64] }),
+      points: { show: false },
+      width: 0,
+    },
+  ],
+  legend: { show: false },
+};
+
+new uPlot(opts, [new Float64Array(xs), new Float64Array(values)], wrap);
+
+window.addEventListener('resize', () => {
+  const u = wrap._uplot;
+  if (u) u.setSize({ width: wrap.clientWidth, height: 300 });
+});
+</script>

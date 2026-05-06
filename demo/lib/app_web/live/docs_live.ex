@@ -35,6 +35,8 @@ defmodule AppWeb.Live.DocsLive do
        btn_variant: "default",
        btn_size: "default",
        active_tab: "overview",
+       chart_curve: "linear",
+       chart_revision: 0,
        show_dialog: false,
        progress_value: 45.0,
        toast_count: 0,
@@ -80,6 +82,14 @@ defmodule AppWeb.Live.DocsLive do
 
   def handle_event("select_tab", %{"tab" => tab}, socket) do
     {:noreply, assign(socket, active_tab: tab)}
+  end
+
+  def handle_event("chart_set_curve", %{"curve" => curve}, socket) do
+    {:noreply, assign(socket, chart_curve: curve)}
+  end
+
+  def handle_event("chart_advance_revision", _params, socket) do
+    {:noreply, update(socket, :chart_revision, &(&1 + 1))}
   end
 
   def handle_event("toggle_dialog", _params, socket) do
@@ -346,6 +356,8 @@ defmodule AppWeb.Live.DocsLive do
       :btn_size,
       :btn_variant,
       :active_tab,
+      :chart_curve,
+      :chart_revision,
       :flash,
       :flash_position,
       :form,

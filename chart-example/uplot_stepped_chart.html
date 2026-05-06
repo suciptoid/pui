@@ -1,0 +1,102 @@
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css">
+<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.iife.min.js"></script>
+
+<h2 class="sr-only">Stepped chart harga listrik per jam menggunakan uPlot</h2>
+
+<div style="display:flex;gap:20px;font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;">
+  <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:2px;background:#8b5cf6;"></span>Tarif (Rp/kWh)</span>
+</div>
+
+<div id="chart"></div>
+
+<style>
+  .uplot,.uplot *,.uplot canvas{box-sizing:border-box;}
+  .u-wrap{position:relative;user-select:none;}
+  .u-over,.u-under{position:absolute;}
+  .u-cursor-x,.u-cursor-y{display:none!important;}
+  .u-cursor-pt{display:none!important;}
+</style>
+
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+const tickColor = isDark ? '#9ca3af' : '#6b7280';
+
+const hours = Array.from({length: 24}, (_, i) => i);
+
+// tarif berubah per blok jam — cocok untuk stepped
+const tarif = [
+  800, 800, 800, 800,   // 00–03 off-peak
+  800, 800,             // 04–05 off-peak
+  1200, 1200,           // 06–07 shoulder
+  1800, 1800, 1800,     // 08–10 peak
+  1800, 1800,           // 11–12 peak
+  1500, 1500, 1500,     // 13–15 mid
+  1800, 1800, 1800,     // 16–18 peak
+  2100, 2100,           // 19–20 super-peak
+  1800,                 // 21
+  1500, 1200, 800,      // 22–23 turun
+];
+
+const wrap = document.getElementById('chart');
+const W = wrap.clientWidth || 640;
+
+const opts = {
+  width: W,
+  height: 300,
+  padding: [16, 12, 0, 0],
+  cursor: { show: false },
+  select: { show: false },
+  scales: {
+    x: { time: false, range: [0, 23] },
+    y: { range: [0, 2400] },
+  },
+  axes: [
+    {
+      ticks: { show: false },
+      grid: { show: false },
+      border: { show: false },
+      values: (u, vals) => vals.map(v => {
+        const i = Math.round(v);
+        return (i >= 0 && i <= 23) ? i.toString().padStart(2,'0') + ':00' : '';
+      }),
+      splits: [0, 3, 6, 9, 12, 15, 18, 21, 23],
+      font: '12px system-ui',
+      stroke: tickColor,
+      gap: 6,
+    },
+    {
+      ticks: { show: false },
+      grid: { stroke: gridColor, width: 0.5 },
+      border: { show: false },
+      values: (u, vals) => vals.map(v => v > 0 ? 'Rp' + v.toLocaleString('id') : ''),
+      font: '12px system-ui',
+      stroke: tickColor,
+      size: 72,
+      gap: 6,
+    },
+  ],
+  series: [
+    {},
+    {
+      label: 'Tarif',
+      stroke: '#8b5cf6',
+      fill: isDark ? 'rgba(139,92,246,0.18)' : 'rgba(139,92,246,0.12)',
+      paths: uPlot.paths.stepped({ align: 1 }),
+      points: { show: false },
+      width: 2.5,
+    },
+  ],
+  legend: { show: false },
+};
+
+new uPlot(opts, [
+  new Float64Array(hours),
+  new Float64Array(tarif),
+], wrap);
+
+window.addEventListener('resize', () => {
+  if (wrap._uplot) wrap._uplot.setSize({ width: wrap.clientWidth, height: 300 });
+});
+</script>

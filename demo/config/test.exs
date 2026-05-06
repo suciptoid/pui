@@ -1,10 +1,12 @@
 import Config
 
+test_port = String.to_integer(System.get_env("APP_TEST_PORT", "4002"))
+
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :app, AppWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4002],
-  url: [host: "127.0.0.1"],
+  http: [ip: {127, 0, 0, 1}, port: test_port],
+  url: [host: "127.0.0.1", port: test_port],
   check_origin: false,
   secret_key_base: "Go+ZRTW/Ne4h6HT3cw6bPZbVLOsyM/WcD6xHNTNvvigWWN7nYYIn1xgiv+dYdVl5",
   server: true

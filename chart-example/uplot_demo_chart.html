@@ -1,0 +1,203 @@
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.min.css">
+<script src="https://cdn.jsdelivr.net/npm/uplot@1.6.31/dist/uPlot.iife.min.js"></script>
+
+<h2 class="sr-only">Demo uPlot — multi-series line chart dengan data sensor suhu</h2>
+
+<div style="padding: 1rem 0 0.5rem;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+    <div style="display: flex; gap: 16px; font-size: 13px; color: var(--color-text-secondary);">
+      <span style="display: flex; align-items: center; gap: 6px;">
+        <span style="width: 24px; height: 3px; background: #3b82f6; border-radius: 2px; display: inline-block;"></span>Server A
+      </span>
+      <span style="display: flex; align-items: center; gap: 6px;">
+        <span style="width: 24px; height: 3px; background: #f59e0b; border-radius: 2px; display: inline-block; border-top: 2px dashed #f59e0b; background: none;"></span>Server B
+      </span>
+      <span style="display: flex; align-items: center; gap: 6px;">
+        <span style="width: 24px; height: 3px; background: #10b981; border-radius: 2px; display: inline-block;"></span>Server C
+      </span>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button id="btn-line" onclick="switchType('line')" style="font-size: 12px; padding: 4px 10px; background: var(--color-background-info); color: var(--color-text-info); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer;">Line</button>
+      <button id="btn-step" onclick="switchType('step')" style="font-size: 12px; padding: 4px 10px; background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer;">Step</button>
+      <button id="btn-area" onclick="switchType('area')" style="font-size: 12px; padding: 4px 10px; background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); cursor: pointer;">Area</button>
+    </div>
+  </div>
+  <div id="chart-wrap"></div>
+  <p style="font-size: 12px; color: var(--color-text-tertiary); margin-top: 10px;">Hover untuk tooltip · Scroll/pinch untuk zoom · Drag untuk pan</p>
+</div>
+
+<style>
+  .uplot, .uplot *, .uplot canvas { box-sizing: border-box; }
+  .u-wrap { position: relative; user-select: none; }
+  .u-over, .u-under { position: absolute; }
+  .u-legend { font-size: 13px; text-align: center; }
+  .u-legend * { font-family: var(--font-sans); }
+  .u-legend .u-label { font-size: 13px; }
+  .u-cursor-pt { position: absolute; top: 0; left: 0; border-radius: 50%; pointer-events: none; }
+  .u-tooltip {
+    position: absolute;
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--color-text-primary);
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    z-index: 10;
+    display: none;
+  }
+</style>
+
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+const axisColor = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.35)';
+const textColor = isDark ? '#a1a1a1' : '#6b7280';
+
+const N = 60;
+const now = Math.floor(Date.now() / 1000);
+const timestamps = Array.from({length: N}, (_, i) => now - (N - i) * 60);
+
+function randSeries(base, noise) {
+  const arr = [base];
+  for (let i = 1; i < N; i++) {
+    arr.push(+(arr[i-1] + (Math.random() - 0.48) * noise).toFixed(1));
+  }
+  return arr;
+}
+
+const data = [
+  new Float64Array(timestamps),
+  new Float64Array(randSeries(42, 3)),
+  new Float64Array(randSeries(38, 4)),
+  new Float64Array(randSeries(55, 2.5)),
+];
+
+let currentType = 'line';
+let uplot = null;
+const wrap = document.getElementById('chart-wrap');
+
+function makeOpts(type) {
+  const isArea = type === 'area';
+  const isStep = type === 'step';
+
+  return {
+    width: wrap.clientWidth || 640,
+    height: 280,
+    padding: [10, 0, 0, 0],
+    cursor: {
+      sync: { key: 'main' },
+      drag: { x: true, y: false },
+    },
+    scales: {
+      x: { time: true },
+      y: { auto: true },
+    },
+    axes: [
+      {
+        stroke: axisColor,
+        ticks: { stroke: gridColor },
+        grid: { stroke: gridColor, width: 0.5 },
+        values: (u, vals) => vals.map(v => {
+          const d = new Date(v * 1000);
+          return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+        }),
+        font: `12px ${getComputedStyle(document.body).getPropertyValue('--font-sans') || 'system-ui'}`,
+        labelFont: `12px sans-serif`,
+        stroke: textColor,
+      },
+      {
+        stroke: axisColor,
+        ticks: { stroke: gridColor },
+        grid: { stroke: gridColor, width: 0.5 },
+        values: (u, vals) => vals.map(v => v + '°'),
+        font: `12px ${getComputedStyle(document.body).getPropertyValue('--font-sans') || 'system-ui'}`,
+        stroke: textColor,
+        size: 46,
+      },
+    ],
+    series: [
+      {},
+      {
+        label: 'Server A',
+        stroke: '#3b82f6',
+        fill: isArea ? 'rgba(59,130,246,0.12)' : undefined,
+        paths: isStep ? uPlot.paths.stepped({align: 1}) : uPlot.paths.linear(),
+        width: 2,
+        points: { show: false },
+      },
+      {
+        label: 'Server B',
+        stroke: '#f59e0b',
+        fill: isArea ? 'rgba(245,158,11,0.10)' : undefined,
+        paths: isStep ? uPlot.paths.stepped({align: 1}) : uPlot.paths.linear(),
+        dash: [6, 3],
+        width: 2,
+        points: { show: false },
+      },
+      {
+        label: 'Server C',
+        stroke: '#10b981',
+        fill: isArea ? 'rgba(16,185,129,0.10)' : undefined,
+        paths: isStep ? uPlot.paths.stepped({align: 1}) : uPlot.paths.linear(),
+        width: 2,
+        points: { show: false },
+      },
+    ],
+    legend: { show: false },
+    hooks: {
+      setCursor: [
+        u => {
+          const tt = wrap.querySelector('.u-tooltip');
+          if (!tt) return;
+          const { left, top, idx } = u.cursor;
+          if (idx == null || left < 0) { tt.style.display = 'none'; return; }
+          const ts = new Date(u.data[0][idx] * 1000);
+          const time = ts.getHours().toString().padStart(2,'0') + ':' + ts.getMinutes().toString().padStart(2,'0');
+          const colors = ['#3b82f6','#f59e0b','#10b981'];
+          const labels = ['Server A','Server B','Server C'];
+          tt.innerHTML = `<div style="font-weight:500;margin-bottom:6px;color:var(--color-text-secondary)">${time}</div>` +
+            [1,2,3].map(s => `<div style="display:flex;align-items:center;gap:8px;margin:2px 0"><span style="width:8px;height:8px;border-radius:50%;background:${colors[s-1]};flex-shrink:0"></span><span style="color:var(--color-text-secondary)">${labels[s-1]}:</span><span style="font-weight:500">${u.data[s][idx]}°C</span></div>`).join('');
+          const ow = wrap.offsetWidth;
+          const tw = 160;
+          tt.style.display = 'block';
+          tt.style.left = (left + 20 + tw > ow ? left - tw - 10 : left + 20) + 'px';
+          tt.style.top = Math.max(0, top - 20) + 'px';
+        }
+      ]
+    }
+  };
+}
+
+function createChart(type) {
+  if (uplot) { uplot.destroy(); wrap.innerHTML = ''; }
+  const tooltip = document.createElement('div');
+  tooltip.className = 'u-tooltip';
+  uplot = new uPlot(makeOpts(type), data, wrap);
+  wrap.querySelector('.u-over').appendChild(tooltip);
+}
+
+function switchType(type) {
+  currentType = type;
+  ['line','step','area'].forEach(t => {
+    const btn = document.getElementById('btn-' + t);
+    if (t === type) {
+      btn.style.background = 'var(--color-background-info)';
+      btn.style.color = 'var(--color-text-info)';
+    } else {
+      btn.style.background = 'var(--color-background-secondary)';
+      btn.style.color = 'var(--color-text-secondary)';
+    }
+  });
+  createChart(type);
+}
+
+createChart('line');
+
+window.addEventListener('resize', () => {
+  if (uplot) uplot.setSize({ width: wrap.clientWidth, height: 280 });
+});
+</script>
