@@ -10,16 +10,27 @@ defmodule AppWeb.DocsMarkdown do
   use MDEx
   use PUI
 
+  @mdex_options [
+    extension: [
+      strikethrough: true,
+      table: true,
+      autolink: true,
+      tasklist: true,
+      phoenix_heex: true
+    ],
+    render: [unsafe: true]
+  ]
+
   def render(markdown, assigns) do
-    MDEx.to_heex!(markdown,
-      assigns: assigns,
-      extension: [
-        strikethrough: true,
-        table: true,
-        autolink: true,
-        tasklist: true,
-        header_ids: ""
-      ]
-    )
+    case MDEx.to_html(markdown, @mdex_options) do
+      {:ok, html} ->
+        case MDEx.to_heex(html, assigns: assigns) do
+          {:ok, rendered} -> rendered
+          {:error, error} -> raise error
+        end
+
+      {:error, error} ->
+        raise error
+    end
   end
 end

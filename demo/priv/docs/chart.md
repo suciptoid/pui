@@ -22,7 +22,7 @@ import PUI.Chart
 Use the low-level `chart/1` component when you want full control over the payload and hook pairing.
 
 ```heex
-&lt;.chart
+<.chart
   id="deploys"
   hook="PUI.BarChart"
   height={280}
@@ -37,7 +37,7 @@ Use the low-level `chart/1` component when you want full control over the payloa
       %{label: "Deploys", suffix: "x"}
     ]
   }
-/&gt;
+/>
 ```
 
 <AppWeb.DocsDemo.chart_base_demo />
@@ -47,14 +47,14 @@ Use the low-level `chart/1` component when you want full control over the payloa
 Use `bar_chart/1` for categorical comparisons. It generates the aligned x-axis data for you and wires the default `PUI.BarChart` hook.
 
 ```heex
-&lt;.bar_chart
+<.bar_chart
   id="monthly-revenue"
   categories={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
   series={[
     %{label: "Revenue", data: [12.4, 18.7, 15.2, 22.1, 19.8, 25.3], suffix: " jt"},
     %{label: "Target", data: [10.0, 14.0, 16.0, 18.0, 20.0, 24.0], suffix: " jt"}
   ]}
-/&gt;
+/>
 ```
 
 <AppWeb.DocsDemo.chart_bar_demo />
@@ -64,7 +64,7 @@ Use `bar_chart/1` for categorical comparisons. It generates the aligned x-axis d
 Use `line_chart/1` for trend data. Switch between `linear`, `stepped`, and `spline` path renderers through the component API while LiveView patches the existing hook payload. Each series also accepts `color` as a convenient alias for the line color, plus optional `fill`, `width`, and formatting keys.
 
 ```heex
-&lt;.line_chart
+<.line_chart
   id="server-temps"
   curve={@chart_curve}
   area={@chart_show_area}
@@ -74,19 +74,10 @@ Use `line_chart/1` for trend data. Switch between `linear`, `stepped`, and `spli
   series={[
     %{label: "Desktop", color: @chart_color, data: [186, 202, 194, 228, 246, 268]}
   ]}
-/&gt;
+/>
 ```
 
-<AppWeb.DocsDemo.chart_line_demo
-  chart_color={@chart_color}
-  chart_curve={@chart_curve}
-  chart_revision={@chart_revision}
-  chart_show_area={@chart_show_area}
-  chart_show_grid={@chart_show_grid}
-/>
-
-
----
+<AppWeb.DocsDemo.chart_line_demo chart_color={@chart_color} chart_curve={@chart_curve} chart_revision={@chart_revision} chart_show_area={@chart_show_area} chart_show_grid={@chart_show_grid} />
 
 ## Extending the Hook
 
@@ -102,13 +93,43 @@ For custom behavior, subclass `ChartHook`, keep the component payload serializab
 
 ### Colocated hook example
 
-When a chart should only live next to one LiveView or demo, colocate the hook and pass a dot-prefixed hook name through the component API:
+When a chart should only live next to one LiveView or demo, colocate the hook alongside the LiveView and pass a dot-prefixed hook name through the component API.
 
-In the colocated hook itself, extend `LineChart`, override `buildAxes/1` to hide both
-axes, then override `buildOptions/2` to call the parent implementation with grid
-disabled and return the resulting options with the cursor disabled too.
+Create a hook that hides axes, grid, and cursor for a minimal look:
 
-That keeps the component payload serializable while still letting a colocated hook hide grid lines, cursor chrome, and axis labels for that one chart.
+```javascript
+import { LineChart } from "pui";
+
+export default class MiniChart extends LineChart {
+  buildAxes(payload) {
+    return [{ show: false }, { show: false }];
+  }
+}
+```
+
+Then register it in your app's `app.js` and pass the hook name to the component:
+
+```javascript
+// assets/js/app.js
+import MiniChart from "./hooks/mini_chart";
+
+let liveSocket = new LiveSocket("/live", Socket, {
+  hooks: { ...Hooks, ".MiniChart": MiniChart },
+});
+```
+
+```heex
+<.line_chart
+  id="mini-temps"
+  hook=".MiniChart"
+  labels={["00:00", "04:00", "08:00", "12:00"]}
+  series={[
+    %{label: "CPU", data: [42, 45, 43, 46], suffix: "°C"}
+  ]}
+/>
+```
+
+That keeps the component payload serializable while letting a colocated hook hide grid lines, cursor chrome, and axis labels for just that one chart.
 
 ## API Reference
 
@@ -120,14 +141,19 @@ That keeps the component payload serializable while still letting a colocated ho
 | `hook` | `string` | `"PUI.Chart"` | Hook that renders the chart |
 | `height` | `integer` | `320` | Reserved chart height in pixels |
 | `class` | `string` | `""` | Additional wrapper classes |
+| `card` | `boolean` | `true` | Wraps the chart in a bordered card container |
 | `config` | `map` | required | Serializable chart payload consumed by the hook |
 
 ### `bar_chart/1`
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
+| `id` | `string` | generated | Unique chart DOM id |
 | `categories` | `list` | required | Labels used on the x-axis |
 | `series` | `list` | required | Series maps containing `label` and `data` |
+| `height` | `integer` | `320` | Reserved chart height in pixels |
+| `class` | `string` | `""` | Additional wrapper classes |
+| `card` | `boolean` | `true` | Wraps the chart in a bordered card container |
 | `bar_width` | `float` | `0.72` | Relative bar width passed to `uPlot.paths.bars/1` |
 | `max_bar_width` | `integer` | `64` | Maximum rendered bar width in pixels |
 | `grid` | `boolean` | `true` | Toggles the y-axis grid |
@@ -139,6 +165,7 @@ That keeps the component payload serializable while still letting a colocated ho
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
+| `id` | `string` | generated | Unique chart DOM id |
 | `x` | `list` | generated | Explicit x-axis values |
 | `labels` | `list` | `[]` | Optional categorical x-axis labels |
 | `series` | `list` | required | Series maps containing `label` and `data` |
@@ -146,6 +173,9 @@ That keeps the component payload serializable while still letting a colocated ho
 | `time` | `boolean` | `false` | Enables a temporal x-axis |
 | `area` | `boolean` | `false` | Adds a fill beneath each line |
 | `sparkline` | `boolean` | `false` | Switches to the compact `PUI.SparklineChart` hook |
+| `height` | `integer` | `320` | Reserved chart height in pixels |
+| `class` | `string` | `""` | Additional wrapper classes |
+| `card` | `boolean` | `true` | Wraps the chart in a bordered card container |
 | `grid` | `boolean` | `true` | Toggles the y-axis grid |
 | `legend` | `boolean` | `false` | Enables the built-in uPlot legend |
 | `tooltip` | `map` | `%{}` | Tooltip configuration |
