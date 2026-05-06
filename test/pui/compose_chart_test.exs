@@ -100,6 +100,24 @@ defmodule PUI.ComposeChartTest do
 
       assert html =~ ~s(&quot;series_data&quot;:[[42,44,43]])
     end
+
+    test "raises on mismatched x values length" do
+      message = "ComposeChart.line expects x to have 3 points"
+      assigns = %{}
+
+      assert_raise ArgumentError, message, fn ->
+        rendered_to_string(~H"""
+        <.container id="line-invalid-x">
+          <.line
+            x={[1, 2]}
+            series={[
+              %{label: "Server A", data: [42, 44, 43]}
+            ]}
+          />
+        </.container>
+        """)
+      end
+    end
   end
 
   describe "legend" do

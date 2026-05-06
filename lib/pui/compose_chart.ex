@@ -277,7 +277,13 @@ defmodule PUI.ComposeChart do
       labels: assigns.labels
     }
 
-    config = if assigns.x, do: Map.put(config, :x, assigns.x), else: config
+    config =
+      if assigns.x do
+        validate_x_length!(assigns.x, expected_points, "ComposeChart.line")
+        Map.put(config, :x, assigns.x)
+      else
+        config
+      end
 
     assigns = assign(assigns, config_json: encode_config!(config))
 
@@ -327,6 +333,17 @@ defmodule PUI.ComposeChart do
               "#{component_name} expects every series data list to have #{expected_points} points"
       end
     end)
+  end
+
+  defp validate_x_length!(x_values, expected_points, component_name) when is_list(x_values) do
+    if length(x_values) != expected_points do
+      raise ArgumentError,
+            "#{component_name} expects x to have #{expected_points} points"
+    end
+  end
+
+  defp validate_x_length!(_x_values, _expected_points, component_name) do
+    raise ArgumentError, "#{component_name} expects x to be a list"
   end
 
   defp put_label_default(series) do
