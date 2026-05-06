@@ -2465,6 +2465,67 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def compose_chart_bar_demo(assigns) do
+    ~H"""
+    <.demo_section title="Composable Bar Chart" id="compose-chart-bar-demo">
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-foreground">Monthly revenue</p>
+            <p class="text-sm text-muted-foreground">
+              Built with <code>&lt;.container&gt;</code>, <code>&lt;.x_axis&gt;</code>,
+              <code>&lt;.tooltip&gt;</code>, and <code>&lt;.bar&gt;</code> child components.
+            </p>
+          </div>
+          <.badge variant="outline">Hook: PUI.ComposeChart</.badge>
+        </div>
+
+        <PUI.ComposeChart.container id="docs-compose-bar" height={300}>
+          <PUI.ComposeChart.x_axis categories={chart_categories()} />
+          <PUI.ComposeChart.y_axis />
+          <PUI.ComposeChart.tooltip />
+          <PUI.ComposeChart.legend />
+          <PUI.ComposeChart.bar series={[
+            %{label: "Revenue", data: [12.4, 18.7, 15.2, 22.1, 19.8, 25.3], suffix: " jt"},
+            %{label: "Target", data: [10.0, 14.0, 16.0, 18.0, 20.0, 24.0], suffix: " jt"}
+          ]} />
+        </PUI.ComposeChart.container>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def compose_chart_line_demo(assigns) do
+    ~H"""
+    <.demo_section title="Composable Line Chart" id="compose-chart-line-demo">
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-foreground">Server temperatures</p>
+            <p class="text-sm text-muted-foreground">
+              Spline curves with area fills, built with <code>&lt;.line&gt;</code> child components.
+            </p>
+          </div>
+          <.badge variant="outline">Hook: PUI.ComposeChart</.badge>
+        </div>
+
+        <PUI.ComposeChart.container id="docs-compose-line" height={300}>
+          <PUI.ComposeChart.x_axis labels={chart_line_labels()} />
+          <PUI.ComposeChart.tooltip title="Server temps" />
+          <PUI.ComposeChart.line
+            curve="spline"
+            area={true}
+            series={[
+              %{label: "Server A", data: [42, 45, 43, 46, 44, 47], suffix: "°C", color: "var(--chart-1)"},
+              %{label: "Server B", data: [38, 40, 39, 41, 40, 42], suffix: "°C", color: "var(--chart-2)"}
+            ]}
+          />
+        </PUI.ComposeChart.container>
+      </div>
+    </.demo_section>
+    """
+  end
+
   def getting_started_demo(assigns) do
     ~H"""
     <section class="space-y-8">

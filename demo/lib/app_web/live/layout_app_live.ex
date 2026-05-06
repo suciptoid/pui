@@ -139,6 +139,8 @@ defmodule AppWeb.Live.LayoutAppLive do
               <.components_page page={@page} />
             <% :chart -> %>
               <.chart_page page={@page} />
+            <% :compose_chart -> %>
+              <.compose_chart_page page={@page} />
             <% :settings -> %>
               <.settings_page page={@page} />
           <% end %>
@@ -502,15 +504,13 @@ defmodule AppWeb.Live.LayoutAppLive do
 
       <.surface
         title="Shipments by channel"
-        description="Bar charts fit neatly beside trend panels for compact operational dashboards."
+        description="This chart uses the composable PUI.ComposeChart API instead of the preconfigured bar_chart helper."
       >
-        <.bar_chart
-          id="layout-chart-secondary"
-          card={false}
-          height={300}
-          categories={chart_page_bar_categories()}
-          series={chart_page_bar_series()}
-        />
+        <PUI.ComposeChart.container id="layout-chart-secondary" card={false} height={300}>
+          <PUI.ComposeChart.x_axis categories={chart_page_bar_categories()} />
+          <PUI.ComposeChart.tooltip />
+          <PUI.ComposeChart.bar series={chart_page_bar_series()} />
+        </PUI.ComposeChart.container>
       </.surface>
     </div>
 
@@ -522,6 +522,73 @@ defmodule AppWeb.Live.LayoutAppLive do
         <.metric_card label="Tracked releases" value="18" trend="+3" icon="hero-rocket-launch" />
         <.metric_card label="Active channels" value="6" trend="Stable" icon="hero-signal" />
         <.metric_card label="Alerting rules" value="24" trend="+5%" icon="hero-bell-alert" />
+      </div>
+    </.surface>
+    """
+  end
+
+  attr :page, :map, required: true
+
+  defp compose_chart_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.button variant="outline">
+          <.icon name="hero-arrow-down-tray" class="size-4" /> Export snapshot
+        </.button>
+      </:action>
+      <:action>
+        <.menu_button variant="outline">
+          Chart actions
+          <:item>Share report</:item>
+          <:item>Duplicate dashboard</:item>
+          <:item>Pin to overview</:item>
+        </.menu_button>
+      </:action>
+    </.page_intro>
+
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <.surface
+        title="Composable line chart"
+        description="Built with PUI.ComposeChart — each axis, tooltip, and series is a separate child component."
+      >
+        <PUI.ComposeChart.container id="compose-demo-line" card={false} height={300}>
+          <PUI.ComposeChart.x_axis labels={["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"]} />
+          <PUI.ComposeChart.tooltip title="Throughput" />
+          <PUI.ComposeChart.legend />
+          <PUI.ComposeChart.line
+            curve="spline"
+            area={true}
+            series={[
+              %{label: "Web", data: [62, 66, 70, 74, 78, 81], suffix: " req/s", color: "var(--chart-1)"},
+              %{label: "API", data: [48, 51, 55, 57, 60, 64], suffix: " req/s", color: "var(--chart-2)"}
+            ]}
+          />
+        </PUI.ComposeChart.container>
+      </.surface>
+
+      <.surface
+        title="Composable bar chart"
+        description="The same container paired with bar children and categorical axes."
+      >
+        <PUI.ComposeChart.container id="compose-demo-bar" card={false} height={300}>
+          <PUI.ComposeChart.x_axis categories={["Direct", "Partners", "Marketplace", "Outbound"]} />
+          <PUI.ComposeChart.tooltip />
+          <PUI.ComposeChart.bar series={[
+            %{label: "Orders", data: [124, 88, 96, 72], suffix: " orders"}
+          ]} />
+        </PUI.ComposeChart.container>
+      </.surface>
+    </div>
+
+    <.surface
+      title="How ComposeChart works"
+      description="Each child component renders a hidden config element. The PUI.ComposeChart JS hook reads them on mount and builds the final uPlot chart."
+    >
+      <div class="grid gap-4 md:grid-cols-3">
+        <.metric_card label="Child components" value="7" trend="container, bar, line, tooltip, legend, x_axis, y_axis" icon="hero-puzzle-piece" />
+        <.metric_card label="Hook" value="PUI.ComposeChart" trend="Extends PUI.Chart" icon="hero-code-bracket" />
+        <.metric_card label="Config" value="Client-merged" trend="JS reads data-chart-child" icon="hero-cog-6-tooth" />
       </div>
     </.surface>
     """
@@ -1142,7 +1209,7 @@ defmodule AppWeb.Live.LayoutAppLive do
   end
 
   defp navigation_pages do
-    Enum.map([:overview, :activity, :forms, :components, :chart, :settings], &page_config/1)
+    Enum.map([:overview, :activity, :forms, :components, :chart, :compose_chart, :settings], &page_config/1)
   end
 
   defp page_config(action) do
@@ -1213,6 +1280,19 @@ defmodule AppWeb.Live.LayoutAppLive do
           breadcrumb_parent: "Layout showcase",
           breadcrumb_current: "Chart",
           icon: "hero-chart-bar",
+          path: path
+        }
+
+      :compose_chart ->
+        %{
+          action: :compose_chart,
+          title: "ComposeChart",
+          eyebrow: "Composable charts",
+          description:
+            "Declarative, child-component-based charts built with PUI.ComposeChart. Each axis, tooltip, and series is a separate composable element.",
+          breadcrumb_parent: "Layout showcase",
+          breadcrumb_current: "ComposeChart",
+          icon: "hero-puzzle-piece",
           path: path,
           badge: "New"
         }
@@ -1240,10 +1320,12 @@ defmodule AppWeb.Live.LayoutAppLive do
   defp normalize_page_action("forms"), do: :forms
   defp normalize_page_action("components"), do: :components
   defp normalize_page_action("chart"), do: :chart
+  defp normalize_page_action("compose_chart"), do: :compose_chart
   defp normalize_page_action("settings"), do: :settings
 
   defp normalize_page_action(action)
-       when action in [:overview, :activity, :forms, :components, :chart, :settings], do: action
+       when action in [:overview, :activity, :forms, :components, :chart, :compose_chart, :settings],
+       do: action
 
   defp normalize_page_action(_), do: :overview
 
@@ -1252,6 +1334,7 @@ defmodule AppWeb.Live.LayoutAppLive do
   defp page_path(:forms), do: ~p"/demo/layout/forms"
   defp page_path(:components), do: ~p"/demo/layout/components"
   defp page_path(:chart), do: ~p"/demo/layout/chart"
+  defp page_path(:compose_chart), do: ~p"/demo/layout/compose_chart"
   defp page_path(:settings), do: ~p"/demo/layout/settings"
 
   defp overview_chart_labels do

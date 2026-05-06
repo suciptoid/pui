@@ -79,6 +79,10 @@ Use `line_chart/1` for trend data. Switch between `linear`, `stepped`, and `spli
 
 <AppWeb.DocsDemo.chart_line_demo chart_color={@chart_color} chart_curve={@chart_curve} chart_revision={@chart_revision} chart_show_area={@chart_show_area} chart_show_grid={@chart_show_grid} />
 
+## Composable Chart
+
+For a declarative, child-component-based API (similar to Recharts), see the dedicated [ComposeChart](/docs/compose_chart) module.
+
 ## Extending the Hook
 
 The base hook exports `this.uPlot`, `this.chart`, `this.data`, and `this.opts`. That means derivative hooks can stay very small:
