@@ -88,6 +88,7 @@ defmodule PUI.Chart do
   | `curve` | `string` | `"linear"` | One of `"linear"`, `"stepped"`, or `"spline"` |
   | `time` | `boolean` | `false` | Enables uPlot's time scale for the x-axis |
   | `area` | `boolean` | `false` | Adds area fills beneath line series |
+  | `sparkline` | `boolean` | `false` | Uses the dedicated sparkline hook with compact chrome-free defaults |
   | `grid` | `boolean` | `true` | Toggles the y-axis grid |
   | `tooltip` | `map` | `%{}` | Tooltip configuration merged into defaults |
   | `legend` | `boolean` | `false` | Toggles the built-in uPlot legend |
@@ -100,6 +101,7 @@ defmodule PUI.Chart do
   attr :hook, :string, default: "PUI.Chart"
   attr :height, :integer, default: 320
   attr :class, :string, default: ""
+  attr :card, :boolean, default: true
   attr :config, :map, required: true
   attr :rest, :global
 
@@ -123,10 +125,13 @@ defmodule PUI.Chart do
       id={@id}
       phx-hook={@hook}
       data-chart-config={@encoded_config}
-      class={["pui-chart flex w-full flex-col gap-3", @class]}
+      class={["pui-chart flex w-full flex-col", @class]}
       {@rest}
     >
-      <div class="overflow-hidden rounded-[calc(var(--radius)+2px)] border border-border/70 bg-card/50 p-4 shadow-sm sm:p-5">
+      <div class={[
+        @card &&
+          "overflow-hidden rounded-[calc(var(--radius)+2px)] border border-border/60 bg-card p-4 shadow-sm sm:p-5"
+      ]}>
         <div
           id={@root_id}
           data-chart-root
@@ -142,7 +147,7 @@ defmodule PUI.Chart do
         data-chart-tooltip
         phx-update="ignore"
         role="tooltip"
-        class="pui-chart-tooltip pointer-events-none fixed left-0 top-0 z-50 hidden min-w-44 rounded-xl border border-border/70 bg-popover/95 px-3 py-2 text-xs text-popover-foreground shadow-lg backdrop-blur-sm"
+        class="pui-chart-tooltip pointer-events-none fixed left-0 top-0 z-50 hidden min-w-40 rounded-2xl border border-border/50 bg-popover px-4 py-3 text-popover-foreground shadow-lg"
       >
       </div>
     </div>
@@ -153,6 +158,7 @@ defmodule PUI.Chart do
   attr :hook, :string, default: "PUI.BarChart"
   attr :height, :integer, default: 320
   attr :class, :string, default: ""
+  attr :card, :boolean, default: true
   attr :categories, :list, required: true
   attr :series, :list, required: true
   attr :bar_width, :float, default: 0.72
@@ -197,12 +203,14 @@ defmodule PUI.Chart do
   attr :hook, :string, default: "PUI.LineChart"
   attr :height, :integer, default: 320
   attr :class, :string, default: ""
+  attr :card, :boolean, default: true
   attr :x, :list, default: nil
   attr :labels, :list, default: []
   attr :series, :list, required: true
   attr :curve, :string, values: ["linear", "stepped", "spline"], default: "linear"
   attr :time, :boolean, default: false
   attr :area, :boolean, default: false
+  attr :sparkline, :boolean, default: false
   attr :grid, :boolean, default: true
   attr :tooltip, :map, default: %{}
   attr :legend, :boolean, default: false
@@ -232,6 +240,20 @@ defmodule PUI.Chart do
           Enum.to_list(0..(expected_points - 1))
       end
 
+    height =
+      if assigns.sparkline do
+        if assigns.height == 320, do: 56, else: assigns.height
+      else
+        assigns.height
+      end
+
+    hook =
+      if assigns.sparkline and assigns.hook == "PUI.LineChart" do
+        "PUI.SparklineChart"
+      else
+        assigns.hook
+      end
+
     config = %{
       preset: "line",
       curve: assigns.curve,
@@ -240,14 +262,17 @@ defmodule PUI.Chart do
       labels: assigns.labels,
       data: [x_values | series_data],
       series: series_config,
-      grid: assigns.grid,
+      grid: assigns.sparkline == false and assigns.grid,
       legend: %{show: assigns.legend},
       tooltip: assigns.tooltip,
       options: assigns.options
     }
 
     assigns
+    |> assign(:hook, hook)
     |> assign(:config, config)
+    |> assign(:height, height)
+    |> assign(:card, assigns.sparkline == false and assigns.card)
     |> chart()
   end
 

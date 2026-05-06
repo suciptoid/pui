@@ -108,5 +108,24 @@ defmodule PUI.ChartTest do
         """)
       end
     end
+
+    test "renders sparklines with the dedicated sparkline hook" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.line_chart
+          id="sparkline-chart"
+          sparkline={true}
+          series={[
+            %{data: [12, 18, 15, 20]}
+          ]}
+        />
+        """)
+
+      assert html =~ ~s(phx-hook="PUI.SparklineChart")
+      assert html =~ ~s(style="height: 56px")
+      assert html =~ ~s(&quot;preset&quot;:&quot;line&quot;)
+    end
   end
 end

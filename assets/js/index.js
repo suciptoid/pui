@@ -9,6 +9,7 @@ import Sidebar from "./sidebar";
 import ChartHook from "./chart_hook";
 import BarChart from "./bar_chart";
 import LineChart from "./line_chart";
+import SparklineChart from "./sparkline_chart";
 
 export const Hooks = {
   "PUI.LoadingBar": LoadingBar,
@@ -22,6 +23,7 @@ export const Hooks = {
   "PUI.Chart": ChartHook,
   "PUI.BarChart": BarChart,
   "PUI.LineChart": LineChart,
+  "PUI.SparklineChart": SparklineChart,
 };
 
 export {
@@ -36,4 +38,5 @@ export {
   ChartHook,
   BarChart,
   LineChart,
+  SparklineChart,
 };

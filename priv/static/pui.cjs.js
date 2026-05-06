@@ -29,6 +29,7 @@ __export(index_exports, {
   Popover: () => Popover,
   Select: () => Select,
   Sidebar: () => sidebar_default,
+  SparklineChart: () => SparklineChart,
   Tabs: () => Tabs,
   Tooltip: () => Tooltip
 });
@@ -8243,6 +8244,7 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
   data = [];
   opts = {};
   payload = {};
+  colorResolutionCache = /* @__PURE__ */ new Map();
   root = null;
   tooltip = null;
   resizeObserver = null;
@@ -8380,7 +8382,7 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
     const defaults = {
       width: size3.width,
       height: size3.height,
-      padding: [12, 10, 8, 0],
+      padding: [1, 0, 6, 0],
       focus: { alpha: 0.3 },
       legend: {
         show: payload.legend?.show === true,
@@ -8424,23 +8426,23 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
   }
   buildAxes(payload) {
     const font2 = this.axisFont();
-    const axisColor = this.resolveCssValue("var(--muted-foreground)");
-    const gridColor = this.resolveCssValue("var(--border)");
+    const axisColor = this.resolveCssValue("var(--chart-axis-color)");
+    const gridColor = this.resolveCssValue("var(--chart-grid-color)");
     const baseX = {
       ticks: { show: false },
       border: { show: false },
       grid: { show: false },
-      gap: 8,
-      size: 30,
+      gap: 6,
+      size: 28,
       font: font2,
       stroke: axisColor
     };
     const baseY = {
       ticks: { show: false },
       border: { show: false },
-      grid: { show: payload.grid, stroke: gridColor, width: 1 },
-      gap: 8,
-      size: 56,
+      grid: { show: payload.grid, stroke: gridColor, width: 0.5 },
+      gap: 6,
+      size: 52,
       font: font2,
       stroke: axisColor,
       values: (_self, values) => values.map((value) => this.formatNumericValue(value, payload.y_axis))
@@ -8476,7 +8478,7 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
       const shared = {
         label: series.label || series.name || `Series ${index + 1}`,
         stroke,
-        width: series.width ?? (preset === "bar" ? 0 : 2.5),
+        width: series.width ?? (preset === "bar" ? 0 : 2),
         points: mergeDeep({ show: false }, series.points || {})
       };
       const nextSeries = mergeDeep(shared, stripSeriesMeta(series));
@@ -8594,11 +8596,9 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
     if (!this.tooltip) {
       return;
     }
-    const title = document.createElement("div");
-    title.className = "pui-chart-tooltip__title";
-    title.textContent = this.tooltipTitle(chart, idx);
     const list = document.createElement("div");
     list.className = "pui-chart-tooltip__list";
+    const titleText = this.tooltipTitle(chart, idx);
     rows.forEach((row) => {
       const item = document.createElement("div");
       item.className = "pui-chart-tooltip__row";
@@ -8616,9 +8616,22 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
       item.append(label, value);
       list.append(item);
     });
-    this.tooltip.replaceChildren(title, list);
+    if (titleText) {
+      const title = document.createElement("div");
+      title.className = "pui-chart-tooltip__title";
+      title.textContent = titleText;
+      this.tooltip.replaceChildren(title, list);
+      return;
+    }
+    this.tooltip.replaceChildren(list);
   }
   tooltipTitle(chart, idx) {
+    if (this.payload.tooltip?.title === false) {
+      return "";
+    }
+    if (typeof this.payload.tooltip?.title === "string") {
+      return this.payload.tooltip.title;
+    }
     const xValue = chart.data[0]?.[idx];
     if (Array.isArray(this.payload.categories) && this.payload.categories[idx] != null) {
       return `${this.payload.categories[idx]}`;
@@ -8677,11 +8690,38 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
     if (typeof value !== "string") {
       return value;
     }
-    const match = value.match(/^var\((--[^)]+)\)$/);
-    if (!match) {
+    const match = value.trim().match(/^var\((--[^)]+)\)$/);
+    const resolved = match ? getComputedStyle(this.el).getPropertyValue(match[1]).trim() || value : value;
+    return this.resolveCanvasColor(resolved);
+  }
+  resolveCanvasColor(value) {
+    if (!this.isColorLikeValue(value)) {
       return value;
     }
-    return getComputedStyle(this.el).getPropertyValue(match[1]).trim() || value;
+    const trimmed = value.trim();
+    const cached = this.colorResolutionCache.get(trimmed);
+    if (cached) {
+      return cached;
+    }
+    const probe = document.createElement("span");
+    probe.style.color = trimmed;
+    probe.style.position = "absolute";
+    probe.style.visibility = "hidden";
+    probe.style.pointerEvents = "none";
+    this.el.appendChild(probe);
+    const resolved = getComputedStyle(probe).color || trimmed;
+    probe.remove();
+    this.colorResolutionCache.set(trimmed, resolved);
+    return resolved;
+  }
+  isColorLikeValue(value) {
+    if (typeof value !== "string") {
+      return false;
+    }
+    const trimmed = value.trim();
+    return /^#(?:[\da-f]{3,8})$/i.test(trimmed) || /^(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color|color-mix)\(/i.test(
+      trimmed
+    );
   }
   resolveColors(value) {
     if (Array.isArray(value)) {
@@ -8708,6 +8748,52 @@ var BarChart = class extends chart_hook_default {
 var LineChart = class extends chart_hook_default {
 };
 
+// js/sparkline_chart.js
+var SparklineChart = class extends chart_hook_default {
+  measureSize(payload) {
+    const width = Math.max(
+      Math.round(this.root?.clientWidth || this.el.clientWidth || 0),
+      48
+    );
+    return {
+      width,
+      height: payload.height || 56
+    };
+  }
+  buildOptions(payload, size3) {
+    const options = super.buildOptions(
+      {
+        ...payload,
+        preset: "line",
+        grid: false,
+        tooltip: { ...payload.tooltip, show: false },
+        legend: { ...payload.legend, show: false, live: false }
+      },
+      size3
+    );
+    return {
+      ...options,
+      padding: [4, 2, 4, 2],
+      cursor: { show: false },
+      select: { show: false },
+      legend: { show: false },
+      axes: [{ show: false }, { show: false }],
+      series: options.series.map((series, index) => {
+        if (index === 0) {
+          return series;
+        }
+        return {
+          ...series,
+          width: payload.series[index - 1]?.width ?? 1.5,
+          points: { show: false },
+          fill: void 0,
+          paths: this.uPlot.paths.linear()
+        };
+      })
+    };
+  }
+};
+
 // js/index.js
 var Hooks = {
   "PUI.LoadingBar": LoadingBar,
@@ -8720,6 +8806,7 @@ var Hooks = {
   "PUI.Sidebar": sidebar_default,
   "PUI.Chart": chart_hook_default,
   "PUI.BarChart": BarChart,
-  "PUI.LineChart": LineChart
+  "PUI.LineChart": LineChart,
+  "PUI.SparklineChart": SparklineChart
 };
 //# sourceMappingURL=pui.cjs.js.map

@@ -18,11 +18,13 @@
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    --chart-1: #1447e6; /* oklch(0.488 0.243 264.376) */
+    --chart-2: #00bc7d; /* oklch(0.696 0.17  162.48)  */
+    --chart-3: #fe9a00; /* oklch(0.769 0.188 70.08)   */
+    --chart-4: #ad46ff; /* oklch(0.627 0.265 303.9)   */
+    --chart-5: #ff2056; /* oklch(0.645 0.246 16.439)  */
+    --chart-grid-color: rgba(0, 0, 0, 0.055);
+    --chart-axis-color: rgba(0, 0, 0, 0.38);
     --sidebar: oklch(0.985 0 0);
     --sidebar-foreground: oklch(0.145 0 0);
     --sidebar-primary: oklch(0.205 0 0);
@@ -58,6 +60,8 @@
     --chart-3: oklch(0.769 0.188 70.08);
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
+    --chart-grid-color: rgba(255, 255, 255, 0.07);
+    --chart-axis-color: rgba(255, 255, 255, 0.38);
     --sidebar: oklch(0.205 0 0);
     --sidebar-foreground: oklch(0.985 0 0);
     --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -940,7 +944,8 @@
 .pui-chart .u-hz .u-cursor-y,
 .pui-chart .u-vt .u-cursor-x {
     width: 100%;
-    border-bottom: 1px dashed color-mix(in oklab, var(--border) 82%, transparent);
+    border-bottom: 1px dashed
+        color-mix(in oklab, var(--border) 82%, transparent);
 }
 
 .pui-chart .u-cursor-pt {
@@ -967,12 +972,11 @@
 }
 
 .pui-chart-tooltip__title {
-    margin-bottom: 0.5rem;
-    color: var(--muted-foreground);
-    font-size: 0.6875rem;
+    margin-bottom: 0.625rem;
+    color: var(--popover-foreground);
+    font-size: 0.9375rem;
+    line-height: 1.2;
     font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
 }
 
 .pui-chart-tooltip__list {
@@ -985,21 +989,22 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1.25rem;
     white-space: nowrap;
-    font-size: 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.15;
 }
 
 .pui-chart-tooltip__label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: color-mix(in oklab, var(--popover-foreground) 80%, transparent);
+    gap: 0.75rem;
+    color: var(--muted-foreground);
 }
 
 .pui-chart-tooltip__marker {
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.25rem;
+    height: 1rem;
     border-radius: 9999px;
     flex-shrink: 0;
 }
@@ -1007,4 +1012,6 @@
 .pui-chart-tooltip__value {
     color: var(--popover-foreground);
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
 }

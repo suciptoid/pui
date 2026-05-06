@@ -1,10 +1,5 @@
 import { ViewHook } from "phoenix_live_view";
-import {
-  computePosition,
-  flip,
-  offset,
-  shift,
-} from "@floating-ui/dom";
+import { computePosition, flip, offset, shift } from "@floating-ui/dom";
 import uPlot from "uplot";
 
 const DEFAULT_HEIGHT = 320;
@@ -97,6 +92,7 @@ export class ChartHook extends ViewHook {
   data = [];
   opts = {};
   payload = {};
+  colorResolutionCache = new Map();
   root = null;
   tooltip = null;
   resizeObserver = null;
@@ -223,7 +219,11 @@ export class ChartHook extends ViewHook {
     this.payload = payload;
     this.size = size;
 
-    if (!this.chart || force || structureSignature !== this.structureSignature) {
+    if (
+      !this.chart ||
+      force ||
+      structureSignature !== this.structureSignature
+    ) {
       this.rebuildChart(payload, size);
       this.structureSignature = structureSignature;
       this.dataSignature = dataSignature;
@@ -241,10 +241,7 @@ export class ChartHook extends ViewHook {
       this.dataSignature = dataSignature;
     }
 
-    if (
-      size.width !== this.chart.width ||
-      size.height !== this.chart.height
-    ) {
+    if (size.width !== this.chart.width || size.height !== this.chart.height) {
       this.chart.setSize(size);
     }
   }
@@ -272,10 +269,11 @@ export class ChartHook extends ViewHook {
 
   buildOptions(payload, size) {
     const preset = payload.preset;
+
     const defaults = {
       width: size.width,
       height: size.height,
-      padding: [12, 10, 8, 0],
+      padding: [10, 8, 6, 0],
       focus: { alpha: 0.3 },
       legend: {
         show: payload.legend?.show === true,
@@ -326,23 +324,23 @@ export class ChartHook extends ViewHook {
 
   buildAxes(payload) {
     const font = this.axisFont();
-    const axisColor = this.resolveCssValue("var(--muted-foreground)");
-    const gridColor = this.resolveCssValue("var(--border)");
+    const axisColor = this.resolveCssValue("var(--chart-axis-color)");
+    const gridColor = this.resolveCssValue("var(--chart-grid-color)");
     const baseX = {
       ticks: { show: false },
       border: { show: false },
       grid: { show: false },
-      gap: 8,
-      size: 30,
+      gap: 6,
+      size: 28,
       font,
       stroke: axisColor,
     };
     const baseY = {
       ticks: { show: false },
       border: { show: false },
-      grid: { show: payload.grid, stroke: gridColor, width: 1 },
-      gap: 8,
-      size: 56,
+      grid: { show: payload.grid, stroke: gridColor, width: 0.5 },
+      gap: 6,
+      size: 52,
       font,
       stroke: axisColor,
       values: (_self, values) =>
@@ -386,7 +384,7 @@ export class ChartHook extends ViewHook {
       const shared = {
         label: series.label || series.name || `Series ${index + 1}`,
         stroke,
-        width: series.width ?? (preset === "bar" ? 0 : 2.5),
+        width: series.width ?? (preset === "bar" ? 0 : 2),
         points: mergeDeep({ show: false }, series.points || {}),
       };
       const nextSeries = mergeDeep(shared, stripSeriesMeta(series));
@@ -569,11 +567,17 @@ export class ChartHook extends ViewHook {
   tooltipTitle(chart, idx) {
     const xValue = chart.data[0]?.[idx];
 
-    if (Array.isArray(this.payload.categories) && this.payload.categories[idx] != null) {
+    if (
+      Array.isArray(this.payload.categories) &&
+      this.payload.categories[idx] != null
+    ) {
       return `${this.payload.categories[idx]}`;
     }
 
-    if (Array.isArray(this.payload.labels) && this.payload.labels[idx] != null) {
+    if (
+      Array.isArray(this.payload.labels) &&
+      this.payload.labels[idx] != null
+    ) {
       return `${this.payload.labels[idx]}`;
     }
 
@@ -646,13 +650,54 @@ export class ChartHook extends ViewHook {
       return value;
     }
 
-    const match = value.match(/^var\((--[^)]+)\)$/);
+    const match = value.trim().match(/^var\((--[^)]+)\)$/);
+    const resolved = match
+      ? getComputedStyle(this.el).getPropertyValue(match[1]).trim() || value
+      : value;
 
-    if (!match) {
+    return this.resolveCanvasColor(resolved);
+  }
+
+  resolveCanvasColor(value) {
+    if (!this.isColorLikeValue(value)) {
       return value;
     }
 
-    return getComputedStyle(this.el).getPropertyValue(match[1]).trim() || value;
+    const trimmed = value.trim();
+    const cached = this.colorResolutionCache.get(trimmed);
+
+    if (cached) {
+      return cached;
+    }
+
+    const probe = document.createElement("span");
+    probe.style.color = trimmed;
+    probe.style.position = "absolute";
+    probe.style.visibility = "hidden";
+    probe.style.pointerEvents = "none";
+
+    this.el.appendChild(probe);
+    const resolved = getComputedStyle(probe).color || trimmed;
+    probe.remove();
+
+    this.colorResolutionCache.set(trimmed, resolved);
+
+    return resolved;
+  }
+
+  isColorLikeValue(value) {
+    if (typeof value !== "string") {
+      return false;
+    }
+
+    const trimmed = value.trim();
+
+    return (
+      /^#(?:[\da-f]{3,8})$/i.test(trimmed) ||
+      /^(?:rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color|color-mix)\(/i.test(
+        trimmed,
+      )
+    );
   }
 
   resolveColors(value) {

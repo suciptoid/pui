@@ -217,19 +217,34 @@ defmodule AppWeb.Live.LayoutAppLive do
   attr :value, :string, required: true
   attr :trend, :string, required: true
   attr :icon, :string, required: true
+  attr :sparkline_id, :string, default: nil
+  attr :sparkline, :list, default: []
 
   defp metric_card(assigns) do
     ~H"""
-    <div class="rounded-lg border border-border bg-muted/20 p-5">
+    <div class="rounded-lg border border-border bg-card p-5">
       <div class="flex items-center justify-between">
-        <p class="text-sm text-muted-foreground">{@label}</p>
-        <.icon name={@icon} class="size-5 text-primary" />
+        <p class="text-sm font-medium text-muted-foreground">{@label}</p>
+        <.icon name={@icon} class="size-4 text-muted-foreground/50" />
       </div>
-      <div class="mt-4 flex items-end justify-between gap-3">
-        <p class="text-3xl font-semibold tracking-tight text-foreground">{@value}</p>
-        <span class="rounded-full bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground">
-          {@trend}
-        </span>
+      <div class="mt-3 flex items-end justify-between gap-2">
+        <div>
+          <p class="text-2xl font-semibold tracking-tight text-foreground">{@value}</p>
+          <span class="mt-0.5 inline-block text-xs font-medium text-muted-foreground">
+            {@trend}
+          </span>
+        </div>
+        <div
+          :if={@sparkline != [] and @sparkline_id != nil}
+          class="w-28 shrink-0 overflow-hidden sm:w-32 xl:w-36"
+        >
+          <.line_chart
+            id={"sparkline-#{@sparkline_id}"}
+            sparkline={true}
+            height={40}
+            series={[%{data: @sparkline}]}
+          />
+        </div>
       </div>
     </div>
     """
@@ -295,9 +310,30 @@ defmodule AppWeb.Live.LayoutAppLive do
       description="The content area now spans the full shell width and shows buttons, alerts, list items, tabs, and menus in ordinary application patterns."
     >
       <div class="grid gap-4 md:grid-cols-3">
-        <.metric_card label="Open tasks" value="128" trend="+14%" icon="hero-check-circle" />
-        <.metric_card label="Deploys" value="42" trend="Stable" icon="hero-rocket-launch" />
-        <.metric_card label="Incidents" value="3" trend="-2" icon="hero-shield-check" />
+        <.metric_card
+          label="Open tasks"
+          value="128"
+          trend="+14% this week"
+          icon="hero-check-circle"
+          sparkline_id="tasks"
+          sparkline={[85, 92, 88, 101, 109, 115, 128]}
+        />
+        <.metric_card
+          label="Deploys"
+          value="42"
+          trend="Stable"
+          icon="hero-rocket-launch"
+          sparkline_id="deploys"
+          sparkline={[38, 40, 39, 41, 40, 42, 42]}
+        />
+        <.metric_card
+          label="Incidents"
+          value="3"
+          trend="−2 vs last week"
+          icon="hero-shield-check"
+          sparkline_id="incidents"
+          sparkline={[9, 7, 8, 6, 7, 5, 3]}
+        />
       </div>
 
       <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
@@ -308,8 +344,9 @@ defmodule AppWeb.Live.LayoutAppLive do
           >
             <.line_chart
               id="layout-overview-chart"
-              class="border-none bg-transparent p-0 shadow-none"
-              height={280}
+              card={false}
+              area={true}
+              height={240}
               labels={overview_chart_labels()}
               series={overview_chart_series()}
             />
@@ -456,7 +493,8 @@ defmodule AppWeb.Live.LayoutAppLive do
       >
         <.line_chart
           id="layout-chart-primary"
-          height={320}
+          card={false}
+          height={300}
           labels={chart_page_line_labels()}
           series={chart_page_line_series()}
         />
@@ -468,7 +506,8 @@ defmodule AppWeb.Live.LayoutAppLive do
       >
         <.bar_chart
           id="layout-chart-secondary"
-          height={320}
+          card={false}
+          height={300}
           categories={chart_page_bar_categories()}
           series={chart_page_bar_series()}
         />
