@@ -41,7 +41,8 @@ export default class SparklineChart extends ChartHook {
           ...series,
           width: payload.series[index - 1]?.width ?? 1.5,
           points: { show: false },
-          fill: undefined,
+          fill:
+            payload.series[index - 1]?.fill || this.withAlpha(series.stroke, 0.18),
           paths: this.uPlot.paths.linear(),
         };
       }),

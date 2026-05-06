@@ -13,6 +13,7 @@ const DEFAULT_PALETTE = [
 
 const DEFAULT_BAR_SIZE = [0.72, 64];
 const SERIES_META_KEYS = new Set([
+  "color",
   "curve",
   "data",
   "format",
@@ -379,7 +380,7 @@ export class ChartHook extends ViewHook {
   buildSeries(payload, preset) {
     return payload.series.map((series, index) => {
       const stroke = this.resolveCssValue(
-        series.stroke || this.paletteColor(index),
+        series.color || series.stroke || this.paletteColor(index),
       );
       const shared = {
         label: series.label || series.name || `Series ${index + 1}`,
@@ -398,7 +399,9 @@ export class ChartHook extends ViewHook {
 
       if (preset === "line") {
         if (payload.area || series.area) {
-          nextSeries.fill = this.resolveCssValue(series.fill || stroke);
+          nextSeries.fill = this.resolveCssValue(
+            series.fill || this.withAlpha(stroke, 0.18),
+          );
         }
 
         nextSeries.paths = this.resolveLinePath(series, payload);
@@ -683,6 +686,22 @@ export class ChartHook extends ViewHook {
     this.colorResolutionCache.set(trimmed, resolved);
 
     return resolved;
+  }
+
+  withAlpha(color, alpha) {
+    const resolved = this.resolveCanvasColor(color);
+    const match = resolved.match(/^rgba?\(([^)]+)\)$/i);
+
+    if (!match) {
+      return resolved;
+    }
+
+    const [red, green, blue] = match[1]
+      .split(",")
+      .slice(0, 3)
+      .map((channel) => channel.trim());
+
+    return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
   }
 
   isColorLikeValue(value) {

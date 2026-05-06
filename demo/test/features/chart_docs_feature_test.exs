@@ -10,6 +10,9 @@ defmodule AppWeb.ChartDocsFeatureTest do
     |> assert_has(css("#chart-bar-demo"))
     |> assert_has(css("#chart-line-demo"))
     |> assert_has(css("button[phx-value-curve='linear']"))
+    |> assert_has(css("button[phx-value-color='var(--chart-1)']"))
+    |> assert_has(css("#chart-toggle-area"))
+    |> assert_has(css("#chart-toggle-grid"))
     |> assert_has(css("#chart-reseed", text: "Refresh dataset"))
   end
 end

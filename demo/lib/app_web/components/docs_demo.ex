@@ -11,9 +11,13 @@ defmodule AppWeb.DocsDemo do
 
   @chart_categories ~w(Jan Feb Mar Apr May Jun)
   @chart_line_labels ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"]
-  @chart_line_base_a [41.2, 43.8, 46.5, 45.1, 44.6, 42.9]
-  @chart_line_base_b [36.4, 37.8, 39.2, 40.3, 39.4, 38.1]
-  @chart_line_base_c [51.5, 53.0, 54.1, 55.4, 54.0, 52.6]
+  @chart_playground_base [186, 202, 194, 228, 246, 268]
+  @chart_color_options [
+    %{label: "Blue", value: "var(--chart-1)"},
+    %{label: "Teal", value: "var(--chart-2)"},
+    %{label: "Amber", value: "var(--chart-3)"},
+    %{label: "Rose", value: "var(--chart-5)"}
+  ]
 
   def button_demo(assigns) do
     ~H"""
@@ -2343,48 +2347,118 @@ defmodule AppWeb.DocsDemo do
 
   def chart_line_demo(assigns) do
     ~H"""
-    <.demo_section title="LiveView Patch Updates" id="chart-line-demo">
+    <.demo_section title="Interactive Chart Playground" id="chart-line-demo">
       <div class="space-y-5">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex flex-wrap gap-2">
+        <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto]">
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Curve
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  :for={curve <- ~w(linear stepped spline)}
+                  type="button"
+                  phx-click="chart_set_curve"
+                  phx-value-curve={curve}
+                  class={[
+                    "rounded-full px-3 py-1 text-xs font-medium transition-all",
+                    curve == @chart_curve && "bg-primary text-primary-foreground shadow-sm",
+                    curve != @chart_curve &&
+                      "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+                  ]}
+                >
+                  {curve}
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Series color
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  :for={option <- chart_color_options()}
+                  type="button"
+                  phx-click="chart_set_color"
+                  phx-value-color={option.value}
+                  class={[
+                    "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-all",
+                    option.value == @chart_color &&
+                      "border-primary bg-primary/10 text-foreground shadow-sm",
+                    option.value != @chart_color &&
+                      "border-border bg-background text-muted-foreground hover:bg-accent hover:text-foreground"
+                  ]}
+                >
+                  <span
+                    class="size-2.5 rounded-full"
+                    style={"background-color: #{option.value}"}
+                  />
+                  {option.label}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-start justify-start gap-2 lg:justify-end">
             <button
-              :for={curve <- ~w(linear stepped spline)}
+              id="chart-toggle-area"
               type="button"
-              phx-click="chart_set_curve"
-              phx-value-curve={curve}
+              phx-click="chart_toggle_area"
               class={[
                 "rounded-full px-3 py-1 text-xs font-medium transition-all",
-                curve == @chart_curve && "bg-primary text-primary-foreground shadow-sm",
-                curve != @chart_curve &&
+                @chart_show_area && "bg-primary text-primary-foreground shadow-sm",
+                !@chart_show_area &&
                   "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
               ]}
             >
-              {curve}
+              Area {if @chart_show_area, do: "on", else: "off"}
             </button>
-          </div>
 
-          <.button
-            id="chart-reseed"
-            type="button"
-            variant="outline"
-            size="sm"
-            phx-click="chart_advance_revision"
-          >
-            Refresh dataset
-          </.button>
+            <button
+              id="chart-toggle-grid"
+              type="button"
+              phx-click="chart_toggle_grid"
+              class={[
+                "rounded-full px-3 py-1 text-xs font-medium transition-all",
+                @chart_show_grid && "bg-primary text-primary-foreground shadow-sm",
+                !@chart_show_grid &&
+                  "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+              ]}
+            >
+              Grid {if @chart_show_grid, do: "on", else: "off"}
+            </button>
+
+            <.button
+              id="chart-reseed"
+              type="button"
+              variant="outline"
+              size="sm"
+              phx-click="chart_advance_revision"
+            >
+              Refresh dataset
+            </.button>
+          </div>
         </div>
 
         <div class="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
           Curve: <span class="font-medium text-foreground">{@chart_curve}</span>
+          · Color: <span class="font-medium text-foreground">{@chart_color}</span>
+          · Area: <span class="font-medium text-foreground">{if @chart_show_area, do: "on", else: "off"}</span>
+          · Grid: <span class="font-medium text-foreground">{if @chart_show_grid, do: "on", else: "off"}</span>
           · Revision: <span class="font-medium text-foreground">{@chart_revision}</span>
         </div>
 
         <.line_chart
           id="docs-line-chart"
           curve={@chart_curve}
+          area={@chart_show_area}
+          grid={@chart_show_grid}
           labels={chart_line_labels()}
           height={320}
-          series={chart_line_series(@chart_revision)}
+          tooltip={%{title: "Page Views"}}
+          series={chart_playground_series(@chart_revision, @chart_color)}
         />
       </div>
     </.demo_section>
@@ -2441,24 +2515,16 @@ defmodule AppWeb.DocsDemo do
   end
 
   defp chart_categories, do: @chart_categories
+  defp chart_color_options, do: @chart_color_options
   defp chart_line_labels, do: @chart_line_labels
 
-  defp chart_line_series(revision) do
+  defp chart_playground_series(revision, color) do
     [
       %{
-        label: "Server A",
-        data: revise_points(@chart_line_base_a, revision, 0.7),
-        suffix: "°C"
-      },
-      %{
-        label: "Server B",
-        data: revise_points(@chart_line_base_b, revision + 1, 0.55),
-        suffix: "°C"
-      },
-      %{
-        label: "Server C",
-        data: revise_points(@chart_line_base_c, revision + 2, 0.45),
-        suffix: "°C"
+        label: "Desktop",
+        color: color,
+        data: revise_points(@chart_playground_base, revision, 8.0),
+        precision: 0
       }
     ]
   end

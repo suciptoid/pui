@@ -8181,6 +8181,7 @@ var DEFAULT_PALETTE = [
 ];
 var DEFAULT_BAR_SIZE = [0.72, 64];
 var SERIES_META_KEYS = /* @__PURE__ */ new Set([
+  "color",
   "curve",
   "data",
   "format",
@@ -8382,7 +8383,7 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
     const defaults = {
       width: size3.width,
       height: size3.height,
-      padding: [1, 0, 6, 0],
+      padding: [10, 8, 6, 0],
       focus: { alpha: 0.3 },
       legend: {
         show: payload.legend?.show === true,
@@ -8473,7 +8474,7 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
   buildSeries(payload, preset) {
     return payload.series.map((series, index) => {
       const stroke = this.resolveCssValue(
-        series.stroke || this.paletteColor(index)
+        series.color || series.stroke || this.paletteColor(index)
       );
       const shared = {
         label: series.label || series.name || `Series ${index + 1}`,
@@ -8490,7 +8491,9 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
       }
       if (preset === "line") {
         if (payload.area || series.area) {
-          nextSeries.fill = this.resolveCssValue(series.fill || stroke);
+          nextSeries.fill = this.resolveCssValue(
+            series.fill || this.withAlpha(stroke, 0.18)
+          );
         }
         nextSeries.paths = this.resolveLinePath(series, payload);
       }
@@ -8596,9 +8599,11 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
     if (!this.tooltip) {
       return;
     }
+    const title = document.createElement("div");
+    title.className = "pui-chart-tooltip__title";
+    title.textContent = this.tooltipTitle(chart, idx);
     const list = document.createElement("div");
     list.className = "pui-chart-tooltip__list";
-    const titleText = this.tooltipTitle(chart, idx);
     rows.forEach((row) => {
       const item = document.createElement("div");
       item.className = "pui-chart-tooltip__row";
@@ -8616,22 +8621,9 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
       item.append(label, value);
       list.append(item);
     });
-    if (titleText) {
-      const title = document.createElement("div");
-      title.className = "pui-chart-tooltip__title";
-      title.textContent = titleText;
-      this.tooltip.replaceChildren(title, list);
-      return;
-    }
-    this.tooltip.replaceChildren(list);
+    this.tooltip.replaceChildren(title, list);
   }
   tooltipTitle(chart, idx) {
-    if (this.payload.tooltip?.title === false) {
-      return "";
-    }
-    if (typeof this.payload.tooltip?.title === "string") {
-      return this.payload.tooltip.title;
-    }
     const xValue = chart.data[0]?.[idx];
     if (Array.isArray(this.payload.categories) && this.payload.categories[idx] != null) {
       return `${this.payload.categories[idx]}`;
@@ -8714,6 +8706,15 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
     this.colorResolutionCache.set(trimmed, resolved);
     return resolved;
   }
+  withAlpha(color, alpha) {
+    const resolved = this.resolveCanvasColor(color);
+    const match = resolved.match(/^rgba?\(([^)]+)\)$/i);
+    if (!match) {
+      return resolved;
+    }
+    const [red, green, blue] = match[1].split(",").slice(0, 3).map((channel) => channel.trim());
+    return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+  }
   isColorLikeValue(value) {
     if (typeof value !== "string") {
       return false;
@@ -8786,7 +8787,7 @@ var SparklineChart = class extends chart_hook_default {
           ...series,
           width: payload.series[index - 1]?.width ?? 1.5,
           points: { show: false },
-          fill: void 0,
+          fill: payload.series[index - 1]?.fill || this.withAlpha(series.stroke, 0.18),
           paths: this.uPlot.paths.linear()
         };
       })

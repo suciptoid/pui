@@ -31,14 +31,17 @@ defmodule AppWeb.Live.DocsLive do
          })
      )
      |> assign(page_title: seo.title, seo: seo)
-     |> assign(
-       btn_variant: "default",
-       btn_size: "default",
-       active_tab: "overview",
-       chart_curve: "linear",
-       chart_revision: 0,
-       show_dialog: false,
-       progress_value: 45.0,
+      |> assign(
+        btn_variant: "default",
+        btn_size: "default",
+        active_tab: "overview",
+        chart_color: "var(--chart-1)",
+        chart_curve: "linear",
+        chart_show_area: true,
+        chart_show_grid: true,
+        chart_revision: 0,
+        show_dialog: false,
+        progress_value: 45.0,
        toast_count: 0,
        flash_position: "top-right"
      )}
@@ -86,6 +89,18 @@ defmodule AppWeb.Live.DocsLive do
 
   def handle_event("chart_set_curve", %{"curve" => curve}, socket) do
     {:noreply, assign(socket, chart_curve: curve)}
+  end
+
+  def handle_event("chart_set_color", %{"color" => color}, socket) do
+    {:noreply, assign(socket, chart_color: color)}
+  end
+
+  def handle_event("chart_toggle_area", _params, socket) do
+    {:noreply, update(socket, :chart_show_area, &(!&1))}
+  end
+
+  def handle_event("chart_toggle_grid", _params, socket) do
+    {:noreply, update(socket, :chart_show_grid, &(!&1))}
   end
 
   def handle_event("chart_advance_revision", _params, socket) do
@@ -356,7 +371,10 @@ defmodule AppWeb.Live.DocsLive do
       :btn_size,
       :btn_variant,
       :active_tab,
+      :chart_color,
       :chart_curve,
+      :chart_show_area,
+      :chart_show_grid,
       :chart_revision,
       :flash,
       :flash_position,
