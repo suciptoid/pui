@@ -5,12 +5,15 @@ defmodule AppWeb.Live.LayoutAppLive do
   use AppWeb, :live_view
   use PUI
 
+  import AppWeb.Live.DemoPages, only: [page_intro: 1, surface: 1]
+
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(:page_title, "App Layout Demo")
-     |> assign(:flash_position, "top-right")}
+     |> assign(:flash_position, "top-right")
+     |> assign(:toast_count, 0)}
   end
 
   @impl true
@@ -20,6 +23,7 @@ defmodule AppWeb.Live.LayoutAppLive do
     {:noreply,
      socket
      |> assign(:pages, navigation_pages())
+     |> assign(:component_pages, component_pages())
      |> assign(:page, page)
      |> assign(:page_title, "#{page.title} - App Layout Demo")}
   end
@@ -53,6 +57,20 @@ defmodule AppWeb.Live.LayoutAppLive do
                   </span>
                 </:trailing>
               </.sidebar_menu_item>
+            </div>
+
+            <div class="flex flex-col gap-1 group-data-[collapsed=true]/pui-layout:gap-0">
+              <p class="px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden">
+                Components
+              </p>
+
+              <.sidebar_menu_item
+                :for={item <- @component_pages}
+                title={item.title}
+                icon={item.icon}
+                patch={item.path}
+                current={item.action == @page.action}
+              />
             </div>
 
             <div class="flex flex-col gap-1 group-data-[collapsed=true]/pui-layout:gap-0">
@@ -126,6 +144,8 @@ defmodule AppWeb.Live.LayoutAppLive do
         </.content_header>
       </:header>
 
+      <PUI.Flash.flash_group :if={@page.action == :flash} flash={%{}} live={true} position={@flash_position} />
+
       <section class="min-h-full p-4 sm:p-6 lg:p-8">
         <div class="mx-auto flex max-w-7xl flex-col gap-6">
           <%= case @page.action do %>
@@ -141,6 +161,34 @@ defmodule AppWeb.Live.LayoutAppLive do
               <.chart_page page={@page} />
             <% :settings -> %>
               <.settings_page page={@page} />
+            <% :button -> %>
+              <AppWeb.Live.DemoPages.button_page page={@page} />
+            <% :input -> %>
+              <AppWeb.Live.DemoPages.input_page page={@page} />
+            <% :select -> %>
+              <AppWeb.Live.DemoPages.select_page page={@page} />
+            <% :date_picker -> %>
+              <AppWeb.Live.DemoPages.date_picker_page page={@page} />
+            <% :dialog -> %>
+              <AppWeb.Live.DemoPages.dialog_page page={@page} />
+            <% :dropdown -> %>
+              <AppWeb.Live.DemoPages.dropdown_page page={@page} />
+            <% :alert -> %>
+              <AppWeb.Live.DemoPages.alert_page page={@page} />
+            <% :flash -> %>
+              <AppWeb.Live.DemoPages.flash_page page={@page} toast_count={@toast_count} />
+            <% :tabs -> %>
+              <AppWeb.Live.DemoPages.tabs_page page={@page} />
+            <% :accordion -> %>
+              <AppWeb.Live.DemoPages.accordion_page page={@page} />
+            <% :container -> %>
+              <AppWeb.Live.DemoPages.container_page page={@page} />
+            <% :charts -> %>
+              <AppWeb.Live.DemoPages.charts_page page={@page} />
+            <% :popover -> %>
+              <AppWeb.Live.DemoPages.popover_page page={@page} />
+            <% :loading -> %>
+              <AppWeb.Live.DemoPages.loading_page page={@page} />
           <% end %>
         </div>
       </section>
@@ -148,69 +196,11 @@ defmodule AppWeb.Live.LayoutAppLive do
     """
   end
 
-  attr :page, :map, required: true
-  slot :action
-
-  defp page_intro(assigns) do
-    ~H"""
-    <section class="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
-      <div class="border-b border-border bg-gradient-to-br from-primary/10 via-background to-background p-6 sm:p-8">
-        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-3xl">
-            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
-              {@page.eyebrow}
-            </p>
-            <h1 class="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-              {@page.title}
-            </h1>
-            <p class="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
-              {@page.description}
-            </p>
-          </div>
-
-          <%= if @action != [] do %>
-            <div class="flex flex-wrap gap-2">
-              {render_slot(@action)}
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </section>
-    """
-  end
-
-  attr :title, :string, required: true
-  attr :description, :string, default: nil
-  attr :class, :string, default: ""
-  slot :action
-  slot :inner_block, required: true
-
-  defp surface(assigns) do
-    ~H"""
-    <section class={[
-      "overflow-hidden rounded-lg border border-border bg-background shadow-sm",
-      @class
-    ]}>
-      <div class="flex flex-col gap-4 border-b border-border px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
-        <div class="space-y-1">
-          <h2 class="text-base font-semibold text-foreground">{@title}</h2>
-          <p :if={@description} class="max-w-3xl text-sm leading-6 text-muted-foreground">
-            {@description}
-          </p>
-        </div>
-
-        <%= if @action != [] do %>
-          <div class="flex flex-wrap gap-2">
-            {render_slot(@action)}
-          </div>
-        <% end %>
-      </div>
-
-      <div class="p-6">
-        {render_slot(@inner_block)}
-      </div>
-    </section>
-    """
+  @impl true
+  def handle_event("send_toast", _params, socket) do
+    count = socket.assigns.toast_count + 1
+    PUI.Flash.send_flash("Toast notification ##{count}!")
+    {:noreply, assign(socket, toast_count: count)}
   end
 
   attr :label, :string, required: true
@@ -1149,6 +1139,13 @@ defmodule AppWeb.Live.LayoutAppLive do
     )
   end
 
+  defp component_pages do
+    Enum.map(
+      [:button, :input, :select, :date_picker, :dialog, :dropdown, :alert, :flash, :tabs, :accordion, :container, :charts, :popover, :loading],
+      &page_config/1
+    )
+  end
+
   defp page_config(action) do
     action = normalize_page_action(action)
     path = page_path(action)
@@ -1233,6 +1230,48 @@ defmodule AppWeb.Live.LayoutAppLive do
           path: path
         }
 
+      :button ->
+        %{action: :button, title: "Button", eyebrow: "Button component", description: "All button variants, sizes, states, and icon combinations.", breadcrumb_parent: "Components", breadcrumb_current: "Button", icon: "hero-cursor-arrow-rays", path: path}
+
+      :input ->
+        %{action: :input, title: "Input", eyebrow: "Input component", description: "Text inputs, textarea, checkbox, radio, switch, and error states.", breadcrumb_parent: "Components", breadcrumb_current: "Input", icon: "hero-pencil-square", path: path}
+
+      :select ->
+        %{action: :select, title: "Select", eyebrow: "Select component", description: "Basic, searchable, grouped, and custom select variants.", breadcrumb_parent: "Components", breadcrumb_current: "Select", icon: "hero-chevron-down", path: path}
+
+      :date_picker ->
+        %{action: :date_picker, title: "Date Picker", eyebrow: "Date picker component", description: "Single date, range, bounded, and footer slot variants.", breadcrumb_parent: "Components", breadcrumb_current: "Date Picker", icon: "hero-calendar-days", path: path}
+
+      :dialog ->
+        %{action: :dialog, title: "Dialog", eyebrow: "Dialog component", description: "Sizes, alert mode, scrollable, and form-in-dialog patterns.", breadcrumb_parent: "Components", breadcrumb_current: "Dialog", icon: "hero-window", path: path}
+
+      :dropdown ->
+        %{action: :dropdown, title: "Dropdown", eyebrow: "Dropdown component", description: "Basic menus, shortcuts, destructive items, and button variants.", breadcrumb_parent: "Components", breadcrumb_current: "Dropdown", icon: "hero-chevron-up-down", path: path}
+
+      :alert ->
+        %{action: :alert, title: "Alert", eyebrow: "Alert component", description: "Default, destructive, and custom content alert variants.", breadcrumb_parent: "Components", breadcrumb_current: "Alert", icon: "hero-exclamation-triangle", path: path}
+
+      :flash ->
+        %{action: :flash, title: "Flash", eyebrow: "Flash component", description: "Live toast notifications with configurable positions.", breadcrumb_parent: "Components", breadcrumb_current: "Flash", icon: "hero-bolt", path: path}
+
+      :tabs ->
+        %{action: :tabs, title: "Tabs", eyebrow: "Tabs component", description: "Client-controlled, line variant, and vertical tab layouts.", breadcrumb_parent: "Components", breadcrumb_current: "Tabs", icon: "hero-squares-2x2", path: path}
+
+      :accordion ->
+        %{action: :accordion, title: "Accordion", eyebrow: "Accordion component", description: "Single-open, multiple-open, and headless accordion variants.", breadcrumb_parent: "Components", breadcrumb_current: "Accordion", icon: "hero-bars-3", path: path}
+
+      :container ->
+        %{action: :container, title: "Container", eyebrow: "Container component", description: "Card with header, content, action, and footer slots.", breadcrumb_parent: "Components", breadcrumb_current: "Container", icon: "hero-square-3-stack-3d", path: path}
+
+      :charts ->
+        %{action: :charts, title: "Charts", eyebrow: "Chart component", description: "Bar, line, area, sparkline, and colocated hook chart demos.", breadcrumb_parent: "Components", breadcrumb_current: "Charts", icon: "hero-chart-bar", path: path}
+
+      :popover ->
+        %{action: :popover, title: "Popover", eyebrow: "Popover & Tooltip", description: "Click-triggered popovers and hover tooltips in all placements.", breadcrumb_parent: "Components", breadcrumb_current: "Popover", icon: "hero-chat-bubble-bottom-center-text", path: path}
+
+      :loading ->
+        %{action: :loading, title: "Loading", eyebrow: "Loading component", description: "Loading topbar that activates during page navigation.", breadcrumb_parent: "Components", breadcrumb_current: "Loading", icon: "hero-arrow-path", path: path}
+
       _ ->
         page_config(:overview)
     end
@@ -1244,6 +1283,20 @@ defmodule AppWeb.Live.LayoutAppLive do
   defp normalize_page_action("components"), do: :components
   defp normalize_page_action("chart"), do: :chart
   defp normalize_page_action("settings"), do: :settings
+  defp normalize_page_action("button"), do: :button
+  defp normalize_page_action("input"), do: :input
+  defp normalize_page_action("select"), do: :select
+  defp normalize_page_action("date-picker"), do: :date_picker
+  defp normalize_page_action("dialog"), do: :dialog
+  defp normalize_page_action("dropdown"), do: :dropdown
+  defp normalize_page_action("alert"), do: :alert
+  defp normalize_page_action("flash"), do: :flash
+  defp normalize_page_action("tabs"), do: :tabs
+  defp normalize_page_action("accordion"), do: :accordion
+  defp normalize_page_action("container"), do: :container
+  defp normalize_page_action("charts"), do: :charts
+  defp normalize_page_action("popover"), do: :popover
+  defp normalize_page_action("loading"), do: :loading
 
   defp normalize_page_action(action)
        when action in [
@@ -1252,18 +1305,46 @@ defmodule AppWeb.Live.LayoutAppLive do
               :forms,
               :components,
               :chart,
-              :settings
+              :settings,
+              :button,
+              :input,
+              :select,
+              :date_picker,
+              :dialog,
+              :dropdown,
+              :alert,
+              :flash,
+              :tabs,
+              :accordion,
+              :container,
+              :charts,
+              :popover,
+              :loading
             ],
        do: action
 
   defp normalize_page_action(_), do: :overview
 
-  defp page_path(:overview), do: ~p"/demo/layout/overview"
-  defp page_path(:activity), do: ~p"/demo/layout/activity"
-  defp page_path(:forms), do: ~p"/demo/layout/forms"
-  defp page_path(:components), do: ~p"/demo/layout/components"
-  defp page_path(:chart), do: ~p"/demo/layout/chart"
-  defp page_path(:settings), do: ~p"/demo/layout/settings"
+  defp page_path(:overview), do: ~p"/demo/overview"
+  defp page_path(:activity), do: ~p"/demo/activity"
+  defp page_path(:forms), do: ~p"/demo/forms"
+  defp page_path(:components), do: ~p"/demo/components"
+  defp page_path(:chart), do: ~p"/demo/chart"
+  defp page_path(:settings), do: ~p"/demo/settings"
+  defp page_path(:button), do: ~p"/demo/button"
+  defp page_path(:input), do: ~p"/demo/input"
+  defp page_path(:select), do: ~p"/demo/select"
+  defp page_path(:date_picker), do: ~p"/demo/date-picker"
+  defp page_path(:dialog), do: ~p"/demo/dialog"
+  defp page_path(:dropdown), do: ~p"/demo/dropdown"
+  defp page_path(:alert), do: ~p"/demo/alert"
+  defp page_path(:flash), do: ~p"/demo/flash"
+  defp page_path(:tabs), do: ~p"/demo/tabs"
+  defp page_path(:accordion), do: ~p"/demo/accordion"
+  defp page_path(:container), do: ~p"/demo/container"
+  defp page_path(:charts), do: ~p"/demo/charts"
+  defp page_path(:popover), do: ~p"/demo/popover"
+  defp page_path(:loading), do: ~p"/demo/loading"
 
   defp overview_chart_labels do
     ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]

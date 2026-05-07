@@ -68,7 +68,7 @@ If you were relying on a colocated sidebar collapse hook, move to
 Open the full-page demo to see how the generated layout, topbar, sidebar, and
 local submenu hook can collapse into reusable PUI primitives:
 
-[Open app layout demo](/demo/layout/overview)
+[Open app layout demo](/demo/overview)
 
 ## Notes
 

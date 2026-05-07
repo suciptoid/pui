@@ -269,6 +269,12 @@ defmodule AppWeb.Live.DocsLive do
             >
               <.icon name="hero-bars-3" class="h-4 w-4" />
             </button>
+            <.link
+              navigate={~p"/demo/overview"}
+              class="hidden sm:inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              <.icon name="hero-play" class="size-3.5" /> Live Demo
+            </.link>
             <a
               href={source_code_url()}
               target="_blank"
