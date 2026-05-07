@@ -69,6 +69,7 @@ defmodule PUI.ChartTest do
       assert html =~ ~s(&quot;preset&quot;:&quot;bar&quot;)
       assert html =~ ~s(&quot;categories&quot;:[&quot;Jan&quot;,&quot;Feb&quot;,&quot;Mar&quot;])
       assert html =~ ~s(&quot;suffix&quot;:&quot; jt&quot;)
+      assert html =~ ~s(&quot;radius&quot;:2)
     end
 
     test "raises on mismatched category lengths" do

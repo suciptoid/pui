@@ -18,6 +18,7 @@ defmodule PUI.DatePickerTest do
       assert html =~ ~s(id="picker-default-year-select-0")
       assert html =~ ~s(data-pui="calendar-month-select")
       assert html =~ ~s(data-pui="calendar-year-select")
+      assert html =~ ~s(data-strategy="auto")
       refute html =~ ~s(<form class="contents")
     end
 

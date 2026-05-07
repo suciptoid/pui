@@ -16,7 +16,7 @@ export default class DatePicker extends ViewHook {
   placement = "bottom-start";
   defaultPlacement = "bottom-start";
   activePlacement = "bottom-start";
-  strategy = "absolute"; // floating-ui strategy
+  strategy = "auto"; // "auto" | "absolute" | "fixed"
   defaultStrategy = "absolute";
   currentStrategy = "absolute";
   event_trigger = "click"; // "click" | "hover" | "focus"

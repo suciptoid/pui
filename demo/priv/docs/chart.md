@@ -143,6 +143,7 @@ The hook name must start with a `.` prefix and the script must use `:type={Phoen
 | `card` | `boolean` | `true` | Wraps the chart in a bordered card container |
 | `bar_width` | `float` | `0.72` | Relative bar width passed to `uPlot.paths.bars/1` |
 | `max_bar_width` | `integer` | `64` | Maximum rendered bar width in pixels |
+| `bar_radius` | `integer` | `2` | Top corner radius in pixels for rendered bars |
 | `grid` | `boolean` | `true` | Toggles the y-axis grid |
 | `legend` | `boolean` | `false` | Enables the built-in uPlot legend |
 | `tooltip` | `map` | `%{}` | Tooltip configuration |

@@ -214,6 +214,7 @@ defmodule PUI.DatePickerComponent do
       id={@id}
       phx-hook="PUI.DatePicker"
       data-placement="bottom-start"
+      data-strategy="auto"
       class="relative"
     >
       <input
@@ -297,6 +298,7 @@ defmodule PUI.DatePickerComponent do
       id={@id}
       phx-hook="PUI.DatePicker"
       data-placement="bottom-start"
+      data-strategy="auto"
       class="relative"
     >
       <input

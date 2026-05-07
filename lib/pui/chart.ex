@@ -73,6 +73,7 @@ defmodule PUI.Chart do
   | `series` | `list` | required | Series maps with `label` and `data` |
   | `bar_width` | `float` | `0.72` | Relative bar width passed to `uPlot.paths.bars/1` |
   | `max_bar_width` | `integer` | `64` | Maximum rendered bar width in pixels |
+  | `bar_radius` | `integer` | `1` | Top corner radius in pixels for rendered bars |
   | `grid` | `boolean` | `true` | Toggles the y-axis grid |
   | `tooltip` | `map` | `%{}` | Tooltip configuration merged into defaults |
   | `legend` | `boolean` | `false` | Toggles the built-in uPlot legend |
@@ -162,6 +163,7 @@ defmodule PUI.Chart do
   attr :series, :list, required: true
   attr :bar_width, :float, default: 0.72
   attr :max_bar_width, :integer, default: 64
+  attr :bar_radius, :float, default: 0.1
   attr :grid, :boolean, default: true
   attr :tooltip, :map, default: %{}
   attr :legend, :boolean, default: false
@@ -189,7 +191,7 @@ defmodule PUI.Chart do
       grid: assigns.grid,
       legend: %{show: assigns.legend},
       tooltip: assigns.tooltip,
-      bar: %{size: [assigns.bar_width, assigns.max_bar_width]},
+      bar: %{size: [assigns.bar_width, assigns.max_bar_width], radius: assigns.bar_radius},
       options: assigns.options
     }
 

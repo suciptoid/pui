@@ -394,6 +394,7 @@ export class ChartHook extends ViewHook {
         nextSeries.fill = this.resolveCssValue(series.fill || stroke);
         nextSeries.paths = this.uPlot.paths.bars({
           size: payload.bar?.size || DEFAULT_BAR_SIZE,
+          radius: payload.bar?.radius ?? 0.1,
         });
       }
 

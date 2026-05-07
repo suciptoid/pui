@@ -2014,8 +2014,8 @@ var DatePicker = class extends import_phoenix_live_view2.ViewHook {
   placement = "bottom-start";
   defaultPlacement = "bottom-start";
   activePlacement = "bottom-start";
-  strategy = "absolute";
-  // floating-ui strategy
+  strategy = "auto";
+  // "auto" | "absolute" | "fixed"
   defaultStrategy = "absolute";
   currentStrategy = "absolute";
   event_trigger = "click";
@@ -8486,7 +8486,8 @@ var ChartHook = class extends import_phoenix_live_view8.ViewHook {
       if (preset === "bar") {
         nextSeries.fill = this.resolveCssValue(series.fill || stroke);
         nextSeries.paths = this.uPlot.paths.bars({
-          size: payload.bar?.size || DEFAULT_BAR_SIZE
+          size: payload.bar?.size || DEFAULT_BAR_SIZE,
+          radius: payload.bar?.radius ?? 0.1
         });
       }
       if (preset === "line") {
