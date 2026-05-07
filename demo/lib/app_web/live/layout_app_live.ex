@@ -560,8 +560,18 @@ defmodule AppWeb.Live.LayoutAppLive do
             curve="spline"
             area={true}
             series={[
-              %{label: "Web", data: [62, 66, 70, 74, 78, 81], suffix: " req/s", color: "var(--chart-1)"},
-              %{label: "API", data: [48, 51, 55, 57, 60, 64], suffix: " req/s", color: "var(--chart-2)"}
+              %{
+                label: "Web",
+                data: [62, 66, 70, 74, 78, 81],
+                suffix: " req/s",
+                color: "var(--chart-1)"
+              },
+              %{
+                label: "API",
+                data: [48, 51, 55, 57, 60, 64],
+                suffix: " req/s",
+                color: "var(--chart-2)"
+              }
             ]}
           />
         </PUI.ComposeChart.container>
@@ -586,9 +596,24 @@ defmodule AppWeb.Live.LayoutAppLive do
       description="Each child component renders a hidden config element. The PUI.ComposeChart JS hook reads them on mount and builds the final uPlot chart."
     >
       <div class="grid gap-4 md:grid-cols-3">
-        <.metric_card label="Child components" value="7" trend="container, bar, line, tooltip, legend, x_axis, y_axis" icon="hero-puzzle-piece" />
-        <.metric_card label="Hook" value="PUI.ComposeChart" trend="Extends PUI.Chart" icon="hero-code-bracket" />
-        <.metric_card label="Config" value="Client-merged" trend="JS reads data-chart-child" icon="hero-cog-6-tooth" />
+        <.metric_card
+          label="Child components"
+          value="7"
+          trend="container, bar, line, tooltip, legend, x_axis, y_axis"
+          icon="hero-puzzle-piece"
+        />
+        <.metric_card
+          label="Hook"
+          value="PUI.ComposeChart"
+          trend="Extends PUI.Chart"
+          icon="hero-code-bracket"
+        />
+        <.metric_card
+          label="Config"
+          value="Client-merged"
+          trend="JS reads data-chart-child"
+          icon="hero-cog-6-tooth"
+        />
       </div>
     </.surface>
     """
@@ -1209,7 +1234,10 @@ defmodule AppWeb.Live.LayoutAppLive do
   end
 
   defp navigation_pages do
-    Enum.map([:overview, :activity, :forms, :components, :chart, :compose_chart, :settings], &page_config/1)
+    Enum.map(
+      [:overview, :activity, :forms, :components, :chart, :compose_chart, :settings],
+      &page_config/1
+    )
   end
 
   defp page_config(action) do
@@ -1324,7 +1352,15 @@ defmodule AppWeb.Live.LayoutAppLive do
   defp normalize_page_action("settings"), do: :settings
 
   defp normalize_page_action(action)
-       when action in [:overview, :activity, :forms, :components, :chart, :compose_chart, :settings],
+       when action in [
+              :overview,
+              :activity,
+              :forms,
+              :components,
+              :chart,
+              :compose_chart,
+              :settings
+            ],
        do: action
 
   defp normalize_page_action(_), do: :overview

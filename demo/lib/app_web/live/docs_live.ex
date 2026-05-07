@@ -31,17 +31,17 @@ defmodule AppWeb.Live.DocsLive do
          })
      )
      |> assign(page_title: seo.title, seo: seo)
-      |> assign(
-        btn_variant: "default",
-        btn_size: "default",
-        active_tab: "overview",
-        chart_color: "var(--chart-1)",
-        chart_curve: "linear",
-        chart_show_area: true,
-        chart_show_grid: true,
-        chart_revision: 0,
-        show_dialog: false,
-        progress_value: 45.0,
+     |> assign(
+       btn_variant: "default",
+       btn_size: "default",
+       active_tab: "overview",
+       chart_color: "var(--chart-1)",
+       chart_curve: "linear",
+       chart_show_area: true,
+       chart_show_grid: true,
+       chart_revision: 0,
+       show_dialog: false,
+       progress_value: 45.0,
        toast_count: 0,
        flash_position: "top-right"
      )}
@@ -172,7 +172,7 @@ defmodule AppWeb.Live.DocsLive do
     """
   end
 
-  # ── Docs shell layout ──────────────────────────────────────────────────
+  # ── Docs shell layout (PUI.Layout) ─────────────────────────────────────
 
   attr :docs, :list, required: true
   attr :doc, :any, default: nil
@@ -182,158 +182,159 @@ defmodule AppWeb.Live.DocsLive do
 
   defp docs_shell(assigns) do
     ~H"""
-    <div class="flex min-h-screen bg-background">
-      <PUI.Flash.flash_group flash={@flash} live={true} position={@flash_position} />
+    <PUI.Flash.flash_group flash={@flash} live={true} position={@flash_position} />
 
-      <%!-- Mobile Sidebar Overlay --%>
-      <div
-        id="docs-mobile-overlay"
-        class="fixed inset-0 z-40 bg-black/50 lg:hidden hidden"
-        phx-click={JS.hide(to: "#docs-mobile-sidebar") |> JS.hide(to: "#docs-mobile-overlay")}
-      />
+    <.app_layout id="docs-shell" content_class="p-0">
+      <:sidebar>
+        <%!-- Mobile overlay --%>
+        <div
+          id="docs-mobile-overlay"
+          class="fixed inset-0 z-40 bg-black/50 hidden lg:hidden"
+          phx-click={
+            JS.add_class("hidden", to: "#docs-sidebar")
+            |> JS.add_class("hidden", to: "#docs-mobile-overlay")
+          }
+        />
 
-      <%!-- Sidebar --%>
-      <aside
-        id="docs-mobile-sidebar"
-        class="fixed inset-y-0 left-0 z-50 w-72 bg-background border-r border-border lg:sticky lg:top-0 lg:block hidden lg:h-screen lg:overflow-y-auto lg:shrink-0"
-      >
-        <div class="flex h-full flex-col">
-          <%!-- Logo --%>
-          <div class="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
-            <.link navigate={~p"/"} class="flex items-center gap-3 group">
-              <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                <.icon name="hero-cube" class="size-4" />
-              </div>
-              <div class="flex flex-col">
-                <span class="text-base font-bold text-foreground">PUI</span>
-                <span class="text-[10px] leading-none text-zinc-600 dark:text-zinc-400">
-                  Documentation
-                </span>
-              </div>
-            </.link>
-            <button
-              class="lg:hidden rounded-md p-1.5 text-zinc-600 hover:bg-accent dark:text-zinc-300"
-              phx-click={JS.hide(to: "#docs-mobile-sidebar") |> JS.hide(to: "#docs-mobile-overlay")}
-            >
-              <.icon name="hero-x-mark" class="size-5" />
-            </button>
-          </div>
+        <.sidebar
+          id="docs-sidebar"
+          class="hidden lg:flex fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto"
+        >
+          <:header>
+            <div class="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
+              <.link navigate={~p"/"} class="flex items-center gap-3 group">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
+                  <.icon name="hero-cube" class="size-4" />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-base font-bold text-foreground">PUI</span>
+                  <span class="text-[10px] leading-none text-foreground/45">Documentation</span>
+                </div>
+              </.link>
+              <button
+                type="button"
+                class="lg:hidden rounded-md p-1.5 text-foreground/60 hover:bg-accent"
+                phx-click={
+                  JS.add_class("hidden", to: "#docs-sidebar")
+                  |> JS.add_class("hidden", to: "#docs-mobile-overlay")
+                }
+              >
+                <.icon name="hero-x-mark" class="size-5" />
+              </button>
+            </div>
+          </:header>
 
-          <%!-- Navigation --%>
-          <nav class="flex-1 overflow-y-auto p-4 space-y-6">
+          <nav class="flex flex-col gap-3 p-3 group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0">
             <div :for={{group, docs} <- @docs}>
-              <h3 class="mb-1 flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
-                <.icon name={group_icon(group)} class="size-3.5" />
-                {group}
-              </h3>
-              <ul class="space-y-0.5">
-                <li :for={d <- docs}>
+              <.sidebar_menu_item
+                title={group}
+                icon={group_icon(group)}
+                collapsible
+                expanded={@doc && Enum.any?(docs, &(&1.id == @doc.id))}
+              >
+                <:subitem :for={d <- docs}>
                   <.link
                     navigate={~p"/docs/#{d.id}"}
                     class={[
-                      "flex items-center px-3 py-1.5 text-sm rounded-md transition-all duration-150",
-                      @doc && @doc.id == d.id &&
-                        "bg-primary/10 text-primary font-medium",
+                      "block rounded-md px-2 py-1.5 text-sm transition-colors",
+                      @doc && @doc.id == d.id && "bg-primary/10 text-primary font-medium",
                       !(@doc && @doc.id == d.id) &&
-                        "text-zinc-700 hover:bg-accent/60 hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white"
+                        "text-foreground/65 hover:bg-accent hover:text-accent-foreground"
                     ]}
                   >
                     {d.title}
                   </.link>
-                </li>
-              </ul>
+                </:subitem>
+              </.sidebar_menu_item>
             </div>
           </nav>
-        </div>
-      </aside>
+        </.sidebar>
+      </:sidebar>
 
-      <%!-- Main --%>
-      <div class="flex flex-1 flex-col min-w-0">
-        <%!-- Top bar --%>
-        <header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:px-8">
-          <div class="flex items-center gap-4">
+      <:header>
+        <.content_header
+          shell_id="docs-shell"
+          breadcrumb_parent="Docs"
+          breadcrumb_current={if(@doc, do: @doc.title, else: "Documentation")}
+          toggle_class="hidden lg:grid"
+        >
+          <:right_actions>
             <button
-              class="lg:hidden p-2 -ml-2 rounded-md hover:bg-accent"
-              phx-click={JS.show(to: "#docs-mobile-sidebar") |> JS.show(to: "#docs-mobile-overlay")}
+              type="button"
+              class="lg:hidden grid h-9 w-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              phx-click={
+                JS.remove_class("hidden", to: "#docs-sidebar")
+                |> JS.remove_class("hidden", to: "#docs-mobile-overlay")
+              }
             >
-              <.icon name="hero-bars-3" class="size-5" />
+              <.icon name="hero-bars-3" class="h-4 w-4" />
             </button>
-            <span class="text-sm font-medium text-foreground">Documentation</span>
-          </div>
-          <div class="flex items-center gap-3">
-            <a
-              href={website_url()}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
-            >
-              <.icon name="hero-globe-alt" class="size-4" /> Website
-            </a>
             <a
               href={source_code_url()}
               target="_blank"
               rel="noopener noreferrer"
-              class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
+              class="hidden sm:grid h-9 w-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              title="Source code"
             >
-              <.icon name="hero-code-bracket" class="size-4" /> Source Code
+              <.icon name="hero-code-bracket" class="h-4 w-4" />
             </a>
             <a
               href="https://hexdocs.pm/pui"
               target="_blank"
-              class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors"
+              class="hidden sm:grid h-9 w-9 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              title="HexDocs"
             >
-              <.icon name="hero-book-open" class="size-4" /> HexDocs
+              <.icon name="hero-book-open" class="h-4 w-4" />
             </a>
             <Layouts.theme_toggle />
+          </:right_actions>
+        </.content_header>
+      </:header>
+
+      <div class="flex min-h-full">
+        <div class="flex-1 min-w-0">
+          <div class="mx-auto max-w-4xl px-4 lg:px-8 py-8 lg:py-12">
+            {render_slot(@inner_block)}
+
+            <footer class="mt-16 pt-8 border-t border-border">
+              <div class="flex items-center justify-between text-sm text-muted-foreground">
+                <p>
+                  © 2026 PUI. Built with <span class="text-red-500">♥</span> and Phoenix LiveView.
+                </p>
+                <.link navigate={~p"/"} class="transition-colors hover:text-foreground">
+                  Back to home →
+                </.link>
+              </div>
+            </footer>
           </div>
-        </header>
-
-        <%!-- Content + TOC --%>
-        <div class="flex flex-1 min-h-0">
-          <main class="flex-1 overflow-y-auto" id="docs-main-content">
-            <div class="mx-auto max-w-4xl px-4 lg:px-8 py-8 lg:py-12">
-              {render_slot(@inner_block)}
-
-              <footer class="mt-16 pt-8 border-t border-border">
-                <div class="flex items-center justify-between text-sm text-muted-foreground">
-                  <p>
-                    © 2026 PUI. Built with <span class="text-red-500">♥</span> and Phoenix LiveView.
-                  </p>
-                  <.link navigate={~p"/"} class="transition-colors hover:text-foreground">
-                    Back to home →
-                  </.link>
-                </div>
-              </footer>
-            </div>
-          </main>
-
-          <%!-- TOC --%>
-          <aside
-            :if={@doc && @doc.toc != []}
-            class="hidden xl:block w-56 shrink-0 self-start border-l border-border bg-background sticky top-12"
-          >
-            <div class="sticky top-0 max-h-screen overflow-y-auto px-5 py-8">
-              <h5 class="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
-                On this page
-              </h5>
-              <ul class="space-y-1.5">
-                <li :for={item <- @doc.toc}>
-                  <a
-                    href={"##{item.id}"}
-                    class={[
-                      "block text-sm text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-300 dark:hover:text-white",
-                      item.level == 3 && "pl-3"
-                    ]}
-                  >
-                    {item.text}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </aside>
         </div>
+
+        <%!-- TOC --%>
+        <aside
+          :if={@doc && @doc.toc != []}
+          class="hidden xl:block w-56 shrink-0 self-start border-l border-border bg-background sticky top-0"
+        >
+          <div class="sticky top-0 max-h-screen overflow-y-auto px-5 py-8">
+            <h5 class="mb-3 text-xs font-semibold uppercase tracking-wider text-foreground/60">
+              On this page
+            </h5>
+            <ul class="space-y-1.5">
+              <li :for={item <- @doc.toc}>
+                <a
+                  href={"##{item.id}"}
+                  class={[
+                    "block text-sm text-foreground/55 transition-colors hover:text-foreground",
+                    item.level == 3 && "pl-3"
+                  ]}
+                >
+                  {item.text}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </aside>
       </div>
-    </div>
+    </.app_layout>
     """
   end
 
@@ -397,5 +398,4 @@ defmodule AppWeb.Live.DocsLive do
   defp group_icon(_), do: "hero-document"
 
   defp source_code_url, do: "https://github.com/suciptoid/pui"
-  defp website_url, do: "https://pui.sukacipta.com"
 end

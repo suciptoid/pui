@@ -2445,8 +2445,14 @@ defmodule AppWeb.DocsDemo do
         <div class="rounded-xl border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
           Curve: <span class="font-medium text-foreground">{@chart_curve}</span>
           · Color: <span class="font-medium text-foreground">{@chart_color}</span>
-          · Area: <span class="font-medium text-foreground">{if @chart_show_area, do: "on", else: "off"}</span>
-          · Grid: <span class="font-medium text-foreground">{if @chart_show_grid, do: "on", else: "off"}</span>
+          · Area:
+          <span class="font-medium text-foreground">
+            {if @chart_show_area, do: "on", else: "off"}
+          </span>
+          · Grid:
+          <span class="font-medium text-foreground">
+            {if @chart_show_grid, do: "on", else: "off"}
+          </span>
           · Revision: <span class="font-medium text-foreground">{@chart_revision}</span>
         </div>
 
@@ -2473,8 +2479,9 @@ defmodule AppWeb.DocsDemo do
           <div>
             <p class="text-sm font-medium text-foreground">Monthly revenue</p>
             <p class="text-sm text-muted-foreground">
-              Built with <code>&lt;.container&gt;</code>, <code>&lt;.x_axis&gt;</code>,
-              <code>&lt;.tooltip&gt;</code>, and <code>&lt;.bar&gt;</code> child components.
+              Built with <code>&lt;.container&gt;</code>, <code>&lt;.x_axis&gt;</code>, <code>&lt;.tooltip&gt;</code>, and
+              <code>&lt;.bar&gt;</code>
+              child components.
             </p>
           </div>
           <.badge variant="outline">Hook: PUI.ComposeChart</.badge>
@@ -2516,8 +2523,18 @@ defmodule AppWeb.DocsDemo do
             curve="spline"
             area={true}
             series={[
-              %{label: "Server A", data: [42, 45, 43, 46, 44, 47], suffix: "°C", color: "var(--chart-1)"},
-              %{label: "Server B", data: [38, 40, 39, 41, 40, 42], suffix: "°C", color: "var(--chart-2)"}
+              %{
+                label: "Server A",
+                data: [42, 45, 43, 46, 44, 47],
+                suffix: "°C",
+                color: "var(--chart-1)"
+              },
+              %{
+                label: "Server B",
+                data: [38, 40, 39, 41, 40, 42],
+                suffix: "°C",
+                color: "var(--chart-2)"
+              }
             ]}
           />
         </PUI.ComposeChart.container>

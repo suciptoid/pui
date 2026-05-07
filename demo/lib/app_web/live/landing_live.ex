@@ -1,11 +1,13 @@
 defmodule AppWeb.Live.LandingLive do
+  @moduledoc """
+  Landing page - Hero + dashboard demo + features + CTA.
+  """
   use AppWeb, :live_view
   use PUI
 
   @impl true
   def mount(_params, _session, socket) do
     seo = AppWeb.Seo.landing_meta()
-
     {:ok, assign(socket, page_title: seo.title, seo: seo)}
   end
 
@@ -14,229 +16,175 @@ defmodule AppWeb.Live.LandingLive do
     ~H"""
     <div class="min-h-screen bg-background text-foreground">
       <div class="relative isolate overflow-hidden">
-        <div class="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-gradient-to-b from-primary/10 via-background to-background" />
-        <div class="absolute left-[8%] top-20 -z-10 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-        <div class="absolute right-[8%] top-12 -z-10 h-72 w-72 rounded-full bg-sky-500/10 blur-3xl" />
+        <div class="absolute inset-x-0 top-0 -z-10 h-[40rem] bg-gradient-to-b from-primary/8 via-transparent to-transparent" />
+        <div class="absolute left-[10%] top-16 -z-10 h-80 w-80 rounded-full bg-primary/8 blur-[100px]" />
+        <div class="absolute right-[5%] top-28 -z-10 h-64 w-64 rounded-full bg-sky-500/6 blur-[80px]" />
 
-        <header class="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
-          <.link navigate={~p"/"} class="flex items-center gap-3">
-            <div class="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/70 bg-card shadow-sm">
-              <img src={~p"/images/pui-hook-2d.png"} alt="PUI" class="h-8 w-8" />
+        <header class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
+          <.link navigate={~p"/"} class="flex items-center gap-3 group">
+            <div class="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur transition-shadow group-hover:shadow-md">
+              <img src={~p"/images/pui-hook-2d.png"} alt="PUI" class="h-7 w-7" />
             </div>
-            <div class="flex flex-col">
-              <span class="text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-foreground/55">
-                PUI
-              </span>
-              <span class="text-sm font-semibold sm:text-base">Phoenix LiveView UI Toolkit</span>
-            </div>
+            <span class="text-lg font-bold tracking-tight">PUI</span>
           </.link>
 
           <div class="flex items-center gap-3">
-            <nav class="hidden items-center gap-2 md:flex">
-              <.link
-                navigate={~p"/docs"}
-                class="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-2 text-sm text-foreground/70 shadow-sm transition-colors hover:text-foreground"
-              >
-                <.icon name="hero-book-open" class="size-4" /> Docs
-              </.link>
-              <a
-                href={source_code_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-2 text-sm text-foreground/70 shadow-sm transition-colors hover:text-foreground"
-              >
-                <.icon name="hero-code-bracket" class="size-4" /> Source Code
-              </a>
-            </nav>
-
+            <.link
+              navigate={~p"/docs"}
+              class="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-foreground/65 hover:text-foreground transition-colors"
+            >
+              <.icon name="hero-book-open" class="size-4" /> Docs
+            </.link>
+            <a
+              href={source_code_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hidden sm:inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground/65 hover:text-foreground transition-colors"
+            >
+              <.icon name="hero-code-bracket" class="size-4" />
+            </a>
             <Layouts.theme_toggle />
           </div>
         </header>
 
-        <main class="mx-auto max-w-7xl px-6 pb-20 pt-6 lg:px-8 lg:pb-24 lg:pt-10">
-          <section class="max-w-4xl">
-            <div class="inline-flex items-center gap-2 rounded-full border border-border bg-background/85 px-3 py-1 text-sm text-foreground/70 shadow-sm backdrop-blur">
-              <.icon name="hero-sparkles" class="size-4 text-primary" />
-              Beautiful LiveView components without the busywork
-            </div>
+        <%!-- Hero --%>
+        <main class="mx-auto max-w-4xl px-6 pt-12 pb-20 text-center lg:px-8 lg:pt-20 lg:pb-28">
+          <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> v1.0.0 beta
+          </div>
 
-            <h1 class="mt-6 text-5xl font-semibold tracking-tight sm:text-6xl">
-              Build polished Phoenix LiveView interfaces with a calm, minimal system.
-            </h1>
+          <h1 class="mt-6 text-5xl font-bold tracking-tight leading-[1.1] sm:text-6xl lg:text-7xl">
+            Build polished interfaces <span class="text-primary/80">without the busywork.</span>
+          </h1>
 
-            <p class="mt-6 max-w-2xl text-lg leading-8 text-foreground/70">
-              PUI gives you accessible, theme-ready components that feel at home in LiveView
-              applications, so you can ship consistent product UI faster.
-            </p>
+          <p class="mt-6 max-w-xl mx-auto text-lg leading-8 text-foreground/60">
+            PUI gives you accessible, theme-ready LiveView components so you can
+            ship consistent product UI faster.
+          </p>
 
-            <div class="mt-8 flex flex-wrap items-center gap-3">
-              <.button navigate={~p"/docs"} size="lg" class="shadow-sm">
-                <.icon name="hero-book-open" class="size-4" /> Read the docs
-              </.button>
-
-              <.button
-                variant="outline"
-                size="lg"
-                href={source_code_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <.icon name="hero-code-bracket" class="size-4" /> Source code
-              </.button>
-            </div>
-
-            <div class="mt-6 flex flex-wrap gap-3">
-              <span
-                :for={tag <- hero_tags()}
-                class="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm text-foreground/65"
-              >
-                {tag}
-              </span>
-            </div>
-          </section>
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <.button navigate={~p"/docs"} size="lg" class="shadow-lg shadow-primary/20">
+              <.icon name="hero-book-open" class="size-4" /> Read the docs
+            </.button>
+            <.button
+              variant="outline"
+              size="lg"
+              href={source_code_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <.icon name="hero-code-bracket" class="size-4" /> Source code
+            </.button>
+          </div>
         </main>
       </div>
 
-      <section class="mx-auto max-w-7xl px-6 pb-12 lg:px-8">
-        <div class="rounded-[2rem] border border-border/80 bg-card/70 p-6 shadow-sm sm:p-8 lg:p-10">
-          <div class="max-w-3xl">
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Quickstart</p>
-            <h2 class="mt-4 text-3xl font-semibold tracking-tight">
-              From install to first component, one step at a time.
-            </h2>
-            <p class="mt-4 text-base leading-7 text-foreground/70">
-              Keep the homepage focused, and move into `/docs` when you want the full interactive
-              examples and component reference.
-            </p>
-          </div>
-
-          <div class="mt-8 space-y-4">
-            <div class="rounded-3xl bg-background/90 p-6">
-              <div class="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
-                <div>
-                  <div class="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
-                    Step 01
-                  </div>
-                  <h3 class="mt-3 text-xl font-semibold tracking-tight">Install the dependency</h3>
-                  <p class="mt-3 text-sm leading-6 text-foreground/65">
-                    Add `pui` to `mix.exs`, fetch dependencies, and keep the setup small.
-                  </p>
+      <%!-- Dashboard demo --%>
+      <section class="mx-auto max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
+        <div class="overflow-hidden rounded-2xl border border-border shadow-xl">
+          <div class="flex h-[600px] bg-background">
+            <div class="hidden w-60 shrink-0 border-r border-border bg-muted/30 sm:flex flex-col">
+              <div class="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
+                <div class="h-7 w-7 rounded-md bg-primary/15 flex items-center justify-center">
+                  <.icon name="hero-chart-bar" class="size-3.5 text-primary" />
                 </div>
-
-                <div class="w-full space-y-4">
-                  <.code_panel title="mix.exs">
-                    <span class="block">
-                      <span class="text-violet-300">defp</span> <span class="text-sky-300">deps</span>
-                      <span class="text-fuchsia-300">do</span>
-                    </span>
-                    <span class="block pl-4 text-zinc-100">[</span>
-                    <span class="block pl-8 text-zinc-100">
-                      &#123;<span class="text-sky-300">:pui</span>, <span class="text-emerald-300">"~&gt; 1.0.0-alpha"</span>&#125;
-                    </span>
-                    <span class="block pl-4 text-zinc-100">]</span>
-                    <span class="block"><span class="text-fuchsia-300">end</span></span>
-                  </.code_panel>
-
-                  <div class="rounded-2xl border border-zinc-800 bg-zinc-950/95 px-4 py-3 font-mono text-sm text-zinc-100 shadow-sm">
-                    <span class="text-zinc-500">$</span> mix deps.get
+                <div>
+                  <p class="text-xs font-bold">FinanceOS</p>
+                  <p class="text-[10px] text-foreground/40">Workspace</p>
+                </div>
+              </div>
+              <nav class="flex-1 p-3 space-y-0.5">
+                <div
+                  :for={item <- sidebar_items()}
+                  class={[
+                    "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-xs font-medium",
+                    item.active && "bg-primary/10 text-primary",
+                    !item.active && "text-foreground/55 hover:text-foreground hover:bg-accent"
+                  ]}
+                >
+                  <.icon name={item.icon} class="size-3.5" />{item.label}
+                </div>
+              </nav>
+              <div class="border-t border-border p-3">
+                <div class="flex items-center gap-2.5 rounded-md px-2.5 py-2">
+                  <div class="h-6 w-6 rounded-md bg-muted flex items-center justify-center text-[10px] font-bold">
+                    S
+                  </div>
+                  <div>
+                    <p class="text-xs font-medium">Sucipto</p>
+                    <p class="text-[10px] text-foreground/40">Developer</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="rounded-3xl bg-background/90 p-6 ">
-              <div class="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
+            <div class="flex-1 flex flex-col min-w-0">
+              <div class="flex items-center justify-between border-b border-border px-5 py-3">
                 <div>
-                  <div class="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
-                    Step 02
-                  </div>
-                  <h3 class="mt-3 text-xl font-semibold tracking-tight">Import and use PUI</h3>
-                  <p class="mt-3 text-sm leading-6 text-foreground/65">
-                    Bring the toolkit into your LiveView and start composing UI with the provided
-                    components.
+                  <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/40">
+                    Dashboard
                   </p>
+                  <p class="text-sm font-semibold">Overview</p>
                 </div>
-
-                <div class="w-full">
-                  <.code_panel title="settings_live.ex">
-                    <span class="block">
-                      <span class="text-violet-300">defmodule</span>
-                      <span class="text-sky-300">MyAppWeb.SettingsLive</span>
-                      <span class="text-fuchsia-300">do</span>
-                    </span>
-                    <span class="block pl-4">
-                      <span class="text-violet-300">use</span>
-                      <span class="text-zinc-100">MyAppWeb</span>,
-                      <span class="text-amber-300">:live_view</span>
-                    </span>
-                    <span class="block pl-4">
-                      <span class="text-violet-300">use</span> <span class="text-zinc-100">PUI</span>
-                    </span>
-                    <span class="block pl-4 mt-2">
-                      <span class="text-violet-300">def</span>
-                      <span class="text-sky-300">render</span>(<span class="text-zinc-100">assigns</span>)
-                      <span class="text-fuchsia-300">do</span>
-                    </span>
-                    <span class="block pl-8">
-                      <span class="text-amber-300">~H&quot;&quot;&quot;</span>
-                    </span>
-                    <span class="block pl-8">
-                      <span class="text-cyan-300">&lt;div class="space-y-4"&gt;</span>
-                    </span>
-                    <span class="block pl-12">
-                      <span class="text-cyan-300">&lt;.button&gt;</span><span class="text-zinc-100">Save changes</span><span class="text-cyan-300">&lt;/.button&gt;</span>
-                    </span>
-                    <span class="block pl-12">
-                      <span class="text-cyan-300">&lt;.input</span>
-                      <span class="text-amber-300">name=</span><span class="text-emerald-300">"email"</span>
-                      <span class="text-amber-300">label=</span><span class="text-emerald-300">"Email"</span>
-                      <span class="text-cyan-300">/&gt;</span>
-                    </span>
-                    <span class="block pl-8">
-                      <span class="text-cyan-300">&lt;/div&gt;</span>
-                    </span>
-                    <span class="block pl-8">
-                      <span class="text-amber-300">&quot;&quot;&quot;</span>
-                    </span>
-                    <span class="block pl-4"><span class="text-fuchsia-300">end</span></span>
-                    <span class="block"><span class="text-fuchsia-300">end</span></span>
-                  </.code_panel>
+                <div class="flex gap-2">
+                  <.button variant="outline" size="sm">
+                    <.icon name="hero-arrow-down-tray" class="size-3" /> Export
+                  </.button>
+                  <.button size="sm"><.icon name="hero-plus" class="size-3" /> New</.button>
                 </div>
               </div>
-            </div>
-
-            <div class="rounded-3xl bg-background/90 p-6">
-              <div class="flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:items-start">
-                <div>
-                  <div class="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">
-                    Step 03
+              <div class="flex-1 overflow-y-auto p-5 space-y-5">
+                <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                  <div
+                    :for={m <- shell_metrics()}
+                    class="rounded-lg border border-border bg-card p-3.5"
+                  >
+                    <p class="text-[10px] font-medium text-foreground/45">{m.label}</p>
+                    <p class="mt-1 text-xl font-bold tracking-tight">{m.value}</p>
+                    <p class={[
+                      "mt-0.5 text-[10px] font-medium",
+                      m.positive && "text-emerald-500",
+                      !m.positive && "text-red-500"
+                    ]}>
+                      {m.change}
+                    </p>
                   </div>
-                  <h3 class="mt-3 text-xl font-semibold tracking-tight">Open the docs</h3>
-                  <p class="mt-3 text-sm leading-6 text-foreground/65">
-                    Use the docs site for interactive demos, usage notes, and the complete API
-                    reference.
-                  </p>
                 </div>
-
-                <div class="w-full rounded-2xl border border-border bg-card px-5 py-5">
-                  <p class="text-sm font-semibold">Choose your path</p>
-                  <p class="mt-2 text-sm leading-6 text-foreground/65">
-                    Start with the local docs, then jump to the hosted package docs when you want the
-                    published reference.
-                  </p>
-
-                  <div class="mt-4 flex flex-wrap gap-3">
-                    <.button navigate={~p"/docs"}>
-                      <.icon name="hero-book-open" class="size-4" /> Docs
-                    </.button>
-                    <.button
-                      variant="outline"
-                      href={hexdocs_url()}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <.icon name="hero-arrow-top-right-on-square" class="size-4" /> HexDocs
-                    </.button>
+                <div class="grid gap-5 xl:grid-cols-[1.2fr_1fr]">
+                  <div class="rounded-lg border border-border bg-card p-4">
+                    <p class="text-xs font-semibold text-foreground/60 mb-3">Revenue trend</p>
+                    <.line_chart
+                      id="demo-chart-main"
+                      card={false}
+                      height={200}
+                      labels={["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"]}
+                      series={[
+                        %{label: "Revenue", data: [42, 48, 45, 52, 58, 64], suffix: "k"},
+                        %{label: "Target", data: [40, 40, 50, 50, 60, 60], suffix: "k"}
+                      ]}
+                    />
+                  </div>
+                  <div class="rounded-lg border border-border bg-card p-4">
+                    <p class="text-xs font-semibold text-foreground/60 mb-3">By channel</p>
+                    <PUI.ComposeChart.container id="demo-chart-bar" card={false} height={200}>
+                      <PUI.ComposeChart.x_axis categories={["Direct", "Referral", "Organic", "Paid"]} />
+                      <PUI.ComposeChart.tooltip />
+                      <PUI.ComposeChart.bar series={[
+                        %{label: "Revenue", data: [24, 18, 32, 14], suffix: "k"}
+                      ]} />
+                    </PUI.ComposeChart.container>
+                  </div>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-4">
+                  <p class="text-xs font-semibold text-foreground/60 mb-3">Recent activity</p>
+                  <div class="space-y-2.5">
+                    <div :for={a <- shell_activity()} class="flex items-center gap-3 py-1.5">
+                      <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                        <.icon name={a.icon} class="size-3.5" />
+                      </div>
+                      <p class="flex-1 text-xs text-foreground/65 truncate">{a.text}</p>
+                      <span class="shrink-0 text-[10px] text-foreground/30">{a.time}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -245,73 +193,72 @@ defmodule AppWeb.Live.LandingLive do
         </div>
       </section>
 
-      <section class="mx-auto max-w-7xl px-6 pb-16 lg:px-8">
-        <div class="max-w-2xl">
-          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Features</p>
-          <h2 class="mt-4 text-3xl font-semibold tracking-tight">
-            A straightforward toolkit for shipping cleaner LiveView interfaces.
+      <%!-- Features --%>
+      <section class="mx-auto max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
+        <div class="text-center mb-10">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Features</p>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">
+            Everything you need, nothing you don't.
           </h2>
-          <p class="mt-4 text-base leading-7 text-foreground/70">
-            PUI stays small on the surface, but still gives you the pieces you need to build cohesive
-            UI quickly.
-          </p>
         </div>
-
-        <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div
-            :for={feature <- feature_cards()}
-            class="rounded-3xl border border-border bg-card p-6 shadow-sm"
+            :for={f <- feature_cards()}
+            class="group rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/20 hover:shadow-md"
           >
-            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-              <.icon name={feature.icon} class="size-5" />
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+              <.icon name={f.icon} class="size-5" />
             </div>
-            <h3 class="mt-6 text-xl font-semibold tracking-tight">{feature.title}</h3>
-            <p class="mt-3 text-sm leading-7 text-foreground/65">{feature.description}</p>
+            <h3 class="mt-5 text-base font-semibold">{f.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-foreground/60">{f.description}</p>
           </div>
         </div>
       </section>
 
-      <footer class="border-t border-border/80 bg-muted/20">
-        <div class="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-          <div class="rounded-[2rem] border border-border bg-card p-8 shadow-sm">
-            <p class="text-sm font-semibold uppercase tracking-[0.2em] text-primary">Next steps</p>
-            <h2 class="mt-4 text-2xl font-semibold tracking-tight">
-              Explore PUI from the channel that fits your workflow.
-            </h2>
-            <p class="mt-4 max-w-2xl text-base leading-7 text-foreground/70">
-              Browse the local docs, read the published package docs, inspect the Hex package, or go
-              straight to the repository.
-            </p>
+      <%!-- CTA --%>
+      <section class="mx-auto max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
+        <div class="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background p-8 text-center lg:p-14">
+          <div class="absolute right-0 top-0 -z-10 h-48 w-48 rounded-full bg-primary/10 blur-[80px]" />
+          <div class="absolute left-0 bottom-0 -z-10 h-36 w-36 rounded-full bg-sky-500/8 blur-[80px]" />
+          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Ready to get started?</h2>
+          <p class="mt-3 text-base leading-7 text-foreground/55 max-w-md mx-auto">
+            Add PUI to your Phoenix LiveView project and start building polished interfaces today.
+          </p>
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <.button navigate={~p"/docs"} size="lg" class="shadow-lg shadow-primary/20">
+              <.icon name="hero-book-open" class="size-4" /> Read the docs
+            </.button>
+            <.button
+              variant="outline"
+              size="lg"
+              href={source_code_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <.icon name="hero-code-bracket" class="size-4" /> View on GitHub
+            </.button>
+          </div>
+        </div>
+      </section>
 
-            <div class="mt-6 flex flex-wrap gap-3">
-              <.button navigate={~p"/docs"}>
-                <.icon name="hero-book-open" class="size-4" /> Docs
-              </.button>
-              <.button
-                variant="outline"
-                href={hexdocs_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <.icon name="hero-arrow-top-right-on-square" class="size-4" /> HexDocs
-              </.button>
-              <.button
-                variant="outline"
-                href={hexpm_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <.icon name="hero-cube" class="size-4" /> Hex.pm
-              </.button>
-              <.button
-                variant="outline"
-                href={source_code_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <.icon name="hero-code-bracket" class="size-4" /> Source code
-              </.button>
-            </div>
+      <footer class="border-t border-border/60">
+        <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-10 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+          <p class="text-sm text-foreground/45">Built with Phoenix LiveView.</p>
+          <div class="flex gap-5">
+            <.link
+              navigate={~p"/docs"}
+              class="text-sm text-foreground/45 hover:text-foreground transition-colors"
+            >
+              Docs
+            </.link>
+            <a
+              href={source_code_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm text-foreground/45 hover:text-foreground transition-colors"
+            >
+              GitHub
+            </a>
           </div>
         </div>
       </footer>
@@ -319,23 +266,32 @@ defmodule AppWeb.Live.LandingLive do
     """
   end
 
-  attr :title, :string, required: true
-  slot :inner_block, required: true
+  defp sidebar_items do
+    [
+      %{icon: "hero-home", label: "Dashboard", active: true},
+      %{icon: "hero-chart-bar", label: "Analytics", active: false},
+      %{icon: "hero-banknotes", label: "Invoices", active: false},
+      %{icon: "hero-user-group", label: "Customers", active: false},
+      %{icon: "hero-cog-6-tooth", label: "Settings", active: false}
+    ]
+  end
 
-  defp code_panel(assigns) do
-    ~H"""
-    <div class="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950 shadow-sm">
-      <div class="flex items-center gap-2 border-b border-white/10 px-4 py-3 text-xs text-zinc-400">
-        <span class="h-2 w-2 rounded-full bg-red-400" />
-        <span class="h-2 w-2 rounded-full bg-amber-400" />
-        <span class="h-2 w-2 rounded-full bg-emerald-400" />
-        <span class="ml-2 font-medium text-zinc-300">{@title}</span>
-      </div>
-      <div class="overflow-x-auto px-4 py-5">
-        <code class="block min-w-max font-mono text-sm leading-7">{render_slot(@inner_block)}</code>
-      </div>
-    </div>
-    """
+  defp shell_metrics do
+    [
+      %{label: "Revenue", value: "$64.2k", change: "+12.5%", positive: true},
+      %{label: "Customers", value: "1,284", change: "+8.3%", positive: true},
+      %{label: "Avg. order", value: "$142", change: "-2.1%", positive: false},
+      %{label: "Churn", value: "1.2%", change: "-0.4%", positive: true}
+    ]
+  end
+
+  defp shell_activity do
+    [
+      %{icon: "hero-banknotes", text: "Payment received from Acme Corp", time: "2m ago"},
+      %{icon: "hero-user-plus", text: "New customer: Globex Inc", time: "15m ago"},
+      %{icon: "hero-document-check", text: "Invoice #1042 marked as paid", time: "1h ago"},
+      %{icon: "hero-arrow-trending-up", text: "Revenue milestone reached", time: "3h ago"}
+    ]
   end
 
   defp feature_cards do
@@ -344,34 +300,28 @@ defmodule AppWeb.Live.LandingLive do
         icon: "hero-bolt",
         title: "Built for LiveView",
         description:
-          "Use components that feel natural in LiveViews and function components, without pulling in a heavy frontend layer."
+          "Components that feel natural in LiveViews and function components, without a heavy frontend layer."
       },
       %{
         icon: "hero-shield-check",
-        title: "Accessible interactions",
+        title: "Accessible by default",
         description:
-          "Start from components that already consider focus, states, and common interaction patterns."
+          "Focus management, keyboard navigation, and ARIA attributes baked in from the start."
       },
       %{
         icon: "hero-swatch",
-        title: "Theme-ready defaults",
+        title: "Theme-ready",
         description:
-          "Keep the defaults minimal, then adapt them to your product without fighting the styling system."
+          "CSS variables for colors, spacing, and radius. Override what you need, keep the rest."
       },
       %{
-        icon: "hero-book-open",
-        title: "Docs-first workflow",
+        icon: "hero-cube",
+        title: "Small footprint",
         description:
-          "Use `/docs` as the main place for interactive examples, usage notes, and API references."
+          "One dependency, minimal JS hooks, no external CSS framework required beyond Tailwind."
       }
     ]
   end
 
-  defp hero_tags do
-    ["LiveView-native", "Accessible by default", "Theme-ready", "Docs-first"]
-  end
-
   defp source_code_url, do: "https://github.com/suciptoid/pui"
-  defp hexdocs_url, do: "https://hexdocs.pm/pui"
-  defp hexpm_url, do: "https://hex.pm/packages/pui"
 end
