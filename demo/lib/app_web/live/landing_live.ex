@@ -1,6 +1,6 @@
 defmodule AppWeb.Live.LandingLive do
   @moduledoc """
-  Landing page - Hero + dashboard demo + features + CTA.
+  Landing page - Clean white with blue-200 top gradient, dashboard demo, features, CTA.
   """
   use AppWeb, :live_view
   use PUI
@@ -14,56 +14,62 @@ defmodule AppWeb.Live.LandingLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-background text-foreground">
+    <div class="min-h-screen bg-white text-foreground dark:bg-gray-950">
       <div class="relative isolate overflow-hidden">
-        <div class="absolute inset-x-0 top-0 -z-10 h-[40rem] bg-gradient-to-b from-primary/8 via-transparent to-transparent" />
-        <div class="absolute left-[10%] top-16 -z-10 h-80 w-80 rounded-full bg-primary/8 blur-[100px]" />
-        <div class="absolute right-[5%] top-28 -z-10 h-64 w-64 rounded-full bg-sky-500/6 blur-[80px]" />
+        <div class="absolute inset-x-0 top-0 -z-10 h-[48rem] bg-gradient-to-b from-blue-200 to-transparent dark:from-blue-500/10" />
 
         <header class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <.link navigate={~p"/"} class="flex items-center gap-3 group">
-            <div class="flex h-10 w-10 items-center justify-center rounded-2xl border border-border/60 bg-card/80 shadow-sm backdrop-blur transition-shadow group-hover:shadow-md">
+            <div class="flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow group-hover:shadow-md dark:border-gray-700 dark:bg-gray-900">
               <img src={~p"/images/pui-hook-2d.png"} alt="PUI" class="h-7 w-7" />
             </div>
             <span class="text-lg font-bold tracking-tight">PUI</span>
           </.link>
 
-          <div class="flex items-center gap-3">
-            <.link
+          <div class="flex items-center gap-2">
+            <.button
               navigate={~p"/docs"}
-              class="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-foreground/65 hover:text-foreground transition-colors"
+              variant="outline"
+              size="sm"
+              class="border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
             >
-              <.icon name="hero-book-open" class="size-4" /> Docs
-            </.link>
-            <a
+              <.icon name="hero-book-open" class="size-3.5" /> Docs
+            </.button>
+            <.button
+              variant="outline"
+              size="sm"
               href={source_code_url()}
               target="_blank"
               rel="noopener noreferrer"
-              class="hidden sm:inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground/65 hover:text-foreground transition-colors"
+              class="border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
             >
-              <.icon name="hero-code-bracket" class="size-4" />
-            </a>
-            <Layouts.theme_toggle />
+              <.icon name="hero-code-bracket" class="size-3.5" /> GitHub
+            </.button>
           </div>
         </header>
 
         <%!-- Hero --%>
         <main class="mx-auto max-w-4xl px-6 pt-12 pb-20 text-center lg:px-8 lg:pt-20 lg:pb-28">
-          <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+          <div class="inline-flex items-center gap-2 rounded-full border border-blue-500/25 bg-blue-600/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:border-blue-400/25 dark:bg-blue-500/15 dark:text-blue-100">
             <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> v1.0.0 beta
           </div>
 
-          <h1 class="mt-6 text-5xl font-bold tracking-tight leading-[1.1] sm:text-6xl lg:text-7xl">
-            Build polished interfaces <span class="text-primary/80">without the busywork.</span>
+          <h1 class="mt-6 text-5xl font-bold tracking-tight leading-[1.1] text-gray-900 dark:text-gray-50 sm:text-6xl lg:text-7xl">
+            Build polished interfaces
+            <span class="text-blue-600 dark:text-blue-400">without the busywork.</span>
           </h1>
 
-          <p class="mt-6 max-w-xl mx-auto text-lg leading-8 text-foreground/60">
+          <p class="mt-6 max-w-xl mx-auto text-lg leading-8 text-gray-600 dark:text-gray-400">
             PUI gives you accessible, theme-ready LiveView components so you can
             ship consistent product UI faster.
           </p>
 
           <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <.button navigate={~p"/docs"} size="lg" class="shadow-lg shadow-primary/20">
+            <.button
+              navigate={~p"/docs"}
+              size="lg"
+              class="border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-700/25 hover:bg-blue-700"
+            >
               <.icon name="hero-book-open" class="size-4" /> Read the docs
             </.button>
             <.button
@@ -72,6 +78,7 @@ defmodule AppWeb.Live.LandingLive do
               href={source_code_url()}
               target="_blank"
               rel="noopener noreferrer"
+              class="border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-800"
             >
               <.icon name="hero-code-bracket" class="size-4" /> Source code
             </.button>
@@ -80,17 +87,17 @@ defmodule AppWeb.Live.LandingLive do
       </div>
 
       <%!-- Dashboard demo --%>
-      <section class="mx-auto max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
-        <div class="overflow-hidden rounded-2xl border border-border shadow-xl">
-          <div class="flex h-[600px] bg-background">
-            <div class="hidden w-60 shrink-0 border-r border-border bg-muted/30 sm:flex flex-col">
-              <div class="flex items-center gap-2.5 border-b border-border px-4 py-3.5">
-                <div class="h-7 w-7 rounded-md bg-primary/15 flex items-center justify-center">
+      <section class="relative z-10 mx-auto -mt-16 max-w-7xl px-6 pb-20 lg:-mt-20 lg:px-8 lg:pb-28">
+        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl shadow-gray-950/8 dark:border-gray-800 dark:bg-gray-900">
+          <div class="flex h-[600px] bg-white dark:bg-gray-900">
+            <div class="hidden w-60 shrink-0 border-r border-gray-200 bg-white sm:flex flex-col dark:border-gray-800 dark:bg-gray-900">
+              <div class="flex items-center gap-2.5 border-b border-gray-200 px-4 py-3.5 dark:border-gray-800">
+                <div class="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800">
                   <.icon name="hero-chart-bar" class="size-3.5 text-primary" />
                 </div>
                 <div>
-                  <p class="text-xs font-bold">FinanceOS</p>
-                  <p class="text-[10px] text-foreground/40">Workspace</p>
+                  <p class="text-xs font-bold text-gray-900 dark:text-gray-50">FinanceOS</p>
+                  <p class="text-[10px] text-gray-500 dark:text-gray-500">Workspace</p>
                 </div>
               </div>
               <nav class="flex-1 p-3 space-y-0.5">
@@ -98,49 +105,61 @@ defmodule AppWeb.Live.LandingLive do
                   :for={item <- sidebar_items()}
                   class={[
                     "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-xs font-medium",
-                    item.active && "bg-primary/10 text-primary",
-                    !item.active && "text-foreground/55 hover:text-foreground hover:bg-accent"
+                    item.active &&
+                      "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100",
+                    !item.active &&
+                      "text-gray-500 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:text-gray-50"
                   ]}
                 >
                   <.icon name={item.icon} class="size-3.5" />{item.label}
                 </div>
               </nav>
-              <div class="border-t border-border p-3">
+              <div class="border-t border-gray-200 p-3 dark:border-gray-800">
                 <div class="flex items-center gap-2.5 rounded-md px-2.5 py-2">
-                  <div class="h-6 w-6 rounded-md bg-muted flex items-center justify-center text-[10px] font-bold">
+                  <div class="flex h-6 w-6 items-center justify-center rounded-md bg-gray-100 text-[10px] font-bold text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                     S
                   </div>
                   <div>
-                    <p class="text-xs font-medium">Sucipto</p>
-                    <p class="text-[10px] text-foreground/40">Developer</p>
+                    <p class="text-xs font-medium text-gray-900 dark:text-gray-50">Sucipto</p>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-500">Developer</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div class="flex-1 flex flex-col min-w-0">
-              <div class="flex items-center justify-between border-b border-border px-5 py-3">
+              <div class="flex items-center justify-between border-b border-gray-200 px-5 py-3 dark:border-gray-800">
                 <div>
-                  <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/40">
+                  <p class="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400">
                     Dashboard
                   </p>
-                  <p class="text-sm font-semibold">Overview</p>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-gray-50">Overview</p>
                 </div>
                 <div class="flex gap-2">
-                  <.button variant="outline" size="sm">
+                  <.button
+                    variant="outline"
+                    size="sm"
+                    class="border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                  >
                     <.icon name="hero-arrow-down-tray" class="size-3" /> Export
                   </.button>
-                  <.button size="sm"><.icon name="hero-plus" class="size-3" /> New</.button>
+                  <.button size="sm" class="border-blue-500 bg-blue-600 text-white hover:bg-blue-700">
+                    <.icon name="hero-plus" class="size-3" /> New
+                  </.button>
                 </div>
               </div>
               <div class="flex-1 overflow-y-auto p-5 space-y-5">
                 <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
                   <div
                     :for={m <- shell_metrics()}
-                    class="rounded-lg border border-border bg-card p-3.5"
+                    class="rounded-lg border border-gray-200 bg-white p-3.5 shadow-sm shadow-gray-950/5 dark:border-gray-800 dark:bg-gray-900"
                   >
-                    <p class="text-[10px] font-medium text-foreground/45">{m.label}</p>
-                    <p class="mt-1 text-xl font-bold tracking-tight">{m.value}</p>
+                    <p class="text-[10px] font-medium text-gray-500 dark:text-gray-400">
+                      {m.label}
+                    </p>
+                    <p class="mt-1 text-xl font-bold tracking-tight text-gray-900 dark:text-gray-50">
+                      {m.value}
+                    </p>
                     <p class={[
                       "mt-0.5 text-[10px] font-medium",
                       m.positive && "text-emerald-500",
@@ -151,8 +170,10 @@ defmodule AppWeb.Live.LandingLive do
                   </div>
                 </div>
                 <div class="grid gap-5 xl:grid-cols-[1.2fr_1fr]">
-                  <div class="rounded-lg border border-border bg-card p-4">
-                    <p class="text-xs font-semibold text-foreground/60 mb-3">Revenue trend</p>
+                  <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm shadow-gray-950/5 dark:border-gray-800 dark:bg-gray-900">
+                    <p class="mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                      Revenue trend
+                    </p>
                     <.line_chart
                       id="demo-chart-main"
                       card={false}
@@ -164,8 +185,10 @@ defmodule AppWeb.Live.LandingLive do
                       ]}
                     />
                   </div>
-                  <div class="rounded-lg border border-border bg-card p-4">
-                    <p class="text-xs font-semibold text-foreground/60 mb-3">By channel</p>
+                  <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm shadow-gray-950/5 dark:border-gray-800 dark:bg-gray-900">
+                    <p class="mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                      By channel
+                    </p>
                     <.bar_chart
                       id="demo-chart-bar"
                       card={false}
@@ -178,15 +201,21 @@ defmodule AppWeb.Live.LandingLive do
                     />
                   </div>
                 </div>
-                <div class="rounded-lg border border-border bg-card p-4">
-                  <p class="text-xs font-semibold text-foreground/60 mb-3">Recent activity</p>
+                <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm shadow-gray-950/5 dark:border-gray-800 dark:bg-gray-900">
+                  <p class="mb-3 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    Recent activity
+                  </p>
                   <div class="space-y-2.5">
                     <div :for={a <- shell_activity()} class="flex items-center gap-3 py-1.5">
-                      <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                      <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                         <.icon name={a.icon} class="size-3.5" />
                       </div>
-                      <p class="flex-1 text-xs text-foreground/65 truncate">{a.text}</p>
-                      <span class="shrink-0 text-[10px] text-foreground/30">{a.time}</span>
+                      <p class="flex-1 truncate text-xs text-gray-600 dark:text-gray-400">
+                        {a.text}
+                      </p>
+                      <span class="shrink-0 text-[10px] text-gray-400 dark:text-gray-500">
+                        {a.time}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -199,36 +228,42 @@ defmodule AppWeb.Live.LandingLive do
       <%!-- Features --%>
       <section class="mx-auto max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
         <div class="text-center mb-10">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Features</p>
-          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">
+            Features
+          </p>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-3xl">
             Everything you need, nothing you don't.
           </h2>
         </div>
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div
             :for={f <- feature_cards()}
-            class="group rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/20 hover:shadow-md"
+            class="group rounded-2xl border border-gray-200 bg-white p-6 transition-all hover:border-gray-300 hover:shadow-md hover:shadow-gray-950/8 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700"
           >
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 transition-transform group-hover:scale-110 dark:bg-blue-500/15 dark:text-blue-400">
               <.icon name={f.icon} class="size-5" />
             </div>
-            <h3 class="mt-5 text-base font-semibold">{f.title}</h3>
-            <p class="mt-2 text-sm leading-6 text-foreground/60">{f.description}</p>
+            <h3 class="mt-5 text-base font-semibold text-gray-900 dark:text-gray-50">{f.title}</h3>
+            <p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-400">{f.description}</p>
           </div>
         </div>
       </section>
 
       <%!-- CTA --%>
       <section class="mx-auto max-w-7xl px-6 pb-20 lg:px-8 lg:pb-28">
-        <div class="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background p-8 text-center lg:p-14">
-          <div class="absolute right-0 top-0 -z-10 h-48 w-48 rounded-full bg-primary/10 blur-[80px]" />
-          <div class="absolute left-0 bottom-0 -z-10 h-36 w-36 rounded-full bg-sky-500/8 blur-[80px]" />
-          <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">Ready to get started?</h2>
-          <p class="mt-3 text-base leading-7 text-foreground/55 max-w-md mx-auto">
+        <div class="relative overflow-hidden rounded-3xl border border-gray-200 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900 lg:p-14">
+          <h2 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-50 sm:text-3xl">
+            Ready to get started?
+          </h2>
+          <p class="mx-auto mt-3 max-w-md text-base leading-7 text-gray-600 dark:text-gray-400">
             Add PUI to your Phoenix LiveView project and start building polished interfaces today.
           </p>
           <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <.button navigate={~p"/docs"} size="lg" class="shadow-lg shadow-primary/20">
+            <.button
+              navigate={~p"/docs"}
+              size="lg"
+              class="border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-700/25 hover:bg-blue-700"
+            >
               <.icon name="hero-book-open" class="size-4" /> Read the docs
             </.button>
             <.button
@@ -237,6 +272,7 @@ defmodule AppWeb.Live.LandingLive do
               href={source_code_url()}
               target="_blank"
               rel="noopener noreferrer"
+              class="border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
             >
               <.icon name="hero-code-bracket" class="size-4" /> View on GitHub
             </.button>
@@ -244,13 +280,13 @@ defmodule AppWeb.Live.LandingLive do
         </div>
       </section>
 
-      <footer class="border-t border-border/60">
+      <footer class="border-t border-gray-200 dark:border-gray-800">
         <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-10 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-          <p class="text-sm text-foreground/45">Built with Phoenix LiveView.</p>
+          <p class="text-sm text-gray-500 dark:text-gray-500">Built with Phoenix LiveView.</p>
           <div class="flex gap-5">
             <.link
               navigate={~p"/docs"}
-              class="text-sm text-foreground/45 hover:text-foreground transition-colors"
+              class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-gray-50"
             >
               Docs
             </.link>
@@ -258,7 +294,7 @@ defmodule AppWeb.Live.LandingLive do
               href={source_code_url()}
               target="_blank"
               rel="noopener noreferrer"
-              class="text-sm text-foreground/45 hover:text-foreground transition-colors"
+              class="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-gray-50"
             >
               GitHub
             </a>

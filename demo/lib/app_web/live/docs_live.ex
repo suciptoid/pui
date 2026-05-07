@@ -230,7 +230,7 @@ defmodule AppWeb.Live.DocsLive do
                 title={group}
                 icon={group_icon(group)}
                 collapsible
-                expanded={@doc && Enum.any?(docs, &(&1.id == @doc.id))}
+                expanded={true}
               >
                 <:subitem :for={d <- docs}>
                   <.link
