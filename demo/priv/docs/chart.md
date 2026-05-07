@@ -93,30 +93,9 @@ For custom behavior, subclass `ChartHook`, keep the component payload serializab
 
 ### Colocated hook example
 
-When a chart should only live next to one LiveView or demo, colocate the hook alongside the LiveView and pass a dot-prefixed hook name through the component API.
+When a chart should only live next to one LiveView or demo, use a colocated hook directly in the HEEx template. This avoids separate files and manual LiveSocket registration — colocated hooks are automatically bundled.
 
 Create a hook that hides axes, grid, and cursor for a minimal look:
-
-```javascript
-import { LineChart } from "pui";
-
-export default class MiniChart extends LineChart {
-  buildAxes(payload) {
-    return [{ show: false }, { show: false }];
-  }
-}
-```
-
-Then register it in your app's `app.js` and pass the hook name to the component:
-
-```javascript
-// assets/js/app.js
-import MiniChart from "./hooks/mini_chart";
-
-let liveSocket = new LiveSocket("/live", Socket, {
-  hooks: { ...Hooks, ".MiniChart": MiniChart },
-});
-```
 
 ```heex
 <.line_chart
@@ -127,9 +106,17 @@ let liveSocket = new LiveSocket("/live", Socket, {
     %{label: "CPU", data: [42, 45, 43, 46], suffix: "°C"}
   ]}
 />
+<script :type={Phoenix.LiveView.ColocatedHook} name=".MiniChart">
+  import { LineChart } from "pui";
+  export default class MiniChart extends LineChart {
+    buildAxes(payload) {
+      return [{ show: false }, { show: false }];
+    }
+  }
+</script>
 ```
 
-That keeps the component payload serializable while letting a colocated hook hide grid lines, cursor chrome, and axis labels for just that one chart.
+The hook name must start with a `.` prefix and the script must use `:type={Phoenix.LiveView.ColocatedHook}` — never raw `<script>` tags. That keeps the component payload serializable while letting the colocated hook hide grid lines, cursor chrome, and axis labels for just that one chart.
 
 ## API Reference
 
