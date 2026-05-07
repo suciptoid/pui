@@ -234,7 +234,7 @@ defmodule AppWeb.Live.DocsLive do
               >
                 <:subitem :for={d <- docs}>
                   <.link
-                    navigate={~p"/docs/#{d.id}"}
+                    patch={~p"/docs/#{d.id}"}
                     class={[
                       "block rounded-md px-2 py-1.5 text-sm transition-colors",
                       @doc && @doc.id == d.id && "bg-primary/10 text-primary font-medium",
