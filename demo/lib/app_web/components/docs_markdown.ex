@@ -16,6 +16,7 @@ defmodule AppWeb.DocsMarkdown do
       table: true,
       autolink: true,
       tasklist: true,
+      header_id_prefix: "",
       phoenix_heex: true
     ],
     render: [unsafe: true]
