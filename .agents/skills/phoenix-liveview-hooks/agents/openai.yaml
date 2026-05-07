@@ -1,0 +1,4 @@
+interface:
+  display_name: "Poenix LiveView Hooks"
+  short_description: "Use colocated and external LiveView hooks correctly"
+  default_prompt: "Use this skill when implementing Phoenix LiveView JavaScript hooks, including colocated hooks and external phx-hook modules."
