@@ -27,6 +27,27 @@ defmodule PUI.ChartTest do
       assert html =~ ~s(style="height: 280px")
       assert html =~ ~s(&quot;label&quot;:&quot;Traffic&quot;)
     end
+
+    test "uses a custom colocated hook without rendering the default hook" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.chart
+          id="custom-chart"
+          phx-hook=".MixedChart"
+          config={
+            %{
+              data: [[1, 2, 3], [12, 18, 20]],
+              series: [%{label: "Traffic"}]
+            }
+          }
+        />
+        """)
+
+      assert html =~ ~s(phx-hook="PUI.ChartTest.MixedChart")
+      refute html =~ ~s(phx-hook="PUI.Chart")
+    end
   end
 
   describe "bar_chart" do

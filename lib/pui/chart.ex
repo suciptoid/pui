@@ -111,7 +111,7 @@ defmodule PUI.Chart do
       assigns
       |> assign_new(:id, fn -> "chart-#{System.unique_integer([:positive])}" end)
       |> assign_new(:rest, fn -> %{} end)
-      |> assign(:rest, Map.put_new(assigns.rest, "phx-hook", "PUI.Chart"))
+      |> assign(:rest, put_phx_hook(assigns.rest, "PUI.Chart"))
 
     assigns =
       assign(assigns,
@@ -195,7 +195,7 @@ defmodule PUI.Chart do
 
     assigns
     |> assign_new(:rest, fn -> %{} end)
-    |> assign(:rest, Map.put_new(assigns.rest, "phx-hook", "PUI.BarChart"))
+    |> assign(:rest, put_phx_hook(assigns.rest, "PUI.BarChart"))
     |> assign(:config, config)
     |> chart()
   end
@@ -272,7 +272,7 @@ defmodule PUI.Chart do
 
     assigns
     |> assign_new(:rest, fn -> %{} end)
-    |> assign(:rest, Map.put(assigns.rest, "phx-hook", hook))
+    |> assign(:rest, put_phx_hook(assigns.rest, hook, true))
     |> assign(:config, config)
     |> assign(:height, height)
     |> assign(:card, assigns.sparkline == false and assigns.card)
@@ -333,8 +333,31 @@ defmodule PUI.Chart do
   end
 
   defp map_get(map, key) when is_map(map) do
-    Map.get(map, key, Map.get(map, Atom.to_string(key)))
+    cond do
+      Map.has_key?(map, key) -> Map.get(map, key)
+      Map.has_key?(map, hyphenated_atom(key)) -> Map.get(map, hyphenated_atom(key))
+      Map.has_key?(map, Atom.to_string(key)) -> Map.get(map, Atom.to_string(key))
+      true -> Map.get(map, hyphenated_key(key))
+    end
   end
+
+  defp put_phx_hook(rest, default, replace? \\ false) do
+    rest = rest || %{}
+    existing = map_get(rest, :phx_hook)
+    hook = if replace? or existing == nil, do: default, else: existing
+
+    rest
+    |> drop_map_keys([:phx_hook, :"phx-hook", "phx-hook"])
+    |> Map.put("phx-hook", hook)
+  end
+
+  defp hyphenated_atom(:phx_hook), do: :"phx-hook"
+  defp hyphenated_atom(key), do: key
+
+  defp hyphenated_key(key) when is_atom(key),
+    do: key |> Atom.to_string() |> String.replace("_", "-")
+
+  defp hyphenated_key(key), do: key
 
   defp encode_config!(config) do
     Phoenix.json_library().encode!(config)

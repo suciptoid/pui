@@ -1072,7 +1072,87 @@ defmodule AppWeb.Live.DemoPages do
         }
       </script>
     </.surface>
+
+    <.surface
+      title="Mixed Bar and Line"
+      description="A colocated hook extends the shared chart renderer for a custom combined chart."
+    >
+      <div class="flex flex-wrap gap-x-5 gap-y-2 pb-4">
+        <div
+          :for={item <- mixed_chart_legend()}
+          class="flex items-center gap-2 text-sm text-muted-foreground"
+        >
+          <span class="size-2.5 rounded-full" style={"background-color: #{item.color}"}></span>
+          <span>{item.label}</span>
+        </div>
+      </div>
+
+      <.chart
+        id="demo-colocated-mixed"
+        phx-hook=".MixedBarLineChart"
+        height={320}
+        config={mixed_chart_config()}
+      />
+
+      <script :type={Phoenix.LiveView.ColocatedHook} name=".MixedBarLineChart">
+        import { ChartHook } from "pui";
+
+        export default class MixedBarLineChart extends ChartHook {
+          buildAxes(_payload) {
+            return [{ show: false }, { show: false }];
+          }
+
+          buildSeries(payload, preset) {
+            return super.buildSeries(payload, preset).map((series, index) => {
+              if (payload.series[index]?.kind !== "line") {
+                return series;
+              }
+
+              return {
+                ...series,
+                fill: null,
+                width: 3,
+                points: { show: true, size: 6, width: 2 },
+                paths: this.uPlot.paths.spline(),
+              };
+            });
+          }
+        }
+      </script>
+    </.surface>
     """
+  end
+
+  defp mixed_chart_config do
+    categories = ["Alpha", "Beta", "RC", "Stable", "Patch"]
+
+    %{
+      preset: "bar",
+      categories: categories,
+      data: [
+        Enum.to_list(0..(length(categories) - 1)),
+        [24, 31, 28, 36, 42],
+        [18, 22, 26, 29, 33],
+        [91, 94, 93, 96, 98]
+      ],
+      series: [
+        %{label: "Web deploys", color: "#0f766e", suffix: " deploys"},
+        %{label: "API deploys", color: "#b45309", suffix: " deploys"},
+        %{label: "SLO", color: "#be123c", suffix: "%", kind: "line"}
+      ],
+      bar: %{size: [0.58, 48]},
+      grid: false,
+      legend: %{show: false},
+      tooltip: %{show: true}
+    }
+  end
+
+  defp mixed_chart_legend do
+    [
+      %{label: "Web deploys", color: "#0f766e"},
+      %{label: "API deploys", color: "#b45309"},
+      %{label: "SLO", color: "#be123c"}
+    ]
   end
 
   # ── Popover & Tooltip ───────────────────────────────────────────────────

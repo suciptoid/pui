@@ -1,4 +1,4 @@
-defmodule AppWeb.Live.LayoutAppLive do
+defmodule AppWeb.Live.DemoLive do
   @moduledoc """
   Full-page demo for the reusable PUI application layout shell.
   """
@@ -144,7 +144,12 @@ defmodule AppWeb.Live.LayoutAppLive do
         </.content_header>
       </:header>
 
-      <PUI.Flash.flash_group :if={@page.action == :flash} flash={%{}} live={true} position={@flash_position} />
+      <PUI.Flash.flash_group
+        :if={@page.action == :flash}
+        flash={%{}}
+        live={true}
+        position={@flash_position}
+      />
 
       <section class="min-h-full p-4 sm:p-6 lg:p-8">
         <div class="mx-auto flex max-w-7xl flex-col gap-6">
@@ -1141,7 +1146,22 @@ defmodule AppWeb.Live.LayoutAppLive do
 
   defp component_pages do
     Enum.map(
-      [:button, :input, :select, :date_picker, :dialog, :dropdown, :alert, :flash, :tabs, :accordion, :container, :charts, :popover, :loading],
+      [
+        :button,
+        :input,
+        :select,
+        :date_picker,
+        :dialog,
+        :dropdown,
+        :alert,
+        :flash,
+        :tabs,
+        :accordion,
+        :container,
+        :charts,
+        :popover,
+        :loading
+      ],
       &page_config/1
     )
   end
@@ -1231,46 +1251,172 @@ defmodule AppWeb.Live.LayoutAppLive do
         }
 
       :button ->
-        %{action: :button, title: "Button", eyebrow: "Button component", description: "All button variants, sizes, states, and icon combinations.", breadcrumb_parent: "Components", breadcrumb_current: "Button", icon: "hero-cursor-arrow-rays", path: path}
+        %{
+          action: :button,
+          title: "Button",
+          eyebrow: "Button component",
+          description: "All button variants, sizes, states, and icon combinations.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Button",
+          icon: "hero-cursor-arrow-rays",
+          path: path
+        }
 
       :input ->
-        %{action: :input, title: "Input", eyebrow: "Input component", description: "Text inputs, textarea, checkbox, radio, switch, and error states.", breadcrumb_parent: "Components", breadcrumb_current: "Input", icon: "hero-pencil-square", path: path}
+        %{
+          action: :input,
+          title: "Input",
+          eyebrow: "Input component",
+          description: "Text inputs, textarea, checkbox, radio, switch, and error states.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Input",
+          icon: "hero-pencil-square",
+          path: path
+        }
 
       :select ->
-        %{action: :select, title: "Select", eyebrow: "Select component", description: "Basic, searchable, grouped, and custom select variants.", breadcrumb_parent: "Components", breadcrumb_current: "Select", icon: "hero-chevron-down", path: path}
+        %{
+          action: :select,
+          title: "Select",
+          eyebrow: "Select component",
+          description: "Basic, searchable, grouped, and custom select variants.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Select",
+          icon: "hero-chevron-down",
+          path: path
+        }
 
       :date_picker ->
-        %{action: :date_picker, title: "Date Picker", eyebrow: "Date picker component", description: "Single date, range, bounded, and footer slot variants.", breadcrumb_parent: "Components", breadcrumb_current: "Date Picker", icon: "hero-calendar-days", path: path}
+        %{
+          action: :date_picker,
+          title: "Date Picker",
+          eyebrow: "Date picker component",
+          description: "Single date, range, bounded, and footer slot variants.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Date Picker",
+          icon: "hero-calendar-days",
+          path: path
+        }
 
       :dialog ->
-        %{action: :dialog, title: "Dialog", eyebrow: "Dialog component", description: "Sizes, alert mode, scrollable, and form-in-dialog patterns.", breadcrumb_parent: "Components", breadcrumb_current: "Dialog", icon: "hero-window", path: path}
+        %{
+          action: :dialog,
+          title: "Dialog",
+          eyebrow: "Dialog component",
+          description: "Sizes, alert mode, scrollable, and form-in-dialog patterns.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Dialog",
+          icon: "hero-window",
+          path: path
+        }
 
       :dropdown ->
-        %{action: :dropdown, title: "Dropdown", eyebrow: "Dropdown component", description: "Basic menus, shortcuts, destructive items, and button variants.", breadcrumb_parent: "Components", breadcrumb_current: "Dropdown", icon: "hero-chevron-up-down", path: path}
+        %{
+          action: :dropdown,
+          title: "Dropdown",
+          eyebrow: "Dropdown component",
+          description: "Basic menus, shortcuts, destructive items, and button variants.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Dropdown",
+          icon: "hero-chevron-up-down",
+          path: path
+        }
 
       :alert ->
-        %{action: :alert, title: "Alert", eyebrow: "Alert component", description: "Default, destructive, and custom content alert variants.", breadcrumb_parent: "Components", breadcrumb_current: "Alert", icon: "hero-exclamation-triangle", path: path}
+        %{
+          action: :alert,
+          title: "Alert",
+          eyebrow: "Alert component",
+          description: "Default, destructive, and custom content alert variants.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Alert",
+          icon: "hero-exclamation-triangle",
+          path: path
+        }
 
       :flash ->
-        %{action: :flash, title: "Flash", eyebrow: "Flash component", description: "Live toast notifications with configurable positions.", breadcrumb_parent: "Components", breadcrumb_current: "Flash", icon: "hero-bolt", path: path}
+        %{
+          action: :flash,
+          title: "Flash",
+          eyebrow: "Flash component",
+          description: "Live toast notifications with configurable positions.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Flash",
+          icon: "hero-bolt",
+          path: path
+        }
 
       :tabs ->
-        %{action: :tabs, title: "Tabs", eyebrow: "Tabs component", description: "Client-controlled, line variant, and vertical tab layouts.", breadcrumb_parent: "Components", breadcrumb_current: "Tabs", icon: "hero-squares-2x2", path: path}
+        %{
+          action: :tabs,
+          title: "Tabs",
+          eyebrow: "Tabs component",
+          description: "Client-controlled, line variant, and vertical tab layouts.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Tabs",
+          icon: "hero-squares-2x2",
+          path: path
+        }
 
       :accordion ->
-        %{action: :accordion, title: "Accordion", eyebrow: "Accordion component", description: "Single-open, multiple-open, and headless accordion variants.", breadcrumb_parent: "Components", breadcrumb_current: "Accordion", icon: "hero-bars-3", path: path}
+        %{
+          action: :accordion,
+          title: "Accordion",
+          eyebrow: "Accordion component",
+          description: "Single-open, multiple-open, and headless accordion variants.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Accordion",
+          icon: "hero-bars-3",
+          path: path
+        }
 
       :container ->
-        %{action: :container, title: "Container", eyebrow: "Container component", description: "Card with header, content, action, and footer slots.", breadcrumb_parent: "Components", breadcrumb_current: "Container", icon: "hero-square-3-stack-3d", path: path}
+        %{
+          action: :container,
+          title: "Container",
+          eyebrow: "Container component",
+          description: "Card with header, content, action, and footer slots.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Container",
+          icon: "hero-square-3-stack-3d",
+          path: path
+        }
 
       :charts ->
-        %{action: :charts, title: "Charts", eyebrow: "Chart component", description: "Bar, line, area, sparkline, and colocated hook chart demos.", breadcrumb_parent: "Components", breadcrumb_current: "Charts", icon: "hero-chart-bar", path: path}
+        %{
+          action: :charts,
+          title: "Charts",
+          eyebrow: "Chart component",
+          description: "Bar, line, area, sparkline, and colocated hook chart demos.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Charts",
+          icon: "hero-chart-bar",
+          path: path
+        }
 
       :popover ->
-        %{action: :popover, title: "Popover", eyebrow: "Popover & Tooltip", description: "Click-triggered popovers and hover tooltips in all placements.", breadcrumb_parent: "Components", breadcrumb_current: "Popover", icon: "hero-chat-bubble-bottom-center-text", path: path}
+        %{
+          action: :popover,
+          title: "Popover",
+          eyebrow: "Popover & Tooltip",
+          description: "Click-triggered popovers and hover tooltips in all placements.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Popover",
+          icon: "hero-chat-bubble-bottom-center-text",
+          path: path
+        }
 
       :loading ->
-        %{action: :loading, title: "Loading", eyebrow: "Loading component", description: "Loading topbar that activates during page navigation.", breadcrumb_parent: "Components", breadcrumb_current: "Loading", icon: "hero-arrow-path", path: path}
+        %{
+          action: :loading,
+          title: "Loading",
+          eyebrow: "Loading component",
+          description: "Loading topbar that activates during page navigation.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Loading",
+          icon: "hero-arrow-path",
+          path: path
+        }
 
       _ ->
         page_config(:overview)
