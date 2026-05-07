@@ -8,6 +8,8 @@ import {
   arrow,
 } from "@floating-ui/dom";
 
+const activeTooltips = new Set();
+
 export default class Tooltip extends ViewHook {
   placement = "top";
   delay = 300;
@@ -54,6 +56,8 @@ export default class Tooltip extends ViewHook {
   }
 
   destroyed() {
+    activeTooltips.delete(this);
+
     if (this.#clear_floating) {
       this.#clear_floating();
     }
@@ -65,6 +69,12 @@ export default class Tooltip extends ViewHook {
   }
 
   setHidden(hidden) {
+    if (hidden) {
+      activeTooltips.delete(this);
+    } else {
+      activeTooltips.add(this);
+    }
+
     requestAnimationFrame(() => {
       this.tooltip?.setAttribute("aria-hidden", hidden ? "true" : "false");
     });
@@ -73,6 +83,7 @@ export default class Tooltip extends ViewHook {
   _onMouseEnter(e) {
     this.hovering = true;
     if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.#dismissOthers();
     this.setHidden(false);
   }
 
@@ -87,6 +98,7 @@ export default class Tooltip extends ViewHook {
   _onFocusIn() {
     this.hovering = true;
     if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.#dismissOthers();
     this.setHidden(false);
   }
 
@@ -102,6 +114,20 @@ export default class Tooltip extends ViewHook {
     this.leaveTimeout = setTimeout(() => {
       this.setHidden(true);
     }, this.delay);
+  }
+
+  #dismissOthers() {
+    for (const tooltip of activeTooltips) {
+      if (tooltip !== this) {
+        tooltip.#dismiss();
+      }
+    }
+  }
+
+  #dismiss() {
+    if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.hovering = false;
+    this.setHidden(true);
   }
 
   _calculatePosition(data) {

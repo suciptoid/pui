@@ -3317,6 +3317,7 @@ var LoadingBar = class extends ViewHook4 {
 
 // js/tooltip.js
 import { ViewHook as ViewHook5 } from "phoenix_live_view";
+var activeTooltips = /* @__PURE__ */ new Set();
 var Tooltip = class extends ViewHook5 {
   placement = "top";
   delay = 300;
@@ -3354,6 +3355,7 @@ var Tooltip = class extends ViewHook5 {
     this._calculatePosition();
   }
   destroyed() {
+    activeTooltips.delete(this);
     if (this.#clear_floating) {
       this.#clear_floating();
     }
@@ -3363,6 +3365,11 @@ var Tooltip = class extends ViewHook5 {
     this.el?.removeEventListener("focusout", this.#focusOutBind);
   }
   setHidden(hidden) {
+    if (hidden) {
+      activeTooltips.delete(this);
+    } else {
+      activeTooltips.add(this);
+    }
     requestAnimationFrame(() => {
       this.tooltip?.setAttribute("aria-hidden", hidden ? "true" : "false");
     });
@@ -3370,6 +3377,7 @@ var Tooltip = class extends ViewHook5 {
   _onMouseEnter(e) {
     this.hovering = true;
     if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.#dismissOthers();
     this.setHidden(false);
   }
   _onMouseLeave(e) {
@@ -3382,6 +3390,7 @@ var Tooltip = class extends ViewHook5 {
   _onFocusIn() {
     this.hovering = true;
     if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.#dismissOthers();
     this.setHidden(false);
   }
   _onFocusOut(event) {
@@ -3394,6 +3403,18 @@ var Tooltip = class extends ViewHook5 {
     this.leaveTimeout = setTimeout(() => {
       this.setHidden(true);
     }, this.delay);
+  }
+  #dismissOthers() {
+    for (const tooltip of activeTooltips) {
+      if (tooltip !== this) {
+        tooltip.#dismiss();
+      }
+    }
+  }
+  #dismiss() {
+    if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.hovering = false;
+    this.setHidden(true);
   }
   _calculatePosition(data) {
     computePosition2(this.trigger, this.tooltip, {

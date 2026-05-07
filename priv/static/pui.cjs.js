@@ -3354,6 +3354,7 @@ var LoadingBar = class extends import_phoenix_live_view4.ViewHook {
 
 // js/tooltip.js
 var import_phoenix_live_view5 = require("phoenix_live_view");
+var activeTooltips = /* @__PURE__ */ new Set();
 var Tooltip = class extends import_phoenix_live_view5.ViewHook {
   placement = "top";
   delay = 300;
@@ -3391,6 +3392,7 @@ var Tooltip = class extends import_phoenix_live_view5.ViewHook {
     this._calculatePosition();
   }
   destroyed() {
+    activeTooltips.delete(this);
     if (this.#clear_floating) {
       this.#clear_floating();
     }
@@ -3400,6 +3402,11 @@ var Tooltip = class extends import_phoenix_live_view5.ViewHook {
     this.el?.removeEventListener("focusout", this.#focusOutBind);
   }
   setHidden(hidden) {
+    if (hidden) {
+      activeTooltips.delete(this);
+    } else {
+      activeTooltips.add(this);
+    }
     requestAnimationFrame(() => {
       this.tooltip?.setAttribute("aria-hidden", hidden ? "true" : "false");
     });
@@ -3407,6 +3414,7 @@ var Tooltip = class extends import_phoenix_live_view5.ViewHook {
   _onMouseEnter(e) {
     this.hovering = true;
     if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.#dismissOthers();
     this.setHidden(false);
   }
   _onMouseLeave(e) {
@@ -3419,6 +3427,7 @@ var Tooltip = class extends import_phoenix_live_view5.ViewHook {
   _onFocusIn() {
     this.hovering = true;
     if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.#dismissOthers();
     this.setHidden(false);
   }
   _onFocusOut(event) {
@@ -3431,6 +3440,18 @@ var Tooltip = class extends import_phoenix_live_view5.ViewHook {
     this.leaveTimeout = setTimeout(() => {
       this.setHidden(true);
     }, this.delay);
+  }
+  #dismissOthers() {
+    for (const tooltip of activeTooltips) {
+      if (tooltip !== this) {
+        tooltip.#dismiss();
+      }
+    }
+  }
+  #dismiss() {
+    if (this.leaveTimeout) clearTimeout(this.leaveTimeout);
+    this.hovering = false;
+    this.setHidden(true);
   }
   _calculatePosition(data) {
     computePosition2(this.trigger, this.tooltip, {
