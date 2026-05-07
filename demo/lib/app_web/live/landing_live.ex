@@ -166,13 +166,16 @@ defmodule AppWeb.Live.LandingLive do
                   </div>
                   <div class="rounded-lg border border-border bg-card p-4">
                     <p class="text-xs font-semibold text-foreground/60 mb-3">By channel</p>
-                    <PUI.ComposeChart.container id="demo-chart-bar" card={false} height={200}>
-                      <PUI.ComposeChart.x_axis categories={["Direct", "Referral", "Organic", "Paid"]} />
-                      <PUI.ComposeChart.tooltip />
-                      <PUI.ComposeChart.bar series={[
+                    <.bar_chart
+                      id="demo-chart-bar"
+                      card={false}
+                      height={200}
+                      categories={["Direct", "Referral", "Organic", "Paid"]}
+                      series={[
                         %{label: "Revenue", data: [24, 18, 32, 14], suffix: "k"}
-                      ]} />
-                    </PUI.ComposeChart.container>
+                      ]}
+                      tooltip={%{}}
+                    />
                   </div>
                 </div>
                 <div class="rounded-lg border border-border bg-card p-4">
