@@ -24,7 +24,7 @@ Use the low-level `chart/1` component when you want full control over the payloa
 ```heex
 <.chart
   id="deploys"
-  hook="PUI.BarChart"
+  phx-hook="PUI.BarChart"
   height={280}
   config=%{
     preset: "bar",
@@ -44,7 +44,7 @@ Use the low-level `chart/1` component when you want full control over the payloa
 
 ## Preconfigured Bar Chart
 
-Use `bar_chart/1` for categorical comparisons. It generates the aligned x-axis data for you and wires the default `PUI.BarChart` hook.
+Use `bar_chart/1` for categorical comparisons. It generates the aligned x-axis data for you and defaults `phx-hook` to `PUI.BarChart`.
 
 ```heex
 <.bar_chart
@@ -100,7 +100,7 @@ Create a hook that hides axes, grid, and cursor for a minimal look:
 ```heex
 <.line_chart
   id="mini-temps"
-  hook=".MiniChart"
+  phx-hook=".MiniChart"
   labels={["00:00", "04:00", "08:00", "12:00"]}
   series={[
     %{label: "CPU", data: [42, 45, 43, 46], suffix: "°C"}
@@ -125,7 +125,7 @@ The hook name must start with a `.` prefix and the script must use `:type={Phoen
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `id` | `string` | generated | Unique chart DOM id |
-| `hook` | `string` | `"PUI.Chart"` | Hook that renders the chart |
+| `phx-hook` | global attr | `"PUI.Chart"` | Hook that renders the chart |
 | `height` | `integer` | `320` | Reserved chart height in pixels |
 | `class` | `string` | `""` | Additional wrapper classes |
 | `card` | `boolean` | `true` | Wraps the chart in a bordered card container |

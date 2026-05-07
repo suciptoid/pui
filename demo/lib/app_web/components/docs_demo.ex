@@ -2308,7 +2308,7 @@ defmodule AppWeb.DocsDemo do
 
         <.chart
           id="docs-chart-base"
-          hook="PUI.BarChart"
+          phx-hook="PUI.BarChart"
           height={280}
           config={chart_base_config()}
         />

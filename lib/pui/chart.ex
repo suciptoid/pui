@@ -36,7 +36,7 @@ defmodule PUI.Chart do
 
       <.chart
         id="custom-chart"
-        hook="PUI.Chart"
+        phx-hook="PUI.Chart"
         height={280}
         config=%{
           data: [
@@ -59,7 +59,7 @@ defmodule PUI.Chart do
   | Name | Type | Default | Description |
   |------|------|---------|-------------|
   | `id` | `string` | generated | Unique DOM id for the chart root |
-  | `hook` | `string` | `"PUI.Chart"` | Hook name used to render/update the chart |
+  | `phx-hook` | global attr | `"PUI.Chart"` | Hook name used to render/update the chart |
   | `height` | `integer` | `320` | Reserved chart height in pixels |
   | `class` | `string` | `""` | Additional classes for the outer chart wrapper |
   | `config` | `map` | required | Serializable chart payload consumed by the hook |
@@ -98,7 +98,6 @@ defmodule PUI.Chart do
   use Phoenix.Component
 
   attr :id, :string, default: nil
-  attr :hook, :string, default: "PUI.Chart"
   attr :height, :integer, default: 320
   attr :class, :string, default: ""
   attr :card, :boolean, default: true
@@ -111,6 +110,8 @@ defmodule PUI.Chart do
     assigns =
       assigns
       |> assign_new(:id, fn -> "chart-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:rest, fn -> %{} end)
+      |> assign(:rest, Map.put_new(assigns.rest, "phx-hook", "PUI.Chart"))
 
     assigns =
       assign(assigns,
@@ -123,7 +124,6 @@ defmodule PUI.Chart do
     ~H"""
     <div
       id={@id}
-      phx-hook={@hook}
       data-chart-config={@encoded_config}
       class={["pui-chart flex w-full flex-col", @class]}
       {@rest}
@@ -155,7 +155,6 @@ defmodule PUI.Chart do
   end
 
   attr :id, :string, default: nil
-  attr :hook, :string, default: "PUI.BarChart"
   attr :height, :integer, default: 320
   attr :class, :string, default: ""
   attr :card, :boolean, default: true
@@ -195,12 +194,13 @@ defmodule PUI.Chart do
     }
 
     assigns
+    |> assign_new(:rest, fn -> %{} end)
+    |> assign(:rest, Map.put_new(assigns.rest, "phx-hook", "PUI.BarChart"))
     |> assign(:config, config)
     |> chart()
   end
 
   attr :id, :string, default: nil
-  attr :hook, :string, default: "PUI.LineChart"
   attr :height, :integer, default: 320
   attr :class, :string, default: ""
   attr :card, :boolean, default: true
@@ -247,11 +247,13 @@ defmodule PUI.Chart do
         assigns.height
       end
 
+    phx_hook = map_get(assigns.rest || %{}, :phx_hook) || "PUI.LineChart"
+
     hook =
-      if assigns.sparkline and assigns.hook == "PUI.LineChart" do
+      if assigns.sparkline and phx_hook == "PUI.LineChart" do
         "PUI.SparklineChart"
       else
-        assigns.hook
+        phx_hook
       end
 
     config = %{
@@ -269,7 +271,8 @@ defmodule PUI.Chart do
     }
 
     assigns
-    |> assign(:hook, hook)
+    |> assign_new(:rest, fn -> %{} end)
+    |> assign(:rest, Map.put(assigns.rest, "phx-hook", hook))
     |> assign(:config, config)
     |> assign(:height, height)
     |> assign(:card, assigns.sparkline == false and assigns.card)
