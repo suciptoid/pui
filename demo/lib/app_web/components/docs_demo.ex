@@ -1718,6 +1718,82 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def dialog_custom_size_demo(assigns) do
+    ~H"""
+    <.demo_section title="Custom Size Demo" id="dialog-custom-size-demo">
+      <.dialog
+        id="demo-custom-size"
+        size=""
+        class="max-w-[80vw] max-h-[80vh]"
+        title="Wide dialog"
+      >
+        <:trigger :let={attr}>
+          <.button {attr}>Open 80vw × 80vh Dialog</.button>
+        </:trigger>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="space-y-4">
+            <h3 class="text-sm font-semibold">Customer Details</h3>
+            <p class="text-sm text-muted-foreground">
+              This dialog uses
+              <code class="text-xs bg-muted px-1 py-0.5 rounded">
+                class="max-w-[80vw] max-h-[80vh]"
+              </code>
+              to
+              override the default size and span 80% of the viewport in both dimensions.
+            </p>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2 text-sm">
+                <span class="font-medium w-20">Name</span>
+                <span class="text-muted-foreground">Alexandra Chen</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="font-medium w-20">Email</span>
+                <span class="text-muted-foreground">alex@example.com</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="font-medium w-20">Plan</span>
+                <span class="text-muted-foreground">Enterprise</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-sm font-semibold">Recent Orders</h3>
+            <div class="space-y-2">
+              <div
+                :for={
+                  %{id: id, item: item, amount: amount} <- [
+                    %{id: "#1089", item: "Widget Pro", amount: "$249"},
+                    %{id: "#1088", item: "Starter Kit", amount: "$89"},
+                    %{id: "#1087", item: "Enterprise Plan", amount: "$499"},
+                    %{id: "#1086", item: "Widget Pro", amount: "$249"},
+                    %{id: "#1085", item: "Add-on Pack", amount: "$49"}
+                  ]
+                }
+                class="flex items-center justify-between py-1.5 border-b border-border/50 text-sm"
+              >
+                <div class="flex gap-3">
+                  <span class="text-xs text-muted-foreground font-mono">{id}</span>
+                  <span>{item}</span>
+                </div>
+                <span class="font-medium">{amount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <:footer :let={%{hide: hide}}>
+          <div class="flex justify-end gap-2">
+            <.button variant="outline" phx-click={hide}>Close</.button>
+            <.button phx-click={hide}>Save Changes</.button>
+          </div>
+        </:footer>
+      </.dialog>
+    </.demo_section>
+    """
+  end
+
   def dropdown_demo(assigns) do
     ~H"""
     <section class="space-y-8">

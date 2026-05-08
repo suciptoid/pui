@@ -129,6 +129,10 @@ defmodule PUI.Dialog do
       <.dialog id="large" size="lg">...</.dialog>   # lg:max-w-lg
       <.dialog id="xlarge" size="xl">...</.dialog>  # xl:max-w-xl
 
+  For more granular control, set `size=""` and use the `class` attribute for full control over dimensions:
+
+      <.dialog id="wide" size="" class="max-w-[80vw] max-h-[80vh]">...</.dialog>
+
   ## Custom Content Slot
 
   Override the default content container for full customization. This bypasses the built-in
@@ -160,10 +164,12 @@ defmodule PUI.Dialog do
   | `id` | `string` | required | Unique identifier for the dialog |
   | `show` | `boolean` | `false` | Control visibility from server |
   | `alert` | `boolean` | `false` | Prevent backdrop click dismiss |
-  | `size` | `string` | `"md"` | Max width: "sm", "md", "lg", "xl" |
+  | `size` | `string` | `"md"` | Max width: `"sm"`, `"md"`, `"lg"`, `"xl"`. Set to `""` for custom sizing via `class` |
   | `title` | `string` | `nil` | Optional built-in title for the default dialog header |
   | `show_close` | `boolean` | `true` | Show the built-in close button on default dialogs |
   | `on_cancel` | `JS` | `%JS{}` | JS command to run on cancel |
+  | `class` | `string` | `""` | Additional CSS classes applied to the content container. Use with `size=""` for full custom sizing (e.g. `max-w-[80vw] max-h-[80vh]`) |
+  | `variant` | `string` | `"default"` | Visual variant: `"default"` or `"unstyled"` |
 
   ## Slots
 
@@ -227,7 +233,7 @@ defmodule PUI.Dialog do
         else
           [
             "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 [hidden]:zoom-out-95 not-[hidden]:zoom-in-95",
-            "bg-background fixed top-[50%] left-[50%] z-50 flex w-full max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg border shadow-lg duration-200 sm:max-w-lg",
+            "bg-background fixed top-[50%] left-[50%] z-50 flex w-full translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg border shadow-lg duration-200",
             @class
           ]
         end
@@ -274,7 +280,7 @@ defmodule PUI.Dialog do
   attr :on_cancel, JS, default: %JS{}
   attr :alert, :boolean, default: false
   attr :show, :boolean, default: false, doc: "Control dialog visibility from server"
-  attr :size, :string, values: ["sm", "md", "lg", "xl"], default: "md"
+  attr :size, :string, default: "md"
   attr :title, :string, default: nil
   attr :show_close, :boolean, default: true
   attr :variant, :string, default: "default", values: ["default", "unstyled"]
@@ -294,10 +300,12 @@ defmodule PUI.Dialog do
         ""
       else
         case assigns[:size] do
-          "sm" -> "sm:max-w-sm"
-          "md" -> "md:max-w-md"
-          "lg" -> "lg:max-w-lg"
-          "xl" -> "xl:max-w-xl"
+          "sm" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] sm:max-w-sm"
+          "md" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] md:max-w-md"
+          "lg" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] lg:max-w-lg"
+          "xl" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] xl:max-w-xl"
+          "" -> ""
+          _ -> ""
         end
       end
 
@@ -328,7 +336,6 @@ defmodule PUI.Dialog do
       <.backdrop
         id={"#{@id}-backdrop"}
         hidden={not @show}
-        class={@class}
         is_unstyled={@is_unstyled}
         phx-click={if @alert, do: nil, else: JS.exec("data-cancel", to: "##{@id}")}
       />
@@ -345,7 +352,7 @@ defmodule PUI.Dialog do
         :if={@content == []}
         role={if @alert, do: "alertdialog", else: "dialog"}
         aria-modal="true"
-        class={if @is_unstyled, do: @class, else: @size_class}
+        class={if @is_unstyled, do: @class, else: [@size_class, @class]}
         id={"#{@id}-content"}
         hidden={not @show}
         is_unstyled={@is_unstyled}

@@ -117,16 +117,37 @@ end
 
 ## Sizes
 
-Dialogs come in four sizes:
+Dialogs come in four sizes. For custom widths, set `size=""` and use `class`:
 
 ```heex
 <.dialog id="sm-dialog" size="sm">...</.dialog>
 <.dialog id="md-dialog" size="md">...</.dialog>  <!-- default -->
 <.dialog id="lg-dialog" size="lg">...</.dialog>
 <.dialog id="xl-dialog" size="xl">...</.dialog>
+
+<!-- Custom width via class -->
+<.dialog id="wide-dialog" size="" class="max-w-[80vw] max-h-[80vh]">...</.dialog>
 ```
 
 <AppWeb.DocsDemo.dialog_sizes_demo />
+
+## Custom Sizing
+
+Use the `class` attribute with `size=""` to take full control over dialog dimensions:
+
+```heex
+<.dialog id="wide-dialog" size="" class="max-w-[80vw] max-h-[80vh]">
+  <:trigger>
+    <.button>Open wide dialog</.button>
+  </:trigger>
+  <p>This dialog takes 80% of the viewport.</p>
+  <:footer>
+    <.button variant="outline">Close</.button>
+  </:footer>
+</.dialog>
+```
+
+<AppWeb.DocsDemo.dialog_custom_size_demo />
 
 ## Alert Dialog
 
@@ -185,12 +206,12 @@ Use the `trigger` slot for inline trigger buttons:
 | `id` | `string` | **required** | Unique identifier for the dialog |
 | `show` | `boolean` | `false` | Server-controlled visibility |
 | `alert` | `boolean` | `false` | Alert dialog mode (no backdrop dismiss) |
-| `size` | `string` | `"md"` | Dialog size: `"sm"`, `"md"`, `"lg"`, `"xl"` |
+| `size` | `string` | `"md"` | Dialog size: `"sm"`, `"md"`, `"lg"`, `"xl"`. Set to `""` for custom sizing via `class` |
 | `title` | `string` | `nil` | Optional built-in title for the default dialog header |
 | `show_close` | `boolean` | `true` | Show the built-in close button on default dialogs |
 | `on_cancel` | `JS` | `%JS{}` | JS command to run on cancel |
 | `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
-| `class` | `string` | `""` | Additional CSS classes |
+| `class` | `string` | `""` | Additional CSS classes applied to the content container. Use with `size=""` for full custom sizing (e.g. `max-w-[80vw] max-h-[80vh]`) |
 
 ### Slots
 
