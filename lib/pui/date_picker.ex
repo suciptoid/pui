@@ -40,6 +40,8 @@ defmodule PUI.DatePicker do
   | `min` | `Date.t() \| String.t()` | `nil` | Minimum selectable day |
   | `max` | `Date.t() \| String.t()` | `nil` | Maximum selectable day |
   | `selectable_month` | `boolean` | `true` | Shows native month and year selects in the calendar header |
+  | `week_start` | `:monday \| :sunday` | `:monday` | First day of the week in the calendar grid |
+  | `show_overlap` | `boolean` | `true` | Shows days from adjacent months in the calendar grid |
   | `placeholder` | `string` | picker-specific | Placeholder text shown before a value is selected |
   | `label` | `string` | `nil` | Optional field label |
   | `class` | `string` | `"w-full"` | Additional trigger classes |
@@ -68,6 +70,8 @@ defmodule PUI.DatePicker do
   attr :min, :any, default: nil
   attr :max, :any, default: nil
   attr :selectable_month, :boolean, default: true
+  attr :week_start, :atom, values: [:monday, :sunday], default: :monday
+  attr :show_overlap, :boolean, default: true
   attr :placeholder, :string, default: "Pick a date"
   attr :class, :string, default: "w-full"
   attr :content_class, :string, default: ""
@@ -112,6 +116,8 @@ defmodule PUI.DatePicker do
           min={@min}
           max={@max}
           selectable_month={@selectable_month}
+          week_start={@week_start}
+          show_overlap={@show_overlap}
           placeholder={@placeholder}
           class={@class}
           content_class={@content_class}
@@ -136,6 +142,8 @@ defmodule PUI.DatePicker do
   attr :min, :any, default: nil
   attr :max, :any, default: nil
   attr :selectable_month, :boolean, default: true
+  attr :week_start, :atom, values: [:monday, :sunday], default: :monday
+  attr :show_overlap, :boolean, default: true
   attr :number_of_months, :integer, default: 2
   attr :placeholder, :string, default: "Pick a date range"
   attr :class, :string, default: "w-full"
@@ -183,6 +191,8 @@ defmodule PUI.DatePicker do
           min={@min}
           max={@max}
           selectable_month={@selectable_month}
+          week_start={@week_start}
+          show_overlap={@show_overlap}
           number_of_months={@number_of_months}
           placeholder={@placeholder}
           class={@class}

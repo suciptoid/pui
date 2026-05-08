@@ -1129,6 +1129,23 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def date_picker_calendar_options_demo(assigns) do
+    ~H"""
+    <.demo_section title="Calendar Options Demo" id="date-picker-calendar-options-demo">
+      <div class="max-w-sm">
+        <.date_picker
+          id="docs-date-picker-calendar-options"
+          name="docs_date_picker_calendar_options"
+          label="Sunday-first calendar"
+          default_month={~D[2026-04-01]}
+          week_start={:sunday}
+          show_overlap={true}
+        />
+      </div>
+    </.demo_section>
+    """
+  end
+
   def date_picker_bounds_demo(assigns) do
     ~H"""
     <.demo_section title="Bounds Demo" id="date-picker-bounds-demo">

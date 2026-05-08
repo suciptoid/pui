@@ -20,6 +20,8 @@ defmodule PUI.DatePickerComponent do
     default_month = DatePicker.normalize_date_value(assigns.default_month)
     min = DatePicker.normalize_date_value(Map.get(assigns, :min))
     max = DatePicker.normalize_date_value(Map.get(assigns, :max))
+    week_start = Map.get(assigns, :week_start, :monday)
+    show_overlap = Map.get(assigns, :show_overlap, false)
 
     visible_month =
       cond do
@@ -69,6 +71,8 @@ defmodule PUI.DatePickerComponent do
         visible_month: visible_month,
         number_of_months: number_of_months,
         selectable_month: Map.get(assigns, :selectable_month, true),
+        week_start: week_start,
+        show_overlap: show_overlap,
         footer: Map.get(assigns, :footer, []),
         months:
           build_months(
@@ -80,7 +84,9 @@ defmodule PUI.DatePickerComponent do
             from_value,
             to_value,
             min,
-            max
+            max,
+            week_start,
+            show_overlap
           )
       )
 
@@ -277,6 +283,8 @@ defmodule PUI.DatePickerComponent do
             min={@min}
             max={@max}
             number_of_months={@number_of_months}
+            week_start={@week_start}
+            show_overlap={@show_overlap}
             show_prev?={true}
             show_next?={true}
             can_navigate_prev?={can_navigate?(@visible_month, -1, @min, @max, @number_of_months)}
@@ -374,6 +382,8 @@ defmodule PUI.DatePickerComponent do
             min={@min}
             max={@max}
             number_of_months={@number_of_months}
+            week_start={@week_start}
+            show_overlap={@show_overlap}
             show_prev?={month.offset == 0}
             show_next?={month.offset == @number_of_months - 1}
             can_navigate_prev?={
@@ -407,6 +417,8 @@ defmodule PUI.DatePickerComponent do
   attr :min, :string, default: nil
   attr :max, :string, default: nil
   attr :number_of_months, :integer, default: 1
+  attr :week_start, :atom, values: [:monday, :sunday], default: :monday
+  attr :show_overlap, :boolean, default: false
   attr :show_prev?, :boolean, default: false
   attr :show_next?, :boolean, default: false
   attr :can_navigate_prev?, :boolean, default: false
@@ -432,7 +444,7 @@ defmodule PUI.DatePickerComponent do
 
       <div class="grid grid-cols-7 gap-0 text-center text-[0.65rem] font-medium text-muted-foreground">
         <span
-          :for={weekday <- ~w(Su Mo Tu We Th Fr Sa)}
+          :for={weekday <- weekdays(@week_start)}
           class="inline-flex h-6 items-center justify-center"
         >
           {weekday}
@@ -440,31 +452,39 @@ defmodule PUI.DatePickerComponent do
       </div>
 
       <div class="grid grid-cols-7 gap-0">
-        <button
-          :for={day <- @month.days}
-          id={day.id}
-          type="button"
-          role="option"
-          tabindex="-1"
-          data-pui="day"
-          data-date={day.value}
-          data-month-offset={to_string(@month.offset)}
-          data-outside-month={to_string(day.outside_month?)}
-          aria-selected={to_string(day.selected?)}
-          aria-disabled={to_string(day.disabled?)}
-          aria-current={if day.today?, do: "date", else: "false"}
-          disabled={day.disabled?}
-          phx-click={if day.disabled?, do: nil, else: day_click_js(assigns, day)}
-          class={day_button_classes(day)}
-        >
+        <div :for={day <- @month.days}>
           <span
-            :if={show_range_background?(day)}
+            :if={day.outside_month? and !@show_overlap}
+            class="block h-7 w-full"
             aria-hidden="true"
-            class={day_range_background_classes(day)}
           >
           </span>
-          <span class={day_label_classes(day)}>{day.label}</span>
-        </button>
+          <button
+            :if={!day.outside_month? or @show_overlap}
+            id={day.id}
+            type="button"
+            role="option"
+            tabindex="-1"
+            data-pui="day"
+            data-date={day.value}
+            data-month-offset={to_string(@month.offset)}
+            data-outside-month={to_string(day.outside_month?)}
+            aria-selected={to_string(day.selected?)}
+            aria-disabled={to_string(day.disabled?)}
+            aria-current={if day.today?, do: "date", else: "false"}
+            disabled={day.disabled?}
+            phx-click={if day.disabled?, do: nil, else: day_click_js(assigns, day)}
+            class={day_button_classes(day)}
+          >
+            <span
+              :if={show_range_background?(day)}
+              aria-hidden="true"
+              class={day_range_background_classes(day)}
+            >
+            </span>
+            <span class={day_label_classes(day)}>{day.label}</span>
+          </button>
+        </div>
       </div>
     </section>
     """
@@ -615,11 +635,15 @@ defmodule PUI.DatePickerComponent do
       day.disabled? && "text-muted-foreground opacity-35",
       day.outside_month? && "text-muted-foreground opacity-60",
       (not day.outside_month? and not day.selected? and not day.disabled?) && "text-foreground",
-      (day.today? and not day.selected? and not day.disabled?) && "ring-1 ring-ring/60"
+      (day.today? and not day.selected? and not day.disabled?) &&
+        "font-medium text-primary underline decoration-primary decoration-2 underline-offset-4"
     ]
   end
 
   defp show_range_background?(day), do: day.in_range? or day.range_start? or day.range_end?
+
+  defp weekdays(:sunday), do: ~w(Su Mo Tu We Th Fr Sa)
+  defp weekdays(:monday), do: ~w(Mo Tu We Th Fr Sa Su)
 
   defp day_range_background_classes(day) do
     [
@@ -639,7 +663,9 @@ defmodule PUI.DatePickerComponent do
          from_value,
          to_value,
          min,
-         max
+         max,
+         week_start,
+         show_overlap
        ) do
     visible_month = DatePicker.normalize_date!(visible_month)
 
@@ -656,24 +682,62 @@ defmodule PUI.DatePickerComponent do
         year: month_start.year,
         value: Date.to_iso8601(month_start),
         days:
-          build_days(picker_id, offset, mode, month_start, value, from_value, to_value, min, max)
+          build_days(
+            picker_id,
+            offset,
+            mode,
+            month_start,
+            value,
+            from_value,
+            to_value,
+            min,
+            max,
+            week_start,
+            show_overlap
+          )
       }
     end)
   end
 
-  defp build_days(picker_id, offset, mode, month_start, value, from_value, to_value, min, max) do
-    start_date =
-      Date.add(month_start, 1 - Date.day_of_week(month_start, :sunday))
+  defp build_days(
+         picker_id,
+         offset,
+         mode,
+         month_start,
+         value,
+         from_value,
+         to_value,
+         min,
+         max,
+         week_start,
+         show_overlap
+       ) do
+    start_date = Date.add(month_start, 1 - Date.day_of_week(month_start, week_start))
 
     Enum.map(0..41, fn index ->
       date = Date.add(start_date, index)
       value_iso = Date.to_iso8601(date)
       outside_month? = date.month != month_start.month or date.year != month_start.year
+      hidden? = outside_month? and not show_overlap
+      suppress_range_indicator? = mode == "range" and outside_month?
       disabled? = not DatePicker.within_bounds?(value_iso, min, max)
-      range_start? = not disabled? and range_start?(mode, value_iso, from_value, to_value)
-      range_end? = not disabled? and range_end?(mode, value_iso, from_value, to_value)
-      selected? = not disabled? and selected?(mode, value_iso, value, from_value, to_value)
-      in_range? = not disabled? and in_range?(mode, value_iso, from_value, to_value)
+
+      range_start? =
+        not disabled? and not suppress_range_indicator? and
+          range_start?(mode, value_iso, from_value, to_value)
+
+      range_end? =
+        not disabled? and not suppress_range_indicator? and
+          range_end?(mode, value_iso, from_value, to_value)
+
+      selected? =
+        not disabled? and not suppress_range_indicator? and
+          selected?(mode, value_iso, value, from_value, to_value)
+
+      in_range? =
+        not disabled? and not suppress_range_indicator? and
+          in_range?(mode, value_iso, from_value, to_value)
+
       today? = Date.compare(date, Date.utc_today()) == :eq
 
       %{
@@ -681,6 +745,7 @@ defmodule PUI.DatePickerComponent do
         value: value_iso,
         label: date.day,
         outside_month?: outside_month?,
+        hidden?: hidden?,
         disabled?: disabled?,
         range_start?: range_start?,
         range_end?: range_end?,
@@ -787,7 +852,9 @@ defmodule PUI.DatePickerComponent do
           from_value,
           to_value,
           socket.assigns.min,
-          socket.assigns.max
+          socket.assigns.max,
+          socket.assigns.week_start,
+          socket.assigns.show_overlap
         )
     )
   end

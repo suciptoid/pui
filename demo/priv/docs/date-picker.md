@@ -7,7 +7,7 @@
 }
 ---
 
-The Date Picker components provide single-date and range selection with a server-rendered calendar, native browser month/year selects, optional bounds, and a footer slot for extra controls such as time inputs or secondary actions.
+The Date Picker components provide single-date and range selection with a server-rendered calendar, native browser month/year selects, configurable week starts, optional adjacent-month days, optional bounds, and a footer slot for extra controls such as time inputs or secondary actions.
 
 ## Import
 
@@ -47,6 +47,23 @@ Use `range_picker/1` when the user needs a start and end date. The popover stays
 ```
 
 <AppWeb.DocsDemo.date_picker_range_demo />
+
+## Calendar Options
+
+Weeks start on Monday by default. Set `week_start={:sunday}` to use a Sunday-first calendar, and set `show_overlap={true}` to render the leading/trailing days from adjacent months.
+
+```heex
+<.date_picker
+  id="calendar-options"
+  name="calendar_options"
+  label="Sunday-first calendar"
+  default_month={~D[2026-04-01]}
+  week_start={:sunday}
+  show_overlap={true}
+/>
+```
+
+<AppWeb.DocsDemo.date_picker_calendar_options_demo />
 
 ## Min and Max Dates
 
@@ -117,6 +134,8 @@ Set `selectable_month={false}` to switch back to the compact button header with 
 | `min` | `Date.t() \| String.t()` | `nil` | Minimum selectable date |
 | `max` | `Date.t() \| String.t()` | `nil` | Maximum selectable date |
 | `selectable_month` | `boolean` | `true` | Enables native month and year dropdowns |
+| `week_start` | `:monday \| :sunday` | `:monday` | First day of the week in the calendar grid |
+| `show_overlap` | `boolean` | `false` | Shows leading and trailing days from adjacent months |
 | `placeholder` | `string` | `"Pick a date"` | Trigger placeholder |
 | `label` | `string` | `nil` | Field label |
 | `field` | `Phoenix.HTML.FormField` | `nil` | Phoenix form field |
@@ -139,6 +158,8 @@ Set `selectable_month={false}` to switch back to the compact button header with 
 | `min` | `Date.t() \| String.t()` | `nil` | Minimum selectable date |
 | `max` | `Date.t() \| String.t()` | `nil` | Maximum selectable date |
 | `selectable_month` | `boolean` | `true` | Enables native month and year dropdowns |
+| `week_start` | `:monday \| :sunday` | `:monday` | First day of the week in the calendar grid |
+| `show_overlap` | `boolean` | `false` | Shows leading and trailing days from adjacent months. In range pickers, overlap days do not show selected/range background indicators |
 | `placeholder` | `string` | `"Pick a date range"` | Trigger placeholder |
 | `label` | `string` | `nil` | Field label |
 | `from_field` | `Phoenix.HTML.FormField` | `nil` | Phoenix form field for the start value |

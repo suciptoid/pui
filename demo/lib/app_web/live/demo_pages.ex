@@ -357,6 +357,34 @@ defmodule AppWeb.Live.DemoPages do
       </div>
     </.surface>
 
+    <.surface
+      title="Calendar Options"
+      description="Configure the first weekday and optionally show adjacent-month days."
+    >
+      <div class="grid gap-8 md:grid-cols-2">
+        <div>
+          <p class="mb-3 text-sm font-medium text-foreground">Monday start, overlap hidden</p>
+          <.date_picker
+            id="demo-dp-monday-hidden"
+            name="dp_monday_hidden"
+            label="Default calendar"
+            default_month={~D[2026-04-01]}
+          />
+        </div>
+        <div>
+          <p class="mb-3 text-sm font-medium text-foreground">Sunday start, overlap visible</p>
+          <.date_picker
+            id="demo-dp-sunday-overlap"
+            name="dp_sunday_overlap"
+            label="US-style calendar"
+            default_month={~D[2026-04-01]}
+            week_start={:sunday}
+            show_overlap={true}
+          />
+        </div>
+      </div>
+    </.surface>
+
     <.surface title="Bounded Dates" description="Restrict selectable dates with min and max.">
       <div class="max-w-sm">
         <.date_picker

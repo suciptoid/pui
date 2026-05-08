@@ -54,6 +54,31 @@ defmodule PUI.DatePickerTest do
       assert html =~ ~r/<option value="5" disabled>\s*May\s*<\/option>/
     end
 
+    test "hides adjacent-month days by default" do
+      html =
+        render_component(&date_picker/1,
+          id: "picker-hidden-overlap",
+          name: "published_on",
+          default_month: ~D[2026-04-01]
+        )
+
+      refute html =~ ~s(id="picker-hidden-overlap-month-0-day-2026-05-01")
+    end
+
+    test "can show adjacent-month days and start weeks on sunday" do
+      html =
+        render_component(&date_picker/1,
+          id: "picker-visible-overlap",
+          name: "published_on",
+          default_month: ~D[2026-04-01],
+          week_start: :sunday,
+          show_overlap: true
+        )
+
+      assert html =~ ~s(id="picker-visible-overlap-month-0-day-2026-03-29")
+      assert html =~ ~s(id="picker-visible-overlap-month-0-day-2026-05-09")
+    end
+
     test "renders footer slot content inside the popup" do
       html =
         render_component(
@@ -71,6 +96,27 @@ defmodule PUI.DatePickerTest do
 
       assert html =~ "Footer content"
       assert html =~ "border-t border-border p-2"
+    end
+  end
+
+  describe "range_picker/1" do
+    test "does not show range indicators for adjacent-month days" do
+      html =
+        render_component(&range_picker/1,
+          id: "range-visible-overlap",
+          from_name: "trip_start",
+          to_name: "trip_end",
+          from_value: ~D[2026-03-30],
+          to_value: ~D[2026-04-02],
+          default_month: ~D[2026-04-01],
+          number_of_months: 1,
+          show_overlap: true
+        )
+
+      assert html =~ ~s(id="range-visible-overlap-month-0-day-2026-03-30")
+
+      assert html =~
+               ~r/id="range-visible-overlap-month-0-day-2026-03-30"[^>]*aria-selected="false"/
     end
   end
 
