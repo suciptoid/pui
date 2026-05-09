@@ -9,6 +9,8 @@
 
 The Tabs component provides accessible, theme-aware tabbed interfaces inspired by shadcn/ui. It renders correct WAI-ARIA roles on the server and can be enhanced with the built-in `PUI.Tabs` hook for keyboard navigation, roving focus, and client-side activation.
 
+You can use tabs with both triggers and content panels, or triggers only for segmented controls and toolbars.
+
 ## Import
 
 ```elixir
@@ -133,6 +135,22 @@ The default styles use the same theme tokens as the rest of PUI and follow shadc
 
 Use `variant="unstyled"` when you want to keep the semantics and hook behavior but supply all presentation classes yourself.
 
+## Trigger-Only Tabs (no content panels)
+
+When you only need the tab triggers as a segmented control or toolbar (e.g. toggling a view mode), omit the `:content` slots entirely. The component will not render extra spacing or a panels wrapper.
+
+```heex
+<.tabs id="view-tabs" default_value="grid">
+  <:trigger value="grid">Grid</:trigger>
+  <:trigger value="list">List</:trigger>
+</.tabs>
+```
+
+This is useful for:
+- View switchers (grid/list, day/week/month)
+- Segmented controls
+- Toolbar-style tab groups where the content lives elsewhere in the DOM
+
 ## API Reference
 
 ### `tabs/1` Attributes
@@ -169,3 +187,5 @@ Use `variant="unstyled"` when you want to keep the semantics and hook behavior b
 | `value` | `string` | **required** | Panel value matched to a trigger |
 | `id` | `string` | generated | Custom panel id |
 | `class` | `string` | `""` | Additional panel classes |
+
+> **Note:** The `:content` slot is optional. Omit all `:content` slots to render trigger-only tabs (e.g. segmented controls) without the extra bottom spacing.

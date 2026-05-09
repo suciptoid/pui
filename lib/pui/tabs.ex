@@ -7,10 +7,35 @@ defmodule PUI.Tabs do
   on the server, then enhances the experience with the `PUI.Tabs` hook for arrow
   key navigation, roving focus, and optional client-side activation.
 
-  Use `tabs/1` with `:trigger` and `:content` slots. Triggers and panels are
-  matched by their shared `value`.
+  Use `tabs/1` with `:trigger` and optional `:content` slots. Triggers and
+  panels are matched by their shared `value`.
+
+  When you only need trigger buttons (e.g. a segmented control or toolbar), omit
+  the `:content` slots entirely — the component will not render the extra spacing
+  or panels wrapper.
 
   ## Basic Usage
+
+      <.tabs id="account-tabs" default_value="account">
+        <:trigger value="account">Account</:trigger>
+        <:trigger value="password">Password</:trigger>
+        <:content value="account">
+          Make changes to your account here.
+        </:content>
+        <:content value="password">
+          Change your password here.
+        </:content>
+      </.tabs>
+
+  ## Trigger-Only Usage
+
+  Omit `:content` slots for segmented controls, toolbars, or any scenario where
+  you only need the tab triggers:
+
+      <.tabs id="view-tabs" default_value="grid">
+        <:trigger value="grid">Grid</:trigger>
+        <:trigger value="list">List</:trigger>
+      </.tabs>
 
       <.tabs id="account-tabs" default_value="account">
         <:trigger value="account">Account</:trigger>
@@ -116,7 +141,7 @@ defmodule PUI.Tabs do
     attr :"phx-value-tab", :string
   end
 
-  slot :content, required: true do
+  slot :content do
     attr :value, :string, required: true
     attr :id, :string
     attr :class, :string
@@ -147,17 +172,29 @@ defmodule PUI.Tabs do
         <:content value="overview">Overview panel.</:content>
         <:content value="activity">Activity panel.</:content>
       </.tabs>
+
+  ## Trigger-Only Tabs (no content panels)
+
+  When you only need the tab triggers as a segmented control or toolbar,
+  omit the `:content` slots entirely:
+
+      <.tabs id="view-tabs" default_value="grid">
+        <:trigger value="grid">Grid</:trigger>
+        <:trigger value="list">List</:trigger>
+      </.tabs>
   """
   def tabs(assigns) do
     assigns = assign_new(assigns, :id, fn -> "tabs-#{System.unique_integer([:positive])}" end)
     active_value = resolve_active_value(assigns.value, assigns.default_value, assigns.trigger)
     is_unstyled = assigns.variant == "unstyled"
+    has_content? = assigns.content != []
 
     assigns =
       assigns
       |> assign(:active_value, active_value)
       |> assign(:is_unstyled, is_unstyled)
-      |> assign(:root_classes, root_classes(assigns.orientation, is_unstyled, assigns.class))
+      |> assign(:has_content?, has_content?)
+      |> assign(:root_classes, root_classes(assigns.orientation, is_unstyled, has_content?, assigns.class))
       |> assign(
         :list_classes,
         list_classes(assigns.variant, assigns.orientation, is_unstyled, assigns.list_class)
@@ -245,10 +282,11 @@ defmodule PUI.Tabs do
     end
   end
 
-  defp root_classes("vertical", true, class), do: [class]
-  defp root_classes(_orientation, true, class), do: [class]
-  defp root_classes("vertical", false, class), do: ["flex items-start gap-6", class]
-  defp root_classes(_orientation, false, class), do: ["w-full space-y-4", class]
+  defp root_classes("vertical", true, _has_content?, class), do: [class]
+  defp root_classes(_orientation, true, _has_content?, class), do: [class]
+  defp root_classes("vertical", false, _has_content?, class), do: ["flex items-start gap-6", class]
+  defp root_classes(_orientation, false, true, class), do: ["w-full space-y-4", class]
+  defp root_classes(_orientation, false, _has_content?, class), do: ["w-full", class]
 
   defp list_classes(_variant, _orientation, true, class), do: [class]
 
