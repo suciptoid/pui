@@ -135,3 +135,182 @@ Use `variant="unstyled"` to get a button with no default styles — perfect for 
 | Name | Required | Description |
 |------|----------|-------------|
 | `inner_block` | ✓ | Button content (text, icons, etc.) |
+
+---
+
+## Button Group
+
+The `button_group` container groups related buttons together with connected styling. Adjacent buttons merge their borders for a cohesive look.
+
+### Import
+
+```elixir
+use PUI
+# or
+import PUI.ButtonGroup
+```
+
+### Basic Usage
+
+```heex
+<.button_group>
+  <.button variant="outline">Button 1</.button>
+  <.button variant="outline">Button 2</.button>
+  <.button variant="outline">Button 3</.button>
+</.button_group>
+```
+
+<AppWeb.DocsDemo.button_group_basic_demo />
+
+### Variants
+
+Any button variant works inside a group. Outline buttons are the most common choice since their visible borders create natural separation.
+
+```heex
+<.button_group>
+  <.button variant="default">Default</.button>
+  <.button variant="default">Group</.button>
+</.button_group>
+
+<.button_group>
+  <.button variant="secondary">Secondary</.button>
+  <.button variant="secondary">Group</.button>
+</.button_group>
+```
+
+<AppWeb.DocsDemo.button_group_variants_demo />
+
+### Sizes
+
+Apply any size to individual buttons within a group.
+
+```heex
+<.button_group>
+  <.button variant="outline" size="sm">Small</.button>
+  <.button variant="outline" size="sm">Group</.button>
+</.button_group>
+
+<.button_group>
+  <.button variant="outline">Default</.button>
+  <.button variant="outline">Group</.button>
+</.button_group>
+```
+
+<AppWeb.DocsDemo.button_group_sizes_demo />
+
+### With Separator
+
+Use `button_group_separator` to visually divide buttons within a group. Separators are most useful with non-outline variants since outline buttons already have visible borders.
+
+```heex
+<.button_group>
+  <.button variant="secondary">Copy</.button>
+  <.button_group_separator />
+  <.button variant="secondary">Paste</.button>
+</.button_group>
+```
+
+<AppWeb.DocsDemo.button_group_separator_demo />
+
+### With Text
+
+Use `button_group_text` to add a label within the group. The text element matches button height and inherits the group's connected styling.
+
+```heex
+<.button_group>
+  <.button_group_text>https://</.button_group_text>
+  <.button variant="outline">example.com</.button>
+</.button_group>
+```
+
+<AppWeb.DocsDemo.button_group_text_demo />
+
+### Vertical Orientation
+
+Set `orientation="vertical"` to stack buttons vertically.
+
+```heex
+<.button_group orientation="vertical">
+  <.button variant="outline" size="icon">
+    <.icon name="hero-plus" class="size-4" />
+  </.button>
+  <.button variant="outline" size="icon">
+    <.icon name="hero-minus" class="size-4" />
+  </.button>
+</.button_group>
+```
+
+<AppWeb.DocsDemo.button_group_orientation_demo bg_orientation={@bg_orientation} />
+
+### Split Button
+
+Create a split button by combining a primary action with a `menu_button` dropdown. Use the `class` attribute on `menu_button` to forward the border-radius override to the inner button.
+
+```heex
+<.button_group>
+  <.button variant="secondary">Send</.button>
+  <.button_group_separator />
+  <.menu_button variant="secondary" class="rounded-l-none" content_class="w-40">
+    <.icon name="hero-chevron-down" class="size-4" />
+    <:item>Reply All</:item>
+    <:item>Forward</:item>
+    <:item variant="destructive">Delete</:item>
+  </.menu_button>
+</.button_group>
+```
+
+<AppWeb.DocsDemo.button_group_split_demo />
+
+### Button Group vs Toggle Group
+
+- Use `button_group` when you want to group buttons that **perform an action**.
+- Use a toggle group when you want to group buttons that **toggle a state**.
+
+### Accessibility
+
+- The container has `role="group"` for assistive technologies.
+- Use `aria-label` or `aria-labelledby` to describe the group's purpose.
+- Use `Tab` to navigate between buttons in the group.
+
+```heex
+<.button_group aria-label="Formatting options">
+  <.button variant="outline">Bold</.button>
+  <.button variant="outline">Italic</.button>
+  <.button variant="outline">Underline</.button>
+</.button_group>
+```
+
+## Button Group API Reference
+
+### button_group
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `orientation` | `string` | `"horizontal"` | Layout direction: `"horizontal"` or `"vertical"` |
+| `class` | `string` | `""` | Additional CSS classes |
+| `rest` | `global` | — | HTML attributes including `aria-label` |
+
+#### Slots
+
+| Name | Required | Description |
+|------|----------|-------------|
+| `inner_block` | ✓ | Group content — buttons, separators, text, or nested groups |
+
+### button_group_separator
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `orientation` | `string` | `"horizontal"` | Separator direction: `"horizontal"` renders a vertical line, `"vertical"` renders a horizontal line |
+| `class` | `string` | `""` | Additional CSS classes |
+
+### button_group_text
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `class` | `string` | `""` | Additional CSS classes |
+
+#### Slots
+
+| Name | Required | Description |
+|------|----------|-------------|
+| `inner_block` | ✓ | Text content |

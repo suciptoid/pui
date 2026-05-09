@@ -263,6 +263,175 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  # ── Button Group demos ─────────────────────────────────────────────────
+
+  def button_group_basic_demo(assigns) do
+    ~H"""
+    <.demo_section title="Basic Button Group" id="button-group-basic-demo">
+      <.button_group>
+        <.button variant="outline">Button 1</.button>
+        <.button variant="outline">Button 2</.button>
+        <.button variant="outline">Button 3</.button>
+      </.button_group>
+    </.demo_section>
+    """
+  end
+
+  def button_group_variants_demo(assigns) do
+    ~H"""
+    <.demo_section title="Button Group Variants" id="button-group-variants-demo">
+      <div class="flex flex-col items-start gap-4">
+        <.button_group>
+          <.button variant="default">Default</.button>
+          <.button variant="default">Group</.button>
+        </.button_group>
+        <.button_group>
+          <.button variant="secondary">Secondary</.button>
+          <.button variant="secondary">Group</.button>
+        </.button_group>
+        <.button_group>
+          <.button variant="outline">Outline</.button>
+          <.button variant="outline">Group</.button>
+        </.button_group>
+        <.button_group>
+          <.button variant="ghost">Ghost</.button>
+          <.button variant="ghost">Group</.button>
+        </.button_group>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def button_group_separator_demo(assigns) do
+    ~H"""
+    <.demo_section title="With Separator" id="button-group-separator-demo">
+      <div class="flex flex-col items-start gap-4">
+        <.button_group>
+          <.button variant="secondary">Copy</.button>
+          <.button_group_separator />
+          <.button variant="secondary">Paste</.button>
+        </.button_group>
+        <.button_group>
+          <.button variant="default">Save</.button>
+          <.button_group_separator />
+          <.button variant="default">
+            <.icon name="hero-chevron-down" class="size-4" />
+          </.button>
+        </.button_group>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def button_group_text_demo(assigns) do
+    ~H"""
+    <.demo_section title="With Text" id="button-group-text-demo">
+      <div class="flex flex-col items-start gap-4">
+        <.button_group>
+          <.button_group_text>https://</.button_group_text>
+          <.button variant="outline">example.com</.button>
+        </.button_group>
+        <.button_group>
+          <.button_group_text>
+            <.icon name="hero-envelope" class="size-4" />
+          </.button_group_text>
+          <.input placeholder="you@example.com" />
+        </.button_group>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def button_group_orientation_demo(assigns) do
+    ~H"""
+    <.demo_section title="Orientation" id="button-group-orientation-demo">
+      <div class="flex flex-col gap-4">
+        <div class="flex gap-1.5">
+          <button
+            :for={o <- ["horizontal", "vertical"]}
+            type="button"
+            phx-click="select_bg_orientation"
+            phx-value-orientation={o}
+            class={[
+              "px-3 py-1 text-xs font-medium rounded-full transition-all",
+              o == @bg_orientation && "bg-primary text-primary-foreground shadow-sm",
+              o != @bg_orientation && "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+            ]}
+          >
+            {o}
+          </button>
+        </div>
+        <.button_group orientation={@bg_orientation}>
+          <.button variant="outline" size="icon">
+            <.icon name="hero-plus" class="size-4" />
+          </.button>
+          <.button variant="outline" size="icon">
+            <.icon name="hero-minus" class="size-4" />
+          </.button>
+        </.button_group>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def button_group_split_demo(assigns) do
+    ~H"""
+    <.demo_section title="Split Button" id="button-group-split-demo">
+      <div class="flex flex-col items-start gap-4">
+        <.button_group>
+          <.button variant="secondary">Send</.button>
+          <.button_group_separator />
+          <.menu_button variant="secondary" class="rounded-l-none" content_class="w-40">
+            <.icon name="hero-chevron-down" class="size-4" />
+            <:item>Reply All</:item>
+            <:item>Forward</:item>
+            <:item variant="destructive">Delete</:item>
+          </.menu_button>
+        </.button_group>
+        <.button_group>
+          <.button variant="outline">Archive</.button>
+          <.menu_button variant="outline" class="rounded-l-none" content_class="w-40">
+            <.icon name="hero-chevron-down" class="size-4" />
+            <:item>Move to Folder</:item>
+            <:item>Apply Label</:item>
+            <:item shortcut="⌘⌫" variant="destructive">Delete</:item>
+          </.menu_button>
+        </.button_group>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def button_group_sizes_demo(assigns) do
+    ~H"""
+    <.demo_section title="Sizes" id="button-group-sizes-demo">
+      <div class="flex flex-col items-start gap-4">
+        <.button_group>
+          <.button variant="outline" size="sm">Small</.button>
+          <.button variant="outline" size="sm">Group</.button>
+          <.button variant="outline" size="sm">
+            <.icon name="hero-plus" class="size-3.5" />
+          </.button>
+        </.button_group>
+        <.button_group>
+          <.button variant="outline">Default</.button>
+          <.button variant="outline">Group</.button>
+          <.button variant="outline">
+            <.icon name="hero-plus" class="size-4" />
+          </.button>
+        </.button_group>
+        <.button_group>
+          <.button variant="outline" size="lg">Large</.button>
+          <.button variant="outline" size="lg">Group</.button>
+          <.button variant="outline" size="lg">
+            <.icon name="hero-plus" class="size-4" />
+          </.button>
+        </.button_group>
+      </div>
+    </.demo_section>
+    """
+  end
+
   def accordion_demo(assigns) do
     ~H"""
     <section class="space-y-8">

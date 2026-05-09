@@ -43,7 +43,8 @@ defmodule AppWeb.Live.DocsLive do
        show_dialog: false,
        progress_value: 45.0,
        toast_count: 0,
-       flash_position: "top-right"
+       flash_position: "top-right",
+       bg_orientation: "horizontal"
      )}
   end
 
@@ -105,6 +106,10 @@ defmodule AppWeb.Live.DocsLive do
 
   def handle_event("chart_advance_revision", _params, socket) do
     {:noreply, update(socket, :chart_revision, &(&1 + 1))}
+  end
+
+  def handle_event("select_bg_orientation", %{"orientation" => orientation}, socket) do
+    {:noreply, assign(socket, bg_orientation: orientation)}
   end
 
   def handle_event("toggle_dialog", _params, socket) do
@@ -385,6 +390,7 @@ defmodule AppWeb.Live.DocsLive do
       :chart_revision,
       :flash,
       :flash_position,
+      :bg_orientation,
       :form,
       :progress_value,
       :show_dialog,

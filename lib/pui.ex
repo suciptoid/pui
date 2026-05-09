@@ -12,6 +12,7 @@ defmodule PUI do
       import PUI
       import PUI.Input
       import PUI.Button
+      import PUI.ButtonGroup
       import PUI.Accordion
       import PUI.Dropdown
       import PUI.Alert
