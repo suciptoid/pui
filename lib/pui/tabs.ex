@@ -208,7 +208,7 @@ defmodule PUI.Tabs do
         </button>
       </div>
 
-      <div class={@panels_classes}>
+      <div :if={@content |> Enum.any?()} class={@panels_classes}>
         <div
           :for={panel <- @content}
           id={content_id(@id, panel[:value], @content)}

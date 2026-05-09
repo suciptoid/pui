@@ -54,12 +54,13 @@ defmodule PUI.DatePickerTest do
       assert html =~ ~r/<option value="5" disabled>\s*May\s*<\/option>/
     end
 
-    test "hides adjacent-month days by default" do
+    test "hides adjacent-month days when show_overlap is false" do
       html =
         render_component(&date_picker/1,
           id: "picker-hidden-overlap",
           name: "published_on",
-          default_month: ~D[2026-04-01]
+          default_month: ~D[2026-04-01],
+          show_overlap: false
         )
 
       refute html =~ ~s(id="picker-hidden-overlap-month-0-day-2026-05-01")
