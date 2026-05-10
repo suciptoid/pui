@@ -2350,6 +2350,48 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def tooltip_variant_demo(assigns) do
+    ~H"""
+    <.demo_section title="Variants" id="tooltip-variants">
+      <div class="flex flex-wrap items-center gap-6">
+        <.tooltip variant="default">
+          <.button variant="outline" size="sm">Default</.button>
+          <:tooltip>Dark tooltip</:tooltip>
+        </.tooltip>
+        <.tooltip variant="dark">
+          <.button variant="outline" size="sm">Dark</.button>
+          <:tooltip>Dark tooltip</:tooltip>
+        </.tooltip>
+        <.tooltip variant="light">
+          <.button variant="outline" size="sm">Light</.button>
+          <:tooltip>Light tooltip</:tooltip>
+        </.tooltip>
+      </div>
+    </.demo_section>
+    """
+  end
+
+  def tooltip_arrow_demo(assigns) do
+    ~H"""
+    <.demo_section title="Custom Arrow" id="tooltip-arrow">
+      <div class="flex flex-wrap items-center gap-6">
+        <.tooltip variant="light" arrow_class="bg-blue-500 ring-1 ring-border shadow-sm">
+          <.button variant="outline" size="sm">Blue arrow</.button>
+          <:tooltip>Blue arrow on light tooltip</:tooltip>
+        </.tooltip>
+        <.tooltip variant="default" arrow_class="bg-red-500">
+          <.button variant="outline" size="sm">Red arrow</.button>
+          <:tooltip>Red arrow on dark tooltip</:tooltip>
+        </.tooltip>
+        <.tooltip variant="light" arrow_class="bg-emerald-500 ring-1 ring-border shadow-sm">
+          <.button variant="outline" size="sm">Emerald arrow</.button>
+          <:tooltip>Emerald arrow on light tooltip</:tooltip>
+        </.tooltip>
+      </div>
+    </.demo_section>
+    """
+  end
+
   def alert_demo(assigns) do
     ~H"""
     <section class="space-y-8">

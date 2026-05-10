@@ -34,6 +34,17 @@ defmodule PUI.Popover do
       <.tooltip placement="left">...</.tooltip>
       <.tooltip placement="right">...</.tooltip>
 
+  ### Variants
+
+      <.tooltip variant="default">...</.tooltip>
+      <.tooltip variant="light">...</.tooltip>
+      <.tooltip variant="dark">...</.tooltip>
+      <.tooltip variant="unstyled">...</.tooltip>
+
+  ### Custom Arrow Color
+
+      <.tooltip arrow_class="bg-blue-500 fill-blue-500">...</.tooltip>
+
   ## With Icons
 
       <.tooltip id="icon-tooltip" placement="bottom">
@@ -69,6 +80,8 @@ defmodule PUI.Popover do
   |-----------|------|---------|-------------|
   | `id` | `string` | auto-generated | Unique identifier |
   | `placement` | `string` | `"top"` | Tooltip position |
+  | `variant` | `string` | `"default"` | Visual variant: `"default"` (dark), `"light"`, `"dark"`, `"unstyled"` |
+  | `arrow_class` | `string` | `""` | Custom CSS classes for the arrow element |
   | `class` | `string` | `""` | Additional CSS classes |
 
   ## Slots (base/1)
@@ -146,7 +159,8 @@ defmodule PUI.Popover do
   attr :id, :string
   attr :class, :string, default: ""
   attr :container_class, :string, default: ""
-  attr :variant, :string, default: "default", values: ["default", "unstyled"]
+  attr :variant, :string, default: "default", values: ["default", "light", "dark", "unstyled"]
+  attr :arrow_class, :string, default: ""
   attr :placement, :string, values: ["top", "bottom", "left", "right"], default: "top"
   slot :inner_block
 
@@ -157,10 +171,12 @@ defmodule PUI.Popover do
   def tooltip(%{variant: variant} = assigns) do
     assigns = assign_new(assigns, :id, fn -> "tooltip#{System.unique_integer()}" end)
     is_unstyled = variant == "unstyled"
+    is_light = variant == "light"
 
     assigns =
       assigns
       |> assign(:is_unstyled, is_unstyled)
+      |> assign(:is_light, is_light)
       |> assign(:tooltip_id, "#{assigns.id}-tooltip")
 
     ~H"""
@@ -184,12 +200,14 @@ defmodule PUI.Popover do
             [@class]
           else
             [
-              "bg-foreground text-background",
+              "before:absolute before:inset-0 before:z-0 before:bg-inherit before:rounded-[inherit] before:pointer-events-none",
+              @is_light && "bg-white text-foreground border border-border shadow-sm",
+              !@is_light && "bg-foreground text-background",
               "duration-100 transition ease-in transform",
               "data-[placement=top]:translate-y-0 data-[placement=top]:aria-hidden:translate-y-2",
               "data-[placement=bottom]:translate-y-0 data-[placement=bottom]:aria-hidden:-translate-y-2",
               "data-[placement=right]:translate-x-0 data-[placement=right]:aria-hidden:-translate-x-2",
-              "data-[placement=left]:translate-x-0 data-[placement=left]:aria-hidden:translate-x-2",
+              "data-[placement=left]:translate-x-0 data-[placement=left]:aria-hidden:-translate-x-2",
               "opacity-100 aria-hidden:opacity-0",
               "aria-hidden:pointer-events-none",
               "invisible not-aria-hidden:visible",
@@ -199,12 +217,17 @@ defmodule PUI.Popover do
           end
         }
       >
-        {render_slot(@tooltip)}
+        <div class="relative z-10">{render_slot(@tooltip)}</div>
 
         <div
           :if={not @is_unstyled}
           data-arrow
-          class="absolute bg-foreground fill-foreground z-[-1] size-2.5 rotate-45 rounded-[2px]"
+          class={[
+            "absolute z-[-1] size-2.5 rotate-45",
+            @arrow_class != "" && @arrow_class,
+            @arrow_class == "" && @is_light && "bg-white ring-1 ring-border shadow-sm",
+            @arrow_class == "" && !@is_light && "bg-foreground"
+          ]}
         >
         </div>
       </div>

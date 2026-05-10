@@ -74,7 +74,33 @@ Tooltips can contain short formatted content:
 </.tooltip>
 ```
 
-## Unstyled / Headless
+## Variants
+
+Use the `variant` attribute to switch between predefined tooltip styles.
+
+### Default (Dark)
+
+The default variant uses a dark background with light text:
+
+```heex
+<.tooltip variant="default">
+  <.button variant="outline">Default</.button>
+  <:tooltip>Dark tooltip</:tooltip>
+</.tooltip>
+```
+
+### Light
+
+The light variant uses a white background with a border, suitable for lighter interfaces:
+
+```heex
+<.tooltip variant="light">
+  <.button variant="outline">Light</.button>
+  <:tooltip>Light tooltip</:tooltip>
+</.tooltip>
+```
+
+### Unstyled / Headless
 
 Use `variant="unstyled"` when you want to provide all tooltip classes yourself:
 
@@ -88,6 +114,30 @@ Use `variant="unstyled"` when you want to provide all tooltip classes yourself:
 </.tooltip>
 ```
 
+<AppWeb.DocsDemo.tooltip_variant_demo />
+
+## Custom Arrow Styling
+
+Override the default arrow color with `arrow_class`. The arrow automatically matches the tooltip variant, but you can provide any Tailwind classes to customize it.
+
+> **Note:** For `variant="light"`, include `ring-1 ring-border shadow-sm` in your `arrow_class` to keep the arrow visible on light backgrounds.
+
+```heex
+<.tooltip variant="light" arrow_class="bg-blue-500 ring-1 ring-border shadow-sm">
+  <.button variant="outline">Custom arrow</.button>
+  <:tooltip>Blue arrow on light tooltip</:tooltip>
+</.tooltip>
+```
+
+```heex
+<.tooltip variant="default" arrow_class="bg-red-500">
+  <.button variant="outline">Red arrow</.button>
+  <:tooltip>Red arrow on dark tooltip</:tooltip>
+</.tooltip>
+```
+
+<AppWeb.DocsDemo.tooltip_arrow_demo />
+
 ## API Reference
 
 ### Tooltip Attributes
@@ -96,7 +146,8 @@ Use `variant="unstyled"` when you want to provide all tooltip classes yourself:
 |------|------|---------|-------------|
 | `id` | `string` | auto-generated | Unique identifier |
 | `placement` | `string` | `"top"` | Position: `"top"`, `"bottom"`, `"left"`, `"right"` |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
+| `variant` | `string` | `"default"` | `"default"`, `"light"`, `"dark"`, or `"unstyled"` |
+| `arrow_class` | `string` | `""` | Custom CSS classes for the arrow element |
 | `class` | `string` | `""` | Additional CSS classes |
 
 ### Tooltip Slots
