@@ -1,13 +1,13 @@
 <p align="center">
   <img src="demo/assets/pui-hook.png" alt="PUI Logo" width="200"/>
-  <br>
+  <br />
   
   <a href="https://hex.pm/packages/pui">
     <img alt="Hex Version" src="https://img.shields.io/hexpm/v/pui">
   </a>
 
   <a href="https://hexdocs.pm/pui">
-    <img alt="Hex Docs" src="http://img.shields.io/badge/hex.pm-docs-green.svg?style=flat">
+    <img alt="Hex Docs" src="https://img.shields.io/badge/hex.pm-docs-green.svg?style=flat">
   </a>
 
   <a href="https://opensource.org/licenses/MIT">
