@@ -9,6 +9,7 @@ defmodule AppWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug :put_demo_sidebar_collapsed
     plug :fetch_live_flash
     plug :put_root_layout, html: {AppWeb.Layouts, :root}
     plug :protect_from_forgery
@@ -62,5 +63,15 @@ defmodule AppWeb.Router do
       live_dashboard "/dashboard", metrics: AppWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  defp put_demo_sidebar_collapsed(conn, _opts) do
+    conn = fetch_cookies(conn)
+
+    put_session(
+      conn,
+      "demo_sidebar_collapsed",
+      conn.req_cookies["demo_sidebar_collapsed"] == "true"
+    )
   end
 end

@@ -11,12 +11,30 @@ templates.
 - `PUI.Layout.sidebar_menu_item/1` renders a row link or collapsible submenu.
 - `PUI.Layout.content_header/1` renders the sticky header with breadcrumb and toggle.
 
+## Initial collapse state
+
+Pass `collapsed={true}` or a boolean assign to `app_layout/1` when the server
+should render the sidebar collapsed on first paint:
+
+```heex
+<.app_layout id="docs-shell" collapsed={@sidebar_collapsed}>
+  ...
+</.app_layout>
+```
+
+PUI does not persist sidebar state or write cookies. When the user toggles the
+shell, the bundled hook updates `data-collapsed` and dispatches a bubbling
+`pui:sidebar-collapsed` event with `%{collapsed: boolean}` semantics in
+`event.detail`. Applications can listen for that event and persist the value in
+the place that matches their own session model, such as a cookie, user
+preference, or browser storage.
+
 ## Example
 
 ```elixir
 def render(assigns) do
   ~H"""
-  <.app_layout id="docs-shell" content_class="p-0">
+  <.app_layout id="docs-shell" content_class="p-0" collapsed={@sidebar_collapsed}>
     <:sidebar>
       <.sidebar>
         <:header>

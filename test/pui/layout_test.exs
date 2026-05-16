@@ -28,6 +28,22 @@ defmodule PUI.LayoutTest do
     assert html =~ "Body"
   end
 
+  test "app_layout can render the initial collapsed state" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.app_layout id="shell" collapsed>
+        <:sidebar>
+          <aside>Sidebar</aside>
+        </:sidebar>
+        Body
+      </.app_layout>
+      """)
+
+    assert html =~ ~s(data-collapsed="true")
+  end
+
   test "sidebar renders header, body, footer, and configurable widths" do
     assigns = %{}
 

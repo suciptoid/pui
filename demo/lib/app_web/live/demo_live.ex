@@ -8,11 +8,12 @@ defmodule AppWeb.Live.DemoLive do
   import AppWeb.Live.DemoPages, only: [page_intro: 1, surface: 1]
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     {:ok,
      socket
      |> assign(:page_title, "App Layout Demo")
      |> assign(:flash_position, "top-right")
+     |> assign(:sidebar_collapsed, session["demo_sidebar_collapsed"] == true)
      |> assign(:toast_count, 0)}
   end
 
@@ -31,7 +32,13 @@ defmodule AppWeb.Live.DemoLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <.app_layout id="demo-app-shell" content_class="bg-muted/20 p-0">
+    <.app_layout
+      id="demo-app-shell"
+      content_class="bg-muted/20 p-0"
+      collapsed={@sidebar_collapsed}
+    >
+      <.demo_sidebar_persistence />
+
       <:sidebar>
         <.sidebar id="demo-app-sidebar" expanded_width_class="w-72">
           <:header>
@@ -198,6 +205,39 @@ defmodule AppWeb.Live.DemoLive do
         </div>
       </section>
     </.app_layout>
+
+    <script :type={Phoenix.LiveView.ColocatedHook} name=".DemoSidebarPersistence">
+      export default {
+        mounted() {
+          this.onCollapsed = (event) => {
+            const collapsed = event.detail?.collapsed ? "true" : "false";
+            document.cookie = `demo_sidebar_collapsed=${collapsed}; Path=/; Max-Age=31536000; SameSite=Lax`;
+          };
+
+          document
+            .getElementById("demo-app-shell")
+            ?.addEventListener("pui:sidebar-collapsed", this.onCollapsed);
+        },
+
+        destroyed() {
+          document
+            .getElementById("demo-app-shell")
+            ?.removeEventListener("pui:sidebar-collapsed", this.onCollapsed);
+        },
+      };
+    </script>
+    """
+  end
+
+  defp demo_sidebar_persistence(assigns) do
+    ~H"""
+    <div
+      id="demo-sidebar-persistence"
+      phx-hook=".DemoSidebarPersistence"
+      phx-update="ignore"
+      class="hidden"
+    >
+    </div>
     """
   end
 

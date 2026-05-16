@@ -68,6 +68,7 @@ defmodule PUI.Layout do
   | `id` | `string` | `"app-layout"` | Shell DOM id, used by `content_header/1` toggle |
   | `class` | `string` | `""` | Additional classes for the root shell |
   | `content_class` | `string` | `"w-full px-4 py-4"` | Classes for the scrollable main content element |
+  | `collapsed` | `boolean` | `false` | Initial sidebar collapsed state rendered by the server |
 
   ## Slots
 
@@ -80,6 +81,7 @@ defmodule PUI.Layout do
   attr :id, :string, default: "app-layout"
   attr :class, :string, default: ""
   attr :content_class, :string, default: "w-full px-4 py-4"
+  attr :collapsed, :boolean, default: false
 
   slot :sidebar, required: true
   slot :header
@@ -89,13 +91,14 @@ defmodule PUI.Layout do
     ~H"""
     <div
       id={@id}
-      data-collapsed="false"
-      phx-hook="PUI.Sidebar"
+      data-collapsed={if @collapsed, do: "true", else: "false"}
       class={[
         "group/pui-layout flex h-dvh overflow-hidden bg-background text-foreground",
         @class
       ]}
     >
+      <.sidebar_controller id={"#{@id}-sidebar-controller"} shell_id={@id} />
+
       {render_slot(@sidebar)}
 
       <section class="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -108,6 +111,22 @@ defmodule PUI.Layout do
         </main>
       </section>
     </div>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :shell_id, :string, required: true
+
+  defp sidebar_controller(assigns) do
+    ~H"""
+    <span
+      id={@id}
+      phx-hook="PUI.Sidebar"
+      phx-update="ignore"
+      data-shell={@shell_id}
+      class="hidden"
+    >
+    </span>
     """
   end
 

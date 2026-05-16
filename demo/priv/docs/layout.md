@@ -17,6 +17,23 @@ without scattering collapse logic across app-specific templates.
 - `sidebar_menu_item/1` renders a nav row with optional collapsible submenu.
 - `content_header/1` renders a sticky header with breadcrumb and shell toggle.
 
+## Initial collapse state
+
+Use `collapsed={@sidebar_collapsed}` when the host app already knows the
+preferred initial state:
+
+```heex
+<.app_layout id="workspace-shell" collapsed={@sidebar_collapsed}>
+  ...
+</.app_layout>
+```
+
+PUI does not write cookies or choose a persistence strategy. Sidebar toggles
+update the shell's `data-collapsed` attribute and dispatch a bubbling
+`pui:sidebar-collapsed` event with `event.detail.collapsed`, so applications can
+persist the value through their own cookie, session, user preference, or browser
+storage flow.
+
 ## Import
 
 All layout primitives are available through:

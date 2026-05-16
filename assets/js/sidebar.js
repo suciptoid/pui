@@ -1,6 +1,8 @@
 const Sidebar = {
   mounted() {
-    if (this.el.dataset.target) {
+    if (this.el.dataset.shell) {
+      this.initShell();
+    } else if (this.el.dataset.target) {
       this.initMenuItem();
     } else {
       this.initShell();
@@ -8,7 +10,9 @@ const Sidebar = {
   },
 
   updated() {
-    if (this.el.dataset.target) {
+    if (this.el.dataset.shell) {
+      this.syncShell(this.shell?.dataset.collapsed === "true");
+    } else if (this.el.dataset.target) {
       this.syncMenuItem(this.el.dataset.expanded !== "false");
     } else {
       this.syncShell(this.el.dataset.collapsed === "true");
@@ -36,9 +40,12 @@ const Sidebar = {
   },
 
   initShell() {
-    this.toggleButton = document.getElementById(`${this.el.id}-sidebar-collapse-toggle`);
+    this.shell = this.el.dataset.shell ? document.getElementById(this.el.dataset.shell) : this.el;
+    this.toggleButton = this.shell
+      ? document.getElementById(`${this.shell.id}-sidebar-collapse-toggle`)
+      : null;
     this.onToggleClick = () => this.toggleShell();
-    this.syncShell(this.el.dataset.collapsed === "true");
+    this.syncShell(this.shell?.dataset.collapsed === "true");
 
     if (this.toggleButton) {
       this.toggleButton.addEventListener("click", this.onToggleClick);
@@ -51,11 +58,11 @@ const Sidebar = {
   },
 
   toggleShell() {
-    const collapsed = this.el.dataset.collapsed === "true";
+    const collapsed = this.shell?.dataset.collapsed === "true";
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        this.syncShell(!collapsed);
+        this.syncShell(!collapsed, { emit: true });
       });
     });
   },
@@ -74,8 +81,19 @@ const Sidebar = {
     }
   },
 
-  syncShell(collapsed) {
-    this.el.dataset.collapsed = collapsed ? "true" : "false";
+  syncShell(collapsed, options = {}) {
+    if (!this.shell) return;
+
+    this.shell.dataset.collapsed = collapsed ? "true" : "false";
+
+    if (options.emit) {
+      this.shell.dispatchEvent(
+        new CustomEvent("pui:sidebar-collapsed", {
+          bubbles: true,
+          detail: { collapsed },
+        })
+      );
+    }
   },
 };
 

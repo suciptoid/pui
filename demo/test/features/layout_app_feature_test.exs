@@ -23,4 +23,15 @@ defmodule AppWeb.LayoutAppFeatureTest do
       )
     )
   end
+
+  feature "layout demo renders collapsed state from the app-owned cookie", %{session: session} do
+    session
+    |> visit("/demo/overview")
+    |> assert_has(css("#demo-app-shell[data-collapsed='false']"))
+    |> execute_script(
+      ~s|document.cookie = "demo_sidebar_collapsed=true; Path=/; Max-Age=31536000; SameSite=Lax"|
+    )
+    |> visit("/demo/overview")
+    |> assert_has(css("#demo-app-shell[data-collapsed='true']"))
+  end
 end
