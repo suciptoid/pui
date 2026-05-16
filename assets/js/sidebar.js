@@ -1,3 +1,5 @@
+const STORAGE_KEY = "pui-sidebar-collapsed";
+
 const Sidebar = {
   mounted() {
     if (this.el.dataset.shell) {
@@ -51,7 +53,9 @@ const Sidebar = {
       this.js().ignoreAttributes(this.shell, ["data-collapsed"]);
     }
 
-    this.syncShell(this.readShellState());
+    const stored = this.readStoredState();
+    const initial = stored ?? this.readShellState();
+    this.syncShell(initial);
 
     if (this.toggleButton) {
       this.toggleButton.addEventListener("click", this.onToggleClick);
@@ -92,6 +96,7 @@ const Sidebar = {
 
     this.collapsed = collapsed;
     this.shell.dataset.collapsed = collapsed ? "true" : "false";
+    this.storeState(collapsed);
 
     if (options.emit) {
       this.shell.dispatchEvent(
@@ -107,6 +112,23 @@ const Sidebar = {
     if (!this.shell) return false;
 
     return this.shell.dataset.collapsed === "true";
+  },
+
+  readStoredState() {
+    try {
+      const value = sessionStorage.getItem(STORAGE_KEY);
+      return value === "true" ? true : value === "false" ? false : null;
+    } catch {
+      return null;
+    }
+  },
+
+  storeState(collapsed) {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, String(collapsed));
+    } catch {
+      // ignore
+    }
   },
 };
 

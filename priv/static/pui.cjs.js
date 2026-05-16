@@ -3819,6 +3819,7 @@ var Tabs = class extends import_phoenix_live_view7.ViewHook {
 };
 
 // js/sidebar.js
+var STORAGE_KEY = "pui-sidebar-collapsed";
 var Sidebar = {
   mounted() {
     if (this.el.dataset.shell) {
@@ -3861,7 +3862,9 @@ var Sidebar = {
     if (this.shell) {
       this.js().ignoreAttributes(this.shell, ["data-collapsed"]);
     }
-    this.syncShell(this.readShellState());
+    const stored = this.readStoredState();
+    const initial = stored ?? this.readShellState();
+    this.syncShell(initial);
     if (this.toggleButton) {
       this.toggleButton.addEventListener("click", this.onToggleClick);
     }
@@ -3893,6 +3896,7 @@ var Sidebar = {
     if (!this.shell) return;
     this.collapsed = collapsed;
     this.shell.dataset.collapsed = collapsed ? "true" : "false";
+    this.storeState(collapsed);
     if (options.emit) {
       this.shell.dispatchEvent(
         new CustomEvent("pui:sidebar-collapsed", {
@@ -3905,6 +3909,20 @@ var Sidebar = {
   readShellState() {
     if (!this.shell) return false;
     return this.shell.dataset.collapsed === "true";
+  },
+  readStoredState() {
+    try {
+      const value = sessionStorage.getItem(STORAGE_KEY);
+      return value === "true" ? true : value === "false" ? false : null;
+    } catch {
+      return null;
+    }
+  },
+  storeState(collapsed) {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, String(collapsed));
+    } catch {
+    }
   }
 };
 var sidebar_default = Sidebar;
