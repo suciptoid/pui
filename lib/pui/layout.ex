@@ -312,8 +312,8 @@ defmodule PUI.Layout do
       :if={!@collapsible}
       id={"#{@id}-tooltip"}
       placement="right"
-      container_class="w-full"
-      class="hidden group-data-[collapsed=true]/pui-layout:block"
+      container_class="block w-full"
+      class="fixed hidden group-data-[collapsed=true]/pui-layout:block"
     >
       <.link
         id={@id}

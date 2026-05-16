@@ -80,6 +80,7 @@ defmodule PUI.LayoutTest do
     assert html =~ ~s(href="/overview")
     assert html =~ ~s(title="Overview")
     assert html =~ ~s(phx-hook="PUI.Tooltip")
+    assert html =~ "fixed hidden group-data-[collapsed=true]/pui-layout:block"
     assert html =~ "hero-home"
     assert html =~ "3"
   end

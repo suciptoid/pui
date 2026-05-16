@@ -11,11 +11,11 @@ const Sidebar = {
 
   updated() {
     if (this.el.dataset.shell) {
-      this.syncShell(this.shell?.dataset.collapsed === "true");
+      this.syncShell(this.collapsed ?? this.shell?.dataset.collapsed === "true");
     } else if (this.el.dataset.target) {
       this.syncMenuItem(this.el.dataset.expanded !== "false");
     } else {
-      this.syncShell(this.el.dataset.collapsed === "true");
+      this.syncShell(this.collapsed ?? this.el.dataset.collapsed === "true");
     }
   },
 
@@ -27,6 +27,7 @@ const Sidebar = {
     if (this.toggleButton && this.onToggleClick) {
       this.toggleButton.removeEventListener("click", this.onToggleClick);
     }
+
   },
 
   initMenuItem() {
@@ -45,7 +46,12 @@ const Sidebar = {
       ? document.getElementById(`${this.shell.id}-sidebar-collapse-toggle`)
       : null;
     this.onToggleClick = () => this.toggleShell();
-    this.syncShell(this.shell?.dataset.collapsed === "true");
+
+    if (this.shell) {
+      this.js().ignoreAttributes(this.shell, ["data-collapsed"]);
+    }
+
+    this.syncShell(this.readShellState());
 
     if (this.toggleButton) {
       this.toggleButton.addEventListener("click", this.onToggleClick);
@@ -84,6 +90,7 @@ const Sidebar = {
   syncShell(collapsed, options = {}) {
     if (!this.shell) return;
 
+    this.collapsed = collapsed;
     this.shell.dataset.collapsed = collapsed ? "true" : "false";
 
     if (options.emit) {
@@ -94,6 +101,12 @@ const Sidebar = {
         })
       );
     }
+  },
+
+  readShellState() {
+    if (!this.shell) return false;
+
+    return this.shell.dataset.collapsed === "true";
   },
 };
 

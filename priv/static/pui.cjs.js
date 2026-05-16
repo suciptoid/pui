@@ -3827,11 +3827,11 @@ var Sidebar = {
   },
   updated() {
     if (this.el.dataset.shell) {
-      this.syncShell(this.shell?.dataset.collapsed === "true");
+      this.syncShell(this.collapsed ?? this.shell?.dataset.collapsed === "true");
     } else if (this.el.dataset.target) {
       this.syncMenuItem(this.el.dataset.expanded !== "false");
     } else {
-      this.syncShell(this.el.dataset.collapsed === "true");
+      this.syncShell(this.collapsed ?? this.el.dataset.collapsed === "true");
     }
   },
   destroyed() {
@@ -3854,7 +3854,10 @@ var Sidebar = {
     this.shell = this.el.dataset.shell ? document.getElementById(this.el.dataset.shell) : this.el;
     this.toggleButton = this.shell ? document.getElementById(`${this.shell.id}-sidebar-collapse-toggle`) : null;
     this.onToggleClick = () => this.toggleShell();
-    this.syncShell(this.shell?.dataset.collapsed === "true");
+    if (this.shell) {
+      this.js().ignoreAttributes(this.shell, ["data-collapsed"]);
+    }
+    this.syncShell(this.readShellState());
     if (this.toggleButton) {
       this.toggleButton.addEventListener("click", this.onToggleClick);
     }
@@ -3884,6 +3887,7 @@ var Sidebar = {
   },
   syncShell(collapsed, options = {}) {
     if (!this.shell) return;
+    this.collapsed = collapsed;
     this.shell.dataset.collapsed = collapsed ? "true" : "false";
     if (options.emit) {
       this.shell.dispatchEvent(
@@ -3893,6 +3897,10 @@ var Sidebar = {
         })
       );
     }
+  },
+  readShellState() {
+    if (!this.shell) return false;
+    return this.shell.dataset.collapsed === "true";
   }
 };
 var sidebar_default = Sidebar;
