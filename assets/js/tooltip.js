@@ -136,11 +136,13 @@ export default class Tooltip extends ViewHook {
       strategy: "fixed",
       middleware: [offset(8), flip(), shift(), arrow({ element: this.arrow })],
     }).then(({ x, y, strategy, middlewareData, placement }) => {
-      Object.assign(this.tooltip.style, {
-        left: `${x}px`,
-        top: `${y}px`,
-        position: strategy,
-      });
+      if (this.tooltip) {
+        Object.assign(this.tooltip.style, {
+          left: `${x}px`,
+          top: `${y}px`,
+          position: strategy,
+        });
+      }
       if (middlewareData.arrow) {
         const { x, y } = middlewareData.arrow;
 
@@ -159,7 +161,9 @@ export default class Tooltip extends ViewHook {
 
         style[arrowPlacement[p]] = "-4px";
 
-        Object.assign(this.arrow.style, style);
+        if (this.arrow) {
+          Object.assign(this.arrow.style, style);
+        }
       }
     });
   }

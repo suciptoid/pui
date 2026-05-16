@@ -211,7 +211,7 @@ defmodule PUI.Popover do
               "opacity-100 aria-hidden:opacity-0",
               "aria-hidden:pointer-events-none",
               "invisible not-aria-hidden:visible",
-              "z-50 w-fit rounded-md px-3 py-1.5 text-sm text-balance",
+              "z-50 w-fit rounded px-3 py-1.5 text-sm text-balance",
               @class
             ]
           end

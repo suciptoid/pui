@@ -3422,11 +3422,13 @@ var Tooltip = class extends ViewHook5 {
       strategy: "fixed",
       middleware: [offset2(8), flip2(), shift2(), arrow2({ element: this.arrow })]
     }).then(({ x, y, strategy, middlewareData, placement }) => {
-      Object.assign(this.tooltip.style, {
-        left: `${x}px`,
-        top: `${y}px`,
-        position: strategy
-      });
+      if (this.tooltip) {
+        Object.assign(this.tooltip.style, {
+          left: `${x}px`,
+          top: `${y}px`,
+          position: strategy
+        });
+      }
       if (middlewareData.arrow) {
         const { x: x2, y: y2 } = middlewareData.arrow;
         const p = placement.split("-").at(0) ?? null;
@@ -3441,7 +3443,9 @@ var Tooltip = class extends ViewHook5 {
           top: y2 != null ? `${y2}px` : ""
         };
         style[arrowPlacement[p]] = "-4px";
-        Object.assign(this.arrow.style, style);
+        if (this.arrow) {
+          Object.assign(this.arrow.style, style);
+        }
       }
     });
   }

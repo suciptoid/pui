@@ -343,7 +343,7 @@ defmodule PUI.Layout do
     [
       "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
       "text-foreground/75 hover:bg-accent hover:text-accent-foreground",
-      "group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0",
+      "group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:my-0.5 group-data-[collapsed=true]/pui-layout:h-9 group-data-[collapsed=true]/pui-layout:w-9 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:p-1",
       current && "bg-primary/10 text-primary",
       class
     ]
