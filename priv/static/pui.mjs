@@ -2794,6 +2794,20 @@ var Select = class extends ViewHook3 {
       const matches = itemText.includes(query2);
       item.setAttribute("aria-hidden", String(!matches));
     });
+    const groupLabels = this.popup?.querySelectorAll("[data-pui='group-label']") ?? [];
+    groupLabels.forEach((label) => {
+      let sibling = label.nextElementSibling;
+      let hasVisibleChild = false;
+      while (sibling) {
+        if (sibling.matches("[data-pui='group-label']")) break;
+        if (sibling.matches("[role='option']") && sibling.getAttribute("aria-hidden") !== "true") {
+          hasVisibleChild = true;
+          break;
+        }
+        sibling = sibling.nextElementSibling;
+      }
+      label.style.display = hasVisibleChild ? "" : "none";
+    });
     const visibleItems = this.getNavigableItems();
     const nextIndex = this.getInitialNavigationIndex(visibleItems);
     this.setCurrentItemByIndex(nextIndex, visibleItems);
@@ -2970,6 +2984,10 @@ var Select = class extends ViewHook3 {
     }
     this.items.forEach((item) => {
       item.removeAttribute("aria-hidden");
+    });
+    const groupLabels = this.popup?.querySelectorAll("[data-pui='group-label']") ?? [];
+    groupLabels.forEach((label) => {
+      label.style.display = "";
     });
     this.resetTypeahead();
   }

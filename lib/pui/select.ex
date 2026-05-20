@@ -211,7 +211,7 @@ defmodule PUI.Select do
       <%= for {opt, index} <- Enum.with_index(@options) do %>
         <%= case opt do %>
           <% {:group, group_label} -> %>
-            <div class="px-2 py-1 text-xs font-semibold text-muted-foreground">{group_label}</div>
+            <div data-pui="group-label" class="px-2 py-1 text-xs font-semibold text-muted-foreground">{group_label}</div>
           <% {val, label} -> %>
             <.select_item id={"#{@id}-option-#{index}"} value={val}>{label}</.select_item>
         <% end %>
