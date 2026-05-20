@@ -2686,6 +2686,8 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     this.hiddenInput = this.el.querySelector("input[data-pui='select-value']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
     this.popupMinWidth = Number.parseFloat(this.popup?.dataset.popupMinWidth || `${this.popupMinWidth}`) || this.popupMinWidth;
+    this.noResults = this.el.querySelector("[data-pui='no-results']");
+    this.noResultsKeyword = this.noResults?.querySelector("[data-pui='no-results-keyword']");
   }
   bindEventListeners() {
     this.el.addEventListener("keydown", this.#containerKeyDownHandler);
@@ -2846,6 +2848,16 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
       label.style.display = hasVisibleChild ? "" : "none";
     });
     const visibleItems = this.getNavigableItems();
+    if (this.noResults) {
+      if (visibleItems.length === 0 && query2) {
+        this.noResults.classList.remove("hidden");
+        if (this.noResultsKeyword) {
+          this.noResultsKeyword.textContent = query2;
+        }
+      } else {
+        this.noResults.classList.add("hidden");
+      }
+    }
     const nextIndex = this.getInitialNavigationIndex(visibleItems);
     this.setCurrentItemByIndex(nextIndex, visibleItems);
   }
@@ -3026,6 +3038,9 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     groupLabels.forEach((label) => {
       label.style.display = "";
     });
+    if (this.noResults) {
+      this.noResults.classList.add("hidden");
+    }
     this.resetTypeahead();
   }
   openPopover(options = {}) {

@@ -105,6 +105,8 @@ export default class Select extends ViewHook {
     this.popupMinWidth =
       Number.parseFloat(this.popup?.dataset.popupMinWidth || `${this.popupMinWidth}`) ||
       this.popupMinWidth;
+    this.noResults = this.el.querySelector("[data-pui='no-results']");
+    this.noResultsKeyword = this.noResults?.querySelector("[data-pui='no-results-keyword']");
   }
 
   bindEventListeners() {
@@ -305,6 +307,18 @@ export default class Select extends ViewHook {
     });
 
     const visibleItems = this.getNavigableItems();
+
+    if (this.noResults) {
+      if (visibleItems.length === 0 && query) {
+        this.noResults.classList.remove("hidden");
+        if (this.noResultsKeyword) {
+          this.noResultsKeyword.textContent = query;
+        }
+      } else {
+        this.noResults.classList.add("hidden");
+      }
+    }
+
     const nextIndex = this.getInitialNavigationIndex(visibleItems);
     this.setCurrentItemByIndex(nextIndex, visibleItems);
   }
@@ -532,6 +546,10 @@ export default class Select extends ViewHook {
     groupLabels.forEach((label) => {
       label.style.display = "";
     });
+
+    if (this.noResults) {
+      this.noResults.classList.add("hidden");
+    }
 
     this.resetTypeahead();
   }

@@ -329,6 +329,14 @@ defmodule PUI.Select do
           <div data-pui="menu-viewport" class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
             <div data-pui="menu-items">
               {render_slot(@inner_block)}
+              <div
+                :if={@searchable}
+                data-pui="no-results"
+                role="status"
+                class="hidden py-6 text-center text-sm text-muted-foreground"
+              >
+                No results for "<span data-pui="no-results-keyword"></span>"
+              </div>
             </div>
           </div>
 
