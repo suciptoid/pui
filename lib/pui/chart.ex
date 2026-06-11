@@ -359,8 +359,6 @@ defmodule PUI.Chart do
   defp hyphenated_key(key) when is_atom(key),
     do: key |> Atom.to_string() |> String.replace("_", "-")
 
-  defp hyphenated_key(key), do: key
-
   defp encode_config!(config) do
     Phoenix.json_library().encode!(config)
   end
