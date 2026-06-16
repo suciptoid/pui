@@ -194,7 +194,10 @@ defmodule PUI.Tabs do
       |> assign(:active_value, active_value)
       |> assign(:is_unstyled, is_unstyled)
       |> assign(:has_content?, has_content?)
-      |> assign(:root_classes, root_classes(assigns.orientation, is_unstyled, has_content?, assigns.class))
+      |> assign(
+        :root_classes,
+        root_classes(assigns.orientation, is_unstyled, has_content?, assigns.class)
+      )
       |> assign(
         :list_classes,
         list_classes(assigns.variant, assigns.orientation, is_unstyled, assigns.list_class)
@@ -284,7 +287,10 @@ defmodule PUI.Tabs do
 
   defp root_classes("vertical", true, _has_content?, class), do: [class]
   defp root_classes(_orientation, true, _has_content?, class), do: [class]
-  defp root_classes("vertical", false, _has_content?, class), do: ["flex items-start gap-6", class]
+
+  defp root_classes("vertical", false, _has_content?, class),
+    do: ["flex items-start gap-6", class]
+
   defp root_classes(_orientation, false, true, class), do: ["w-full space-y-4", class]
   defp root_classes(_orientation, false, _has_content?, class), do: ["w-full", class]
 

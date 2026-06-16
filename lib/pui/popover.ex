@@ -107,6 +107,18 @@ defmodule PUI.Popover do
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
   attr :hook, :string, default: "Popover"
 
+  attr :aria_haspopup, :string,
+    default: "listbox",
+    doc: "Value for the trigger's aria-haspopup attribute"
+
+  attr :aria_controls, :string,
+    default: nil,
+    doc: "Value for the trigger's aria-controls attribute. Defaults to `popup_id`."
+
+  attr :popup_id, :string,
+    default: nil,
+    doc: "DOM id of the popup element. Defaults to `<id>-listbox`."
+
   slot :trigger, doc: "Trigger for the popover" do
     attr :class, :string, doc: "Trigger class"
     attr :role, :string, doc: "Trigger aria role"
@@ -121,6 +133,10 @@ defmodule PUI.Popover do
     doc: "Inner block / children for the popover, can be used for non <button> custom trigger "
 
   def base(assigns) do
+    popup_id = assigns[:popup_id] || "#{assigns.id}-listbox"
+    aria_controls = assigns[:aria_controls] || popup_id
+    assigns = assigns |> assign(:popup_id, popup_id) |> assign(:aria_controls, aria_controls)
+
     ~H"""
     <div id={@id} {@rest}>
       <%!-- Trigger --%>
@@ -130,8 +146,8 @@ defmodule PUI.Popover do
         class={Map.get(t, :class, "")}
         role={Map.get(t, :role)}
         id={"#{@id}-trigger"}
-        aria-controls={"#{@id}-listbox"}
-        aria-haspopup="listbox"
+        aria-controls={@aria_controls}
+        aria-haspopup={@aria_haspopup}
         aria-expanded="false"
       >
         {render_slot(t)}
@@ -142,7 +158,7 @@ defmodule PUI.Popover do
       <%!-- Popover --%>
       <div
         :for={p <- @popup}
-        id={"#{@id}-listbox"}
+        id={@popup_id}
         role={Map.get(p, :role, "listbox")}
         aria-hidden="true"
         class={Map.get(p, :class, "")}
@@ -185,7 +201,6 @@ defmodule PUI.Popover do
       class={["group", @container_class, @container_class == "" && "w-fit"]}
       data-placement={@placement}
       phx-hook="PUI.Tooltip"
-      aria-describedby={@tooltip_id}
     >
       {render_slot(@inner_block)}
 

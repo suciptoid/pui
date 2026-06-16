@@ -142,5 +142,10 @@ defmodule PUI.DatePickerTest do
       assert next_range_selection("2026-04-28", nil, "2026-04-01") ==
                {"2026-04-01", "2026-04-28"}
     end
+
+    test "rejects same-day clicks so a range is never zero-length" do
+      assert next_range_selection("2026-04-28", nil, "2026-04-28") ==
+               {"2026-04-28", nil}
+    end
   end
 end

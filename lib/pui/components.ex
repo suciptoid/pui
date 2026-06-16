@@ -4,17 +4,34 @@ defmodule PUI.Components do
   attr :min, :float, default: 0.0
   attr :max, :float, default: 100.0
   attr :value, :float, default: 0.0
+  attr :label, :string, default: nil, doc: "accessible label for the progressbar"
+  attr :aria_labelledby, :string, default: nil, doc: "id of an element labelling the progressbar"
+
+  attr :value_text, :string,
+    default: nil,
+    doc: "human-readable value text announced by screen readers"
+
   attr :class, :string, default: ""
 
   @doc """
+  Renders a progressbar with ARIA attributes for accessibility.
+
+  ## Examples
+
+      <.progress value={42} label="Upload progress" />
+      <.progress value={3} min={0} max={10} value_text="3 of 10 items" />
+      <.progress value={50} aria_labelledby="upload-label" />
   """
   def progress(assigns) do
     ~H"""
     <div
       role="progressbar"
+      aria-label={@label}
+      aria-labelledby={@aria_labelledby}
       aria-valuenow={@value}
       aria-valuemin={@min}
       aria-valuemax={@max}
+      aria-valuetext={@value_text}
       class={[
         "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
         @class
@@ -86,19 +103,30 @@ defmodule PUI.Components do
   Renders form field error messages.
 
   Displays validation errors below form inputs. Renders nothing when `errors` is empty.
+  Each error paragraph is marked with `role="alert"` and `aria-live="polite"` so screen
+  readers announce new errors as they appear. A deterministic `id` is generated from
+  the `id` attribute (defaulting to `"field-error"`) so callers can wire the input's
+  `aria-errormessage` to it.
 
   ## Examples
 
       <.field_error errors={["can't be blank"]} />
-      <.field_error errors={["must be at least 3 characters", "is invalid"]} />
+      <.field_error id="user_email-error" errors={["must be at least 3 characters", "is invalid"]} />
       <.field_error errors={[]} />
   """
+  attr :id, :string,
+    default: "field-error",
+    doc: "id prefix for each error paragraph; suffixed with the error index"
+
   attr :errors, :list, default: []
 
   def field_error(assigns) do
     ~H"""
     <p
-      :for={msg <- @errors}
+      :for={{msg, idx} <- Enum.with_index(@errors)}
+      id={"#{@id}-#{idx}"}
+      role="alert"
+      aria-live="polite"
       class="mt-1.5 text-xs text-destructive"
     >
       {msg}

@@ -87,7 +87,14 @@ defmodule PUI.MenuButton do
     assigns = assigns |> assign(popup: popup)
 
     ~H"""
-    <PUI.Popover.base id={@id} phx-hook="Popover" class="relative">
+    <PUI.Popover.base
+      id={@id}
+      phx-hook="Popover"
+      class="relative"
+      aria_haspopup="menu"
+      aria_controls={"#{@id}-menu"}
+      popup_id={"#{@id}-menu"}
+    >
       <:trigger :for={button <- @button} class={Map.get(button, :class, "")}>
         {render_slot(button)}
       </:trigger>
@@ -119,7 +126,7 @@ defmodule PUI.MenuButton do
   """
   def menu_group(assigns) do
     ~H"""
-    <div role="group">
+    <div>
       {render_slot(@inner_block)}
     </div>
     """

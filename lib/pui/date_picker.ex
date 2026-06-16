@@ -409,7 +409,12 @@ defmodule PUI.DatePicker do
       is_nil(from_value) or not is_nil(to_value) ->
         {date_value, nil}
 
-      Date.compare(normalize_date!(date_value), normalize_date!(from_value)) in [:lt, :eq] ->
+      # Same-day clicks are rejected so a range is never zero-length;
+      # this mirrors selection_completes_range?/3 which already excludes :eq.
+      Date.compare(normalize_date!(date_value), normalize_date!(from_value)) == :eq ->
+        {from_value, nil}
+
+      Date.compare(normalize_date!(date_value), normalize_date!(from_value)) == :lt ->
         {date_value, from_value}
 
       true ->
@@ -486,7 +491,7 @@ defmodule PUI.DatePicker do
       |> Enum.uniq()
 
     assigns
-    |> assign(:id, assigns.id || field_id(from_field) || field_id(to_field))
+    |> assign(:id, assigns.id || range_field_id(from_field, to_field))
     |> assign(:from_name, assigns.from_name || field_name(from_field))
     |> assign(:to_name, assigns.to_name || field_name(to_field))
     |> assign(
@@ -515,6 +520,12 @@ defmodule PUI.DatePicker do
   defp translate_field_errors(_field), do: []
   defp field_id(%Phoenix.HTML.FormField{id: id}), do: id
   defp field_id(_field), do: nil
+
+  defp range_field_id(%Phoenix.HTML.FormField{id: from_id}, %Phoenix.HTML.FormField{id: to_id})
+       when is_binary(from_id) and is_binary(to_id),
+       do: "range_#{from_id}_#{to_id}"
+
+  defp range_field_id(from_field, to_field), do: field_id(from_field) || field_id(to_field)
   defp field_name(%Phoenix.HTML.FormField{name: name}), do: name
   defp field_name(_field), do: nil
   defp field_value(%Phoenix.HTML.FormField{value: value}), do: value

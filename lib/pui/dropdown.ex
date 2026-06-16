@@ -146,7 +146,7 @@ defmodule PUI.Dropdown do
         variant={@variant}
         aria-haspopup="menu"
         aria-expanded="false"
-        aria-controls={"#{@id}-listbox"}
+        aria-controls={"#{@id}-menu"}
         type="button"
         class={@class}
       >
@@ -158,12 +158,12 @@ defmodule PUI.Dropdown do
         type="button"
         aria-haspopup="menu"
         aria-expanded="false"
-        aria-controls={"#{@id}-listbox"}
+        aria-controls={"#{@id}-menu"}
         class={@class}
       >
         {render_slot(@inner_block)}
       </button>
-      <.menu_content id={"#{@id}-listbox"} class={@content_class} is_unstyled={@is_unstyled}>
+      <.menu_content id={"#{@id}-menu"} class={@content_class} is_unstyled={@is_unstyled}>
         <.menu_item
           :for={item <- @item}
           shortcut={Map.get(item, :shortcut)}

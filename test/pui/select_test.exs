@@ -30,7 +30,7 @@ defmodule PUI.SelectTest do
         </.select>
         """)
 
-      assert html =~ ~s(role="combobox")
+      assert html =~ ~s(type="button")
       assert html =~ ~s(role="listbox")
       assert html =~ ~s(role="option")
       assert html =~ ~s(aria-haspopup="listbox")
@@ -52,7 +52,7 @@ defmodule PUI.SelectTest do
       refute html =~ "lucide lucide-chevron"
     end
 
-    test "search input is linked to the listbox" do
+    test "trigger is linked to the listbox via aria-controls" do
       assigns = %{}
 
       html =

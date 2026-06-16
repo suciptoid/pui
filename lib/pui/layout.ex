@@ -125,8 +125,7 @@ defmodule PUI.Layout do
       phx-update="ignore"
       data-shell={@shell_id}
       class="hidden"
-    >
-    </span>
+    ></span>
     """
   end
 

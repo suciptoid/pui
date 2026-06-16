@@ -309,11 +309,14 @@ defmodule PUI.Dialog do
         end
       end
 
+    on_cancel = assigns[:on_cancel]
+
     cancel_action =
       if assigns[:show] do
-        assigns[:on_cancel]
+        on_cancel
       else
-        JS.exec(assigns[:on_cancel], "phx-remove")
+        on_cancel
+        |> JS.exec("phx-remove", to: "##{assigns.id}")
       end
 
     assigns =
@@ -325,7 +328,7 @@ defmodule PUI.Dialog do
     ~H"""
     <div
       id={@id}
-      phx-window-keydown={JS.exec("data-cancel")}
+      phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
       phx-key="escape"
       phx-remove={hide_dialog(@id)}
       data-cancel={@cancel_action}

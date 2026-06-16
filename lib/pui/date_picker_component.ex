@@ -237,7 +237,7 @@ defmodule PUI.DatePickerComponent do
         id={@trigger_id}
         data-pui="date-picker-trigger"
         type="button"
-        aria-haspopup="dialog"
+        aria-haspopup="listbox"
         aria-expanded="false"
         aria-controls={@popup_id}
         aria-invalid={if @errors != [], do: "true"}
@@ -332,7 +332,7 @@ defmodule PUI.DatePickerComponent do
         id={@trigger_id}
         data-pui="date-picker-trigger"
         type="button"
-        aria-haspopup="dialog"
+        aria-haspopup="listbox"
         aria-expanded="false"
         aria-controls={@popup_id}
         aria-invalid={if @errors != [], do: "true"}
@@ -457,8 +457,7 @@ defmodule PUI.DatePickerComponent do
             :if={day.outside_month? and !@show_overlap}
             class="block h-7 w-full"
             aria-hidden="true"
-          >
-          </span>
+          ></span>
           <button
             :if={!day.outside_month? or @show_overlap}
             id={day.id}
@@ -471,7 +470,8 @@ defmodule PUI.DatePickerComponent do
             data-outside-month={to_string(day.outside_month?)}
             aria-selected={to_string(day.selected?)}
             aria-disabled={to_string(day.disabled?)}
-            aria-current={if day.today?, do: "date", else: "false"}
+            aria-current={if day.today?, do: "date"}
+            aria-label={day_range_aria_label(day)}
             disabled={day.disabled?}
             phx-click={if day.disabled?, do: nil, else: day_click_js(assigns, day)}
             class={day_button_classes(day)}
@@ -480,8 +480,7 @@ defmodule PUI.DatePickerComponent do
               :if={show_range_background?(day)}
               aria-hidden="true"
               class={day_range_background_classes(day)}
-            >
-            </span>
+            ></span>
             <span class={day_label_classes(day)}>{day.label}</span>
           </button>
         </div>
@@ -641,6 +640,23 @@ defmodule PUI.DatePickerComponent do
   end
 
   defp show_range_background?(day), do: day.in_range? or day.range_start? or day.range_end?
+
+  defp day_range_aria_label(%{range_start?: true} = day),
+    do: "Start of selected range, #{format_day_aria_date(day.value)}"
+
+  defp day_range_aria_label(%{range_end?: true} = day),
+    do: "End of selected range, #{format_day_aria_date(day.value)}"
+
+  defp day_range_aria_label(%{in_range?: true} = day),
+    do: "In selected range, #{format_day_aria_date(day.value)}"
+
+  defp day_range_aria_label(_day), do: nil
+
+  defp format_day_aria_date(value) do
+    value
+    |> DatePicker.normalize_date!()
+    |> Calendar.strftime("%B %-d, %Y")
+  end
 
   defp weekdays(:sunday), do: ~w(Su Mo Tu We Th Fr Sa)
   defp weekdays(:monday), do: ~w(Mo Tu We Th Fr Sa Su)

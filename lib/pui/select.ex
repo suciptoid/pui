@@ -211,7 +211,9 @@ defmodule PUI.Select do
       <%= for {opt, index} <- Enum.with_index(@options) do %>
         <%= case opt do %>
           <% {:group, group_label} -> %>
-            <div data-pui="group-label" class="px-2 py-1 text-xs font-semibold text-muted-foreground">{group_label}</div>
+            <div data-pui="group-label" class="px-2 py-1 text-xs font-semibold text-muted-foreground">
+              {group_label}
+            </div>
           <% {val, label} -> %>
             <.select_item id={"#{@id}-option-#{index}"} value={val}>{label}</.select_item>
         <% end %>
@@ -247,22 +249,18 @@ defmodule PUI.Select do
       <input
         id={@input_id}
         data-pui="select-value"
-        type="text"
+        type="hidden"
         name={@name}
         value={@value}
-        tabindex="-1"
-        readonly
+        class="hidden"
         aria-hidden="true"
-        style="position:absolute;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;border:0;padding:0;margin:0"
       />
       <button
         id={@trigger_id}
         type="button"
-        role="combobox"
         aria-haspopup="listbox"
         aria-expanded="false"
         aria-controls={@listbox_id}
-        aria-autocomplete={if @searchable, do: "list", else: nil}
         aria-invalid={if @has_errors, do: "true"}
         class={
           if @is_unstyled do
@@ -377,8 +375,6 @@ defmodule PUI.Select do
         autocorrect="off"
         spellcheck="false"
         role="searchbox"
-        aria-expanded="false"
-        aria-controls={@listbox_id}
         type="text"
         value=""
       />
