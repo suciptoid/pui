@@ -43,7 +43,7 @@ defmodule AppWeb.Live.DocsLive do
        show_dialog: false,
        progress_value: 45.0,
        toast_count: 0,
-       flash_position: "top-right",
+       flash_position: "top-center",
        bg_orientation: "horizontal"
      )}
   end
@@ -123,6 +123,22 @@ defmodule AppWeb.Live.DocsLive do
   def handle_event("send_toast", _params, socket) do
     count = socket.assigns.toast_count + 1
     PUI.Flash.send_flash("Toast notification ##{count}!")
+    {:noreply, assign(socket, toast_count: count)}
+  end
+
+  def handle_event("send_preset_toast", %{"type" => type}, socket) do
+    count = socket.assigns.toast_count + 1
+
+    message =
+      case type do
+        "success" -> "Operation succeeded (#{count})"
+        "error" -> "Something went wrong (#{count})"
+        "warning" -> "Please review your input (#{count})"
+        _ -> "Here is an update (#{count})"
+      end
+
+    type_atom = String.to_existing_atom(type)
+    PUI.Flash.send_flash(%PUI.Flash.Message{type: type_atom, message: message})
     {:noreply, assign(socket, toast_count: count)}
   end
 

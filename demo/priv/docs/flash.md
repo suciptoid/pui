@@ -36,6 +36,42 @@ def handle_event("save", _params, socket) do
 end
 ```
 
+### Phoenix Preset Toasts
+
+Phoenix flash keys such as `:success`, `:error`, `:info`, and `:warning` are
+automatically rendered as compact pill-shaped toasts with a type-colored icon:
+
+```elixir
+def handle_event("save", _params, socket) do
+  {:noreply, put_flash(socket, :success, "Changes saved!")}
+end
+
+def handle_event("delete", _params, socket) do
+  {:noreply, put_flash(socket, :error, "Could not delete item")}
+end
+
+def handle_event("warn", _params, socket) do
+  {:noreply, put_flash(socket, :warning, "Session expires soon")}
+end
+
+def handle_event("notify", _params, socket) do
+  {:noreply, put_flash(socket, :info, "New update available")}
+end
+```
+
+You can also trigger the same preset toast style through `send_flash`:
+
+```elixir
+PUI.Flash.send_flash(%PUI.Flash.Message{
+  type: :success,
+  message: "Connected!"
+})
+```
+
+Preset toasts use a dark pill-shaped container, truncate to one line, and show a
+visible close button. Messages sent without a preset type keep the standard flash
+UI.
+
 ### With Options
 
 ```elixir
@@ -43,15 +79,13 @@ end
 PUI.Flash.send_flash(%PUI.Flash.Message{
   type: :info,
   message: "Item created!",
-  icon: "hero-check-circle",
   duration: 3000
 })
 
 # Error message
 PUI.Flash.send_flash(%PUI.Flash.Message{
   type: :error,
-  message: "Failed to save",
-  icon: "hero-exclamation-circle"
+  message: "Failed to save"
 })
 ```
 
@@ -125,5 +159,7 @@ Control whether flash messages show a close button:
 |------|------|---------|-------------|
 | `id` | `string` | — | Flash message ID |
 | `position` | `string` | `"top-center"` | Position variant |
+| `type` | `atom` | `:info` | Message type: `:info`, `:success`, `:warning`, `:error` |
+| `preset` | `boolean` | `false` | Use compact preset toast styling |
 | `class` | `string` | `""` | Additional CSS classes |
 | `show_close` | `boolean` | `true` | Show close button |

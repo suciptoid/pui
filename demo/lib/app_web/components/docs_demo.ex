@@ -355,7 +355,8 @@ defmodule AppWeb.DocsDemo do
             class={[
               "px-3 py-1 text-xs font-medium rounded-full transition-all",
               o == @bg_orientation && "bg-primary text-primary-foreground shadow-sm",
-              o != @bg_orientation && "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+              o != @bg_orientation &&
+                "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
             ]}
           >
             {o}
@@ -2467,6 +2468,18 @@ defmodule AppWeb.DocsDemo do
           <div class="flex flex-wrap items-center gap-3">
             <.button phx-click="send_toast">
               <.icon name="hero-bell" class="size-4 mr-2" /> Send Toast
+            </.button>
+            <.button variant="outline" phx-click="send_preset_toast" phx-value-type="success">
+              <.icon name="hero-check-circle" class="size-4 mr-2 text-green-600" /> Success
+            </.button>
+            <.button variant="outline" phx-click="send_preset_toast" phx-value-type="error">
+              <.icon name="hero-x-circle" class="size-4 mr-2 text-red-600" /> Error
+            </.button>
+            <.button variant="outline" phx-click="send_preset_toast" phx-value-type="warning">
+              <.icon name="hero-exclamation-triangle" class="size-4 mr-2 text-yellow-600" /> Warning
+            </.button>
+            <.button variant="outline" phx-click="send_preset_toast" phx-value-type="info">
+              <.icon name="hero-information-circle" class="size-4 mr-2 text-blue-600" /> Info
             </.button>
             <p class="text-sm text-muted-foreground self-center">
               Position: {@flash_position}. Count: {@toast_count}
