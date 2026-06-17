@@ -60,12 +60,18 @@ defmodule PUI.Flash do
 
   ## Custom Content
 
-  Send HEEx content in flashes:
+  Send HEEx content in flashes. For fully custom styling, leave `type` as `nil`
+  (or omit it) so the standard flash UI is used instead of a preset toast:
 
-      PUI.Flash.send_flash(~H|<div class="flex items-center gap-2">
-        <.icon name="hero-check-circle" class="size-5" />
-        <span>Success!</span>
-      </div>|)
+      PUI.Flash.send_flash(%PUI.Flash.Message{
+        message: ~H|<div class="flex items-center gap-2">
+          <.icon name="hero-check-circle" class="size-5" />
+          <span>Success!</span>
+        </div>|
+      })
+
+  Preset types (`:success`, `:error`, `:info`, `:warning`) always apply the
+  compact built-in toast styling, even when the message contains custom HEEx.
 
   ## Updating Flashes
 

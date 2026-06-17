@@ -89,6 +89,101 @@ PUI.Flash.send_flash(%PUI.Flash.Message{
 })
 ```
 
+## Custom Content
+
+Send HEEx content in flashes. For fully custom styling, leave `type` as `nil`
+(or omit it) so the message renders with the standard flash UI instead of a
+preset toast:
+
+```elixir
+PUI.Flash.send_flash(%PUI.Flash.Message{
+  message: ~H|<div class="flex items-center gap-2">
+    <.icon name="hero-check-circle" class="size-5" />
+    <span>Success!</span>
+  </div>|
+})
+```
+
+### Custom Flash with Async Update
+
+You can send a custom flash with rich HEEx content and update it later by ID.
+This is useful for showing progress and then replacing it with a result. Keep
+`type` as `nil` so your own markup is preserved:
+
+```elixir
+def handle_event("dispatch_ping", _params, socket) do
+  server = socket.assigns.server
+
+  message = ~H"""
+  <div class="flex items-center gap-2">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24" height="24" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round"
+      class="animate-spin text-foreground size-5"
+    >
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 6l0 -3" />
+      <path d="M16.25 7.75l2.15 -2.15" />
+      <path d="M18 12l3 0" />
+      <path d="M16.25 16.25l2.15 2.15" />
+      <path d="M12 18l0 3" />
+      <path d="M7.75 16.25l-2.15 2.15" />
+      <path d="M6 12l-3 0" />
+      <path d="M7.75 7.75l-2.15 -2.15" />
+    </svg>
+    <div>Connecting to server...</div>
+  </div>
+  """
+
+  PUI.Flash.send_flash(%PUI.Flash.Message{
+    id: "ping-#{server.id}",
+    message: message,
+    duration: -1
+  })
+
+  parent = self()
+
+  Task.async(fn ->
+    message =
+      case perform_ping(server.id) do
+        {:ok, %{status: :up}} ->
+          ~H"""
+          <div class="flex items-center gap-2">
+            <.icon name="hero-check-circle" class="size-6 text-green-600" />
+            <div>Server connected</div>
+          </div>
+          """
+
+        _ ->
+          ~H"""
+          <div class="flex items-center gap-2">
+            <.icon name="hero-x-circle" class="size-6 text-red-600" />
+            <div>Server unreachable</div>
+          </div>
+          """
+      end
+
+    PUI.Flash.update_flash(parent, %PUI.Flash.Message{
+      id: "ping-#{server.id}",
+      message: message,
+      duration: 5
+    })
+  end)
+
+  {:noreply, socket}
+end
+```
+
+Set `duration: -1` to keep the flash open until you explicitly update or dismiss it.
+
+> **Note:** Setting `type` to `:success`, `:error`, `:info`, or `:warning` will
+> still apply the preset toast styling, even when `message` contains custom
+> HEEx. Omit `type` (or set it to `nil`) to keep full control over the markup.
+
+<AppWeb.DocsDemo.custom_flash_demo ping_state={@ping_state} />
+
 ## Positioning
 
 Flash groups support six positions:

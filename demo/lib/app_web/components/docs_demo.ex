@@ -2481,10 +2481,45 @@ defmodule AppWeb.DocsDemo do
             <.button variant="outline" phx-click="send_preset_toast" phx-value-type="info">
               <.icon name="hero-information-circle" class="size-4 mr-2 text-blue-600" /> Info
             </.button>
+            <.button variant="outline" phx-click="send_custom_flash">
+              <.icon name="hero-check-circle" class="size-4 mr-2 text-green-600" /> Custom
+            </.button>
             <p class="text-sm text-muted-foreground self-center">
               Position: {@flash_position}. Count: {@toast_count}
             </p>
           </div>
+        </div>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  attr :ping_state, :atom, default: :idle
+
+  def custom_flash_demo(assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+        Interactive Demo
+      </h2>
+
+      <.demo_section title="Custom Async Flash" id="custom-flash">
+        <div class="space-y-4">
+          <p class="text-sm text-muted-foreground">
+            Send a custom flash with a spinner, then update it after a simulated async operation completes.
+          </p>
+
+          <.button
+            phx-click="dispatch_ping"
+            disabled={@ping_state == :connecting}
+            class="disabled:opacity-50"
+          >
+            <%= if @ping_state == :connecting do %>
+              <.icon name="hero-arrow-path" class="size-4 mr-2 animate-spin" /> Connecting...
+            <% else %>
+              <.icon name="hero-signal" class="size-4 mr-2" /> Dispatch Ping
+            <% end %>
+          </.button>
         </div>
       </.demo_section>
     </section>

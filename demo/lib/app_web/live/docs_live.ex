@@ -44,6 +44,7 @@ defmodule AppWeb.Live.DocsLive do
        progress_value: 45.0,
        toast_count: 0,
        flash_position: "top-center",
+       ping_state: :idle,
        bg_orientation: "horizontal"
      )}
   end
@@ -142,6 +143,48 @@ defmodule AppWeb.Live.DocsLive do
     {:noreply, assign(socket, toast_count: count)}
   end
 
+  def handle_event("send_custom_flash", _params, socket) do
+    count = socket.assigns.toast_count + 1
+
+    PUI.Flash.send_flash(%PUI.Flash.Message{
+      message: custom_flash_message(%{})
+    })
+
+    {:noreply, assign(socket, toast_count: count)}
+  end
+
+  def handle_event("dispatch_ping", _params, socket) do
+    socket = assign(socket, ping_state: :connecting)
+
+    PUI.Flash.send_flash(%PUI.Flash.Message{
+      id: "ping-demo",
+      message: ping_loading_message(%{}),
+      duration: -1
+    })
+
+    parent = self()
+
+    Task.start(fn ->
+      Process.sleep(2000)
+
+      result =
+        case :rand.uniform(4) do
+          n when n <= 3 -> :up
+          _ -> :down
+        end
+
+      PUI.Flash.update_flash(parent, %PUI.Flash.Message{
+        id: "ping-demo",
+        message: ping_result_message(%{result: result}),
+        duration: 5
+      })
+
+      send(parent, {:ping_done, result})
+    end)
+
+    {:noreply, socket}
+  end
+
   def handle_event("select_flash_position", %{"position" => position}, socket) do
     {:noreply, assign(socket, flash_position: position)}
   end
@@ -167,6 +210,68 @@ defmodule AppWeb.Live.DocsLive do
   def handle_event("add-new-item", _params, socket) do
     PUI.Flash.send_flash("Add new item clicked!")
     {:noreply, socket}
+  end
+
+  defp ping_loading_message(assigns) do
+    ~H"""
+    <div class="flex items-center gap-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="animate-spin text-foreground size-5"
+      >
+        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+        <path d="M12 6l0 -3" />
+        <path d="M16.25 7.75l2.15 -2.15" />
+        <path d="M18 12l3 0" />
+        <path d="M16.25 16.25l2.15 2.15" />
+        <path d="M12 18l0 3" />
+        <path d="M7.75 16.25l-2.15 2.15" />
+        <path d="M6 12l-3 0" />
+        <path d="M7.75 7.75l-2.15 -2.15" />
+      </svg>
+      <div>Connecting to server...</div>
+    </div>
+    """
+  end
+
+  defp ping_result_message(%{result: :up} = assigns) do
+    ~H"""
+    <div class="flex items-center gap-2">
+      <.icon name="hero-check-circle" class="size-6 text-green-600" />
+      <div>Server connected</div>
+    </div>
+    """
+  end
+
+  defp ping_result_message(assigns) do
+    ~H"""
+    <div class="flex items-center gap-2">
+      <.icon name="hero-x-circle" class="size-6 text-red-600" />
+      <div>Server unreachable</div>
+    </div>
+    """
+  end
+
+  defp custom_flash_message(assigns) do
+    ~H"""
+    <div class="flex items-center gap-2">
+      <.icon name="hero-check-circle" class="size-5" />
+      <span>Success!</span>
+    </div>
+    """
+  end
+
+  @impl true
+  def handle_info({:ping_done, _result}, socket) do
+    {:noreply, assign(socket, ping_state: :idle)}
   end
 
   @impl true
@@ -408,6 +513,7 @@ defmodule AppWeb.Live.DocsLive do
       :flash_position,
       :bg_orientation,
       :form,
+      :ping_state,
       :progress_value,
       :show_dialog,
       :toast_count
