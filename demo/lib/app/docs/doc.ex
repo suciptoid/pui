@@ -26,16 +26,6 @@ defmodule App.Docs.Doc do
   def render(html, _assigns) when is_binary(html), do: Phoenix.HTML.raw(html)
 
   defp extract_toc({:dynamic, markdown}), do: extract_toc_from_markdown(markdown)
-  defp extract_toc(html) when is_binary(html), do: extract_toc_from_html(html)
-
-  defp extract_toc_from_html(html) do
-    ~r/<h([23])><a[^>]*id="([^"]*)"[^>]*><\/a>(.*?)<\/h\1>/s
-    |> Regex.scan(html)
-    |> Enum.map(fn [_, level, id, text] ->
-      clean_text = Regex.replace(~r/<[^>]+>/, text, "") |> String.trim()
-      %{level: String.to_integer(level), id: id, text: clean_text}
-    end)
-  end
 
   defp extract_toc_from_markdown(markdown) do
     markdown

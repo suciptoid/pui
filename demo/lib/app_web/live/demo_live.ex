@@ -1458,8 +1458,7 @@ defmodule AppWeb.Live.DemoLive do
           path: path
         }
 
-      _ ->
-        page_config(:overview)
+
     end
   end
 
