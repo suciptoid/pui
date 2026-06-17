@@ -43,7 +43,7 @@ defmodule App.MixProject do
       {:phoenix, "~> 1.8.1"},
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.1.0"},
+      {:phoenix_live_view, "~> 1.1"},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
@@ -66,7 +66,7 @@ defmodule App.MixProject do
       {:tidewave, "~> 0.5", only: :dev},
       {:wallaby, "~> 0.30", runtime: false, only: :test},
       {:pui, path: "../", override: true},
-      {:nimble_publisher, "~> 1.1"},
+      {:nimble_publisher, "~> 2.0"},
       {:mdex, "~> 0.4"},
       {:lumis, "~> 0.1"}
     ]
