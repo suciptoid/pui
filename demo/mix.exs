@@ -67,7 +67,8 @@ defmodule App.MixProject do
       {:wallaby, "~> 0.30", runtime: false, only: :test},
       {:pui, path: "../", override: true},
       {:nimble_publisher, "~> 1.1"},
-      {:mdex, "~> 0.4"}
+      {:mdex, "~> 0.4"},
+      {:lumis, "~> 0.1"}
     ]
   end
 

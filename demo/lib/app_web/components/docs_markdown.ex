@@ -10,28 +10,29 @@ defmodule AppWeb.DocsMarkdown do
   use MDEx
   use PUI
 
+
   @mdex_options [
     extension: [
       strikethrough: true,
       table: true,
       autolink: true,
       tasklist: true,
-      header_id_prefix: "",
-      phoenix_heex: true
-    ],
-    render: [unsafe: true]
+      header_id_prefix: ""
+    ]
   ]
 
   def render(markdown, assigns) do
-    case MDEx.to_html(markdown, @mdex_options) do
-      {:ok, html} ->
-        case MDEx.to_heex(html, assigns: assigns) do
-          {:ok, rendered} -> rendered
-          {:error, error} -> raise error
-        end
-
-      {:error, error} ->
-        raise error
+    case MDEx.to_heex(markdown,
+           Keyword.merge(@mdex_options,
+             assigns: assigns,
+             syntax_highlight: [
+               engine: :lumis,
+               opts: [formatter: {:html_inline, theme: "github_light"}]
+             ]
+           )
+         ) do
+      {:ok, rendered} -> rendered
+      {:error, error} -> raise error
     end
   end
 end
