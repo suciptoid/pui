@@ -7,9 +7,7 @@ defmodule AppWeb.DocsMarkdown do
   `<AppWeb.DocsDemo.select_demo form={@form} />`.
   """
   use AppWeb, :html
-  use MDEx
   use PUI
-
 
   @mdex_options [
     extension: [
@@ -17,22 +15,35 @@ defmodule AppWeb.DocsMarkdown do
       table: true,
       autolink: true,
       tasklist: true,
-      header_id_prefix: ""
+      header_id_prefix: "",
+      phoenix_heex: true
+    ],
+    render: [unsafe: true],
+    syntax_highlight: [
+      engine: :lumis,
+      opts: [formatter: {:html_inline, theme: "github_light"}]
     ]
   ]
 
   def render(markdown, assigns) do
-    case MDEx.to_heex(markdown,
-           Keyword.merge(@mdex_options,
-             assigns: assigns,
-             syntax_highlight: [
-               engine: :lumis,
-               opts: [formatter: {:html_inline, theme: "github_light"}]
-             ]
-           )
-         ) do
-      {:ok, rendered} -> rendered
-      {:error, error} -> raise error
+    case MDEx.to_html(markdown, @mdex_options) do
+      {:ok, html} ->
+        rendered =
+          Phoenix.LiveView.TagEngine.compile(html,
+            file: __ENV__.file,
+            line: __ENV__.line + 1,
+            caller: __ENV__,
+            indentation: 0,
+            tag_handler: Phoenix.LiveView.HTMLEngine
+          )
+
+        {rendered, _} =
+          Code.eval_quoted(rendered, [assigns: assigns], Macro.Env.prune_compile_info(__ENV__))
+
+        rendered
+
+      {:error, error} ->
+        raise error
     end
   end
 end
