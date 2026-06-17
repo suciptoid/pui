@@ -305,8 +305,11 @@ defmodule PUI.Flash do
         "w-fit max-w-[75vw] min-w-0 rounded-full shadow-lg",
         "flex items-center gap-2 pl-2.5 pr-8 py-2",
         "transition-all duration-400 opacity-0",
-        "absolute left-0 right-0 data-[position^='top-']:top-0 data-[position^='bottom-']:bottom-0",
-        "m-auto z-[calc(1000-var(--flash-index))] not-aria-hidden:translate-y-[calc(var(--flash-offset-y))] not-aria-hidden:opacity-100",
+        "absolute z-[calc(1000-var(--flash-index))]",
+        "data-[position$='-center']:left-0 data-[position$='-center']:right-0 data-[position$='-center']:m-auto",
+        "data-[position$='-right']:right-0 data-[position$='-left']:left-0",
+        "data-[position^='top-']:top-0 data-[position^='bottom-']:bottom-0",
+        "not-aria-hidden:translate-y-[calc(var(--flash-offset-y))] not-aria-hidden:opacity-100",
         @class
       ]}
       {@rest}
@@ -348,8 +351,11 @@ defmodule PUI.Flash do
         "bg-background text-secondary-foreground text-sm group",
         "w-fit min-w-[200px] max-w-md rounded-md border border-border py-3 px-4 shadow-sm",
         "transition-all duration-400 opacity-0",
-        "absolute left-0 right-0 data-[position^='top-']:top-0 data-[position^='bottom-']:bottom-0",
-        "m-auto z-[calc(1000-var(--flash-index))] not-aria-hidden:translate-y-[calc(var(--flash-offset-y))] not-aria-hidden:opacity-100",
+        "absolute z-[calc(1000-var(--flash-index))]",
+        "data-[position$='-center']:left-0 data-[position$='-center']:right-0 data-[position$='-center']:m-auto",
+        "data-[position$='-right']:right-0 data-[position$='-left']:left-0",
+        "data-[position^='top-']:top-0 data-[position^='bottom-']:bottom-0",
+        "not-aria-hidden:translate-y-[calc(var(--flash-offset-y))] not-aria-hidden:opacity-100",
         @class
       ]}
       {@rest}
