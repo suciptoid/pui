@@ -91,12 +91,13 @@ PUI.Flash.send_flash(%PUI.Flash.Message{
 
 ## Custom Content
 
-Send HEEx content in flashes. For fully custom styling, leave `type` as `nil`
-(or omit it) so the message renders with the standard flash UI instead of a
-preset toast:
+Send HEEx content in flashes. When `message` is a HEEx template, the custom
+markup overrides the preset toast styling. Plain-string messages with a preset
+type still render as the compact built-in toast with a type-colored icon:
 
 ```elixir
 PUI.Flash.send_flash(%PUI.Flash.Message{
+  type: :success,
   message: ~H|<div class="flex items-center gap-2">
     <.icon name="hero-check-circle" class="size-5" />
     <span>Success!</span>
@@ -107,8 +108,7 @@ PUI.Flash.send_flash(%PUI.Flash.Message{
 ### Custom Flash with Async Update
 
 You can send a custom flash with rich HEEx content and update it later by ID.
-This is useful for showing progress and then replacing it with a result. Keep
-`type` as `nil` so your own markup is preserved:
+This is useful for showing progress and then replacing it with a result:
 
 ```elixir
 def handle_event("dispatch_ping", _params, socket) do
@@ -178,9 +178,9 @@ end
 
 Set `duration: -1` to keep the flash open until you explicitly update or dismiss it.
 
-> **Note:** Setting `type` to `:success`, `:error`, `:info`, or `:warning` will
-> still apply the preset toast styling, even when `message` contains custom
-> HEEx. Omit `type` (or set it to `nil`) to keep full control over the markup.
+When `message` is a HEEx template, the custom markup overrides the preset toast
+styling. Plain-string messages with a preset type still render as the compact
+built-in toast with a type-colored icon.
 
 <AppWeb.DocsDemo.custom_flash_demo ping_state={@ping_state} />
 

@@ -60,18 +60,19 @@ defmodule PUI.Flash do
 
   ## Custom Content
 
-  Send HEEx content in flashes. For fully custom styling, leave `type` as `nil`
-  (or omit it) so the standard flash UI is used instead of a preset toast:
+  Send HEEx content in flashes. When `message` is a HEEx template, the custom
+  markup overrides the preset toast styling:
 
       PUI.Flash.send_flash(%PUI.Flash.Message{
+        type: :success,
         message: ~H|<div class="flex items-center gap-2">
           <.icon name="hero-check-circle" class="size-5" />
           <span>Success!</span>
         </div>|
       })
 
-  Preset types (`:success`, `:error`, `:info`, `:warning`) always apply the
-  compact built-in toast styling, even when the message contains custom HEEx.
+  Plain-string messages with a preset type still render as the compact built-in
+  toast with a type-colored icon.
 
   ## Updating Flashes
 
@@ -516,7 +517,7 @@ defmodule PUI.Flash do
     |> Enum.map(fn f ->
       id = "fl#{System.unique_integer([:positive])}"
       type = normalize_flash_key(f.key)
-      preset = preset_type?(type)
+      preset = preset_type?(type) and is_binary(f.value)
 
       case f.value do
         v when is_binary(v) ->
@@ -564,7 +565,8 @@ defmodule PUI.Flash do
     send_flash(pid, %Message{id: "fl-#{System.unique_integer([:positive])}", message: message})
   end
 
-  defp maybe_mark_preset(%Message{type: type} = flash) when type in @preset_types do
+  defp maybe_mark_preset(%Message{type: type, message: message} = flash)
+       when type in @preset_types and is_binary(message) do
     %{flash | preset: true}
   end
 

@@ -147,6 +147,7 @@ defmodule AppWeb.Live.DocsLive do
     count = socket.assigns.toast_count + 1
 
     PUI.Flash.send_flash(%PUI.Flash.Message{
+      type: :success,
       message: custom_flash_message(%{})
     })
 
