@@ -256,16 +256,16 @@ defmodule AppWeb.DocComponents do
         </h3>
         <.code_block code={@import_statement} language="elixir" />
       </div>
-      
-    <!-- Description -->
+
+      <!-- Description -->
       <div :if={@description}>
         <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3">Description</h3>
         <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
           {render_slot(@description)}
         </p>
       </div>
-      
-    <!-- Props Table -->
+
+      <!-- Props Table -->
       <div :if={@props != []}>
         <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
           <svg
@@ -288,8 +288,8 @@ defmodule AppWeb.DocComponents do
           <.props_table props={@props} />
         </div>
       </div>
-      
-    <!-- Examples -->
+
+      <!-- Examples -->
       <div :if={@example != []}>
         <h3 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
           <svg
@@ -386,8 +386,8 @@ defmodule AppWeb.DocComponents do
           </button>
         </div>
       </div>
-      
-    <!-- Size Selector -->
+
+      <!-- Size Selector -->
       <div :if={@sizes != []} class="flex items-center gap-2">
         <label class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
           Size
@@ -411,8 +411,8 @@ defmodule AppWeb.DocComponents do
           </button>
         </div>
       </div>
-      
-    <!-- State Selector -->
+
+      <!-- State Selector -->
       <div :if={@states != []} class="flex items-center gap-2">
         <label class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
           State

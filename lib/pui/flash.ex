@@ -346,7 +346,7 @@ defmodule PUI.Flash do
       data-position={@position}
       class={[
         "bg-background text-secondary-foreground text-sm group",
-        "w-full min-w-[300px] rounded-md border border-border py-3 px-4 shadow-sm",
+        "w-fit min-w-[200px] max-w-md rounded-md border border-border py-3 px-4 shadow-sm",
         "transition-all duration-400 opacity-0",
         "absolute left-0 right-0 data-[position^='top-']:top-0 data-[position^='bottom-']:bottom-0",
         "m-auto z-[calc(1000-var(--flash-index))] not-aria-hidden:translate-y-[calc(var(--flash-offset-y))] not-aria-hidden:opacity-100",
@@ -476,11 +476,11 @@ defmodule PUI.Flash do
   def container(assigns) do
     position_classes =
       case assigns.position do
-        "top-right" -> "top-[1rem] right-[1rem] "
-        "top-center" -> "top-[1rem] left-1/2 -translate-x-1/2 "
-        "top-left" -> "top-[1rem] left-[1rem] "
-        "bottom-right" -> "bottom-[1rem] right-[1rem] "
-        "bottom-center" -> "bottom-[1rem] left-1/2 -translate-x-1/2 "
+        "top-right" -> "top-[1rem] right-[1rem]"
+        "top-center" -> "top-[1rem] inset-x-0"
+        "top-left" -> "top-[1rem] left-[1rem]"
+        "bottom-right" -> "bottom-[1rem] right-[1rem]"
+        "bottom-center" -> "bottom-[1rem] inset-x-0"
         "bottom-left" -> "bottom-[1rem] left-[1rem]"
         _ -> "bottom-[1rem] right-[1rem]"
       end
@@ -492,7 +492,7 @@ defmodule PUI.Flash do
       data-position={@position}
       phx-hook="PUI.FlashGroup"
       class={[
-        "fixed z-[1000] flex flex-col w-auto min-w-[300px]",
+        "fixed z-[1000] flex flex-col w-auto min-w-[200px]",
         @position_classes
       ]}
       {@rest}

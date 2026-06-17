@@ -82,7 +82,9 @@ defmodule PUI.Button do
     default: "default"
 
   attr :size, :string, values: ["default", "sm", "lg", "icon"], default: "default"
-  attr :rest, :global, include: ~w(href navigate patch method download name value disabled type target rel)
+
+  attr :rest, :global,
+    include: ~w(href navigate patch method download name value disabled type target rel)
 
   slot :inner_block, required: true
 

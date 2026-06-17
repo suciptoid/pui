@@ -1457,8 +1457,6 @@ defmodule AppWeb.Live.DemoLive do
           icon: "hero-arrow-path",
           path: path
         }
-
-
     end
   end
 

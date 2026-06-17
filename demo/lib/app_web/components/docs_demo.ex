@@ -2499,7 +2499,7 @@ defmodule AppWeb.DocsDemo do
   def custom_flash_demo(assigns) do
     ~H"""
     <section class="space-y-8">
-      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
+      <h2 id="interactive-demo-custom" class="text-2xl font-semibold text-foreground">
         Interactive Demo
       </h2>
 
