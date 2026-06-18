@@ -187,7 +187,8 @@ defmodule PUI.Input do
       />
   """
   def checkbox(%{label: label} = assigns) when label != nil do
-    assigns = map_field(assigns)
+    rest = Map.get(assigns, :rest, %{}) |> Map.put(:type, "checkbox")
+    assigns = assigns |> Map.put(:rest, rest) |> map_field()
 
     assigns =
       if assigns.errors != [],
@@ -197,6 +198,13 @@ defmodule PUI.Input do
     ~H"""
     <div>
       <label class="inline-flex items-center cursor-pointer">
+        <input
+          type="hidden"
+          name={@rest[:name]}
+          value="false"
+          disabled={@rest[:disabled]}
+          form={@rest[:form]}
+        />
         <.checkbox id={@id} class={@class} {@rest} />
         <span class="text-sm text-foreground ms-3">
           {@label}
@@ -208,7 +216,8 @@ defmodule PUI.Input do
   end
 
   def checkbox(assigns) do
-    assigns = map_field(assigns)
+    rest = Map.get(assigns, :rest, %{}) |> Map.put(:type, "checkbox")
+    assigns = assigns |> Map.put(:rest, rest) |> map_field()
 
     assigns =
       if assigns.errors != [],
@@ -217,8 +226,14 @@ defmodule PUI.Input do
 
     ~H"""
     <input
+      type="hidden"
+      name={@rest[:name]}
+      value="false"
+      disabled={@rest[:disabled]}
+      form={@rest[:form]}
+    />
+    <input
       id={@id}
-      type="checkbox"
       class={[
         "relative size-4 shrink-0 appearance-none rounded-[4px] border border-input shadow-xs outline-none cursor-pointer",
         "before:content-[''] before:absolute before:top-0 before:left-[2px] before:w-[calc(100%-2px)] before:h-[calc(100%-2px)] before:bg-current before:opacity-0",
@@ -448,10 +463,19 @@ defmodule PUI.Input do
       assigns
       |> Map.get(:rest, %{})
       |> Map.put(:name, field.name)
-      |> then(fn rest ->
-        type = Map.get(rest, :type, "text")
-        rest |> Map.put(:value, Phoenix.HTML.Form.normalize_value(type, field.value))
-      end)
+
+    type = Map.get(rest, :type, "text")
+
+    rest =
+      case type do
+        "checkbox" ->
+          rest
+          |> Map.put(:value, "true")
+          |> Map.put(:checked, Phoenix.HTML.Form.normalize_value("checkbox", field.value))
+
+        _ ->
+          Map.put(rest, :value, Phoenix.HTML.Form.normalize_value(type, field.value))
+      end
 
     assigns
     |> assign(:id, assigns.id || field.id)
