@@ -287,14 +287,14 @@ defmodule PUI.Input do
       </div>
   """
   def radio(assigns) do
-    assigns = map_field(assigns)
+    rest = Map.get(assigns, :rest, %{}) |> Map.put(:type, "radio")
+    assigns = assigns |> Map.put(:rest, rest) |> map_field()
     # Radio inputs do not render validation errors inline; ignore any field errors here.
     assigns = assign(assigns, :errors, [])
 
     ~H"""
     <input
       id={@id}
-      type="radio"
       class={[
         "border-input text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 appearance-none relative after:content-[''] after:absolute after:top-1/2 after:left-1/2 after:size-2 after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-primary after:scale-0 checked:after:scale-100 after:transition-transform",
         @class
@@ -317,8 +317,9 @@ defmodule PUI.Input do
     doc: "a list of error strings to display below the switch"
 
   attr :rest, :global,
-    include: ~w(accept  capture cols disabled form list max maxlength min minlength
-                multiple pattern placeholder readonly required rows size step name value)
+    include:
+      ~w(accept  capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step name value type checked)
 
   @doc """
   Renders a switch-style boolean control.
@@ -338,7 +339,8 @@ defmodule PUI.Input do
       />
   """
   def switch(%{label: label} = assigns) when label != nil do
-    assigns = map_field(assigns)
+    rest = Map.get(assigns, :rest, %{}) |> Map.put(:type, "checkbox")
+    assigns = assigns |> Map.put(:rest, rest) |> map_field()
 
     assigns =
       if assigns.errors != [],
@@ -348,6 +350,13 @@ defmodule PUI.Input do
     ~H"""
     <div>
       <label class="inline-flex items-center cursor-pointer">
+        <input
+          type="hidden"
+          name={@rest[:name]}
+          value="false"
+          disabled={@rest[:disabled]}
+          form={@rest[:form]}
+        />
         <.switch id={@id} class={@class} {@rest} />
         <span class="text-sm text-foreground ms-3">
           {@label}
@@ -359,7 +368,8 @@ defmodule PUI.Input do
   end
 
   def switch(assigns) do
-    assigns = map_field(assigns)
+    rest = Map.get(assigns, :rest, %{}) |> Map.put(:type, "checkbox")
+    assigns = assigns |> Map.put(:rest, rest) |> map_field()
 
     assigns =
       if assigns.errors != [],
@@ -368,8 +378,14 @@ defmodule PUI.Input do
 
     ~H"""
     <input
+      type="hidden"
+      name={@rest[:name]}
+      value="false"
+      disabled={@rest[:disabled]}
+      form={@rest[:form]}
+    />
+    <input
       id={@id}
-      type="checkbox"
       role="switch"
       class={[
         "appearance-none checked:bg-primary bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 relative after:content-[''] after:absolute after:bg-background dark:after:bg-foreground dark:checked:after:bg-primary-foreground after:pointer-events-none after:block after:size-4 after:rounded-full after:ring-0 after:transition-transform checked:after:translate-x-[calc(100%-2px)] after:translate-x-0",
@@ -472,6 +488,13 @@ defmodule PUI.Input do
           rest
           |> Map.put(:value, "true")
           |> Map.put(:checked, Phoenix.HTML.Form.normalize_value("checkbox", field.value))
+
+        "radio" ->
+          # For radios, `value` is the option value supplied by the caller and
+          # must not be overwritten. `checked` is true when the field value
+          # matches the option value.
+          rest
+          |> Map.put(:checked, to_string(field.value) == to_string(rest[:value]))
 
         _ ->
           Map.put(rest, :value, Phoenix.HTML.Form.normalize_value(type, field.value))

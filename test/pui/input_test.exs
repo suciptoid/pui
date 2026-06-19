@@ -105,4 +105,103 @@ defmodule PUI.InputTest do
       assert html =~ ~s(Use as default)
     end
   end
+
+  describe "switch/1" do
+    test "renders a hidden unchecked input alongside the visible switch" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.switch id="notifications" name="notifications" />
+        """)
+
+      assert html =~
+               ~s(<input type="hidden" name="notifications" value="false")
+
+      assert html =~ ~s(<input id="notifications")
+      assert html =~ ~s(role="switch")
+    end
+
+    test "uses value=true and adds the checked attribute when field value is true" do
+      assigns = %{form: Phoenix.Component.to_form(%{"notify" => true}, as: :user)}
+
+      html =
+        rendered_to_string(~H"""
+        <.switch field={@form[:notify]} />
+        """)
+
+      assert html =~ ~s(type="hidden" name="user[notify]" value="false")
+      assert html =~ ~s(value="true")
+      assert html =~ ~r/\schecked(=|>|\z)/
+    end
+
+    test "uses value=true and omits the checked attribute when field value is false" do
+      assigns = %{form: Phoenix.Component.to_form(%{"notify" => false}, as: :user)}
+
+      html =
+        rendered_to_string(~H"""
+        <.switch field={@form[:notify]} />
+        """)
+
+      assert html =~ ~s(type="hidden" name="user[notify]" value="false")
+      assert html =~ ~s(value="true")
+      refute html =~ ~r/\schecked(=|>|\z)/
+    end
+
+    test "renders the hidden input inside the labeled wrapper" do
+      assigns = %{form: Phoenix.Component.to_form(%{"notify" => true}, as: :user)}
+
+      html =
+        rendered_to_string(~H"""
+        <.switch field={@form[:notify]} label="Enable notifications" />
+        """)
+
+      assert html =~ ~s(type="hidden" name="user[notify]" value="false")
+      assert html =~ ~s(role="switch")
+      assert html =~ ~s(value="true")
+      assert html =~ ~r/\schecked(=|>|\z)/
+      assert html =~ ~s(Enable notifications)
+    end
+  end
+
+  describe "radio/1" do
+    test "preserves the caller-supplied value when a field is provided" do
+      assigns = %{form: Phoenix.Component.to_form(%{"plan" => "pro"}, as: :user)}
+
+      html =
+        rendered_to_string(~H"""
+        <.radio field={@form[:plan]} value="pro" />
+        <.radio field={@form[:plan]} value="starter" />
+        """)
+
+      assert html =~ ~s(value="pro")
+      assert html =~ ~s(value="starter")
+    end
+
+    test "marks the radio checked when the field value matches the option value" do
+      assigns = %{form: Phoenix.Component.to_form(%{"plan" => "pro"}, as: :user)}
+
+      html =
+        rendered_to_string(~H"""
+        <.radio field={@form[:plan]} value="pro" />
+        <.radio field={@form[:plan]} value="starter" />
+        """)
+
+      # The "pro" radio is the one before the "starter" radio in the rendered HTML.
+      [pro_html, starter_html] = String.split(html, ~r/<input[^>]*value="starter"/, trim: true)
+      assert pro_html =~ ~r/\schecked(=|>|\z)/
+      refute starter_html =~ ~r/\schecked(=|>|\z)/
+    end
+
+    test "uses the field name from the form" do
+      assigns = %{form: Phoenix.Component.to_form(%{"plan" => "pro"}, as: :user)}
+
+      html =
+        rendered_to_string(~H"""
+        <.radio field={@form[:plan]} value="pro" />
+        """)
+
+      assert html =~ ~s(name="user[plan]")
+    end
+  end
 end
