@@ -1,10 +1,10 @@
 defmodule PUI do
   @moduledoc """
-  PUI keeps the contexts that define your domain
-  and business logic.
+  Public entry point for the PUI Phoenix LiveView UI toolkit.
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
+  `use PUI` imports the primary component families for use in HEEx
+  templates. Flash and loading modules remain available through their
+  qualified module names.
   """
 
   defmacro __using__(_opts) do

@@ -149,6 +149,11 @@ PUI supports three usage levels:
 - [Layouts Guide](guides/layouts.md)
 - [Migrate to PUI](guides/migrate-to-pui.md)
 
+Project model:
+
+- [Context glossary](CONTEXT.md)
+- [Domain model](docs/domain-model.md)
+
 ## Development Commands
 
 Build and setup:
