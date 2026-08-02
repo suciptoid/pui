@@ -919,46 +919,90 @@ defmodule AppWeb.Live.DemoPages do
     """
   end
 
-  # ── Container ───────────────────────────────────────────────────────────
+  # ── Badge, Progress, Card, and Container ────────────────────────────────
 
   attr :page, :map, required: true
 
-  def container_page(assigns) do
+  def badge_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.button navigate={~p"/docs/badge"} variant="outline">
+          <.icon name="hero-book-open" class="size-4" /> Read the guide
+        </.button>
+      </:action>
+    </.page_intro>
+
+    <.surface title="Variants" description="Compact labels for statuses, categories, and counts.">
+      <div id="badges-demo" class="flex flex-wrap items-center gap-3">
+        <.badge>Default</.badge>
+        <.badge variant="secondary">Active</.badge>
+        <.badge variant="destructive">Error</.badge>
+        <.badge variant="outline">Draft</.badge>
+      </div>
+    </.surface>
+    """
+  end
+
+  def progress_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.button navigate={~p"/docs/progress"} variant="outline">
+          <.icon name="hero-book-open" class="size-4" /> Read the guide
+        </.button>
+      </:action>
+    </.page_intro>
+
+    <.surface title="Progress bar" description="Accessible completion and loading state presentation.">
+      <div class="max-w-xl space-y-4">
+        <.progress value={45.0} label="Upload progress" />
+        <div class="flex justify-between text-sm text-muted-foreground">
+          <span>Upload progress</span>
+          <span class="font-mono">45%</span>
+        </div>
+        <.progress value={75.0} class="h-3" label="Processing progress" />
+      </div>
+    </.surface>
+    """
+  end
+
+  def card_page(assigns) do
     ~H"""
     <.page_intro page={@page} />
 
     <.surface title="Basic Card" description="A simple card with header, content, and footer.">
-      <PUI.Container.card class="max-w-md">
-        <PUI.Container.card_header>
-          <PUI.Container.card_title>Profile</PUI.Container.card_title>
-          <PUI.Container.card_description>
+      <.card class="max-w-md">
+        <.card_header>
+          <.card_title>Profile</.card_title>
+          <.card_description>
             Manage your account details.
-          </PUI.Container.card_description>
-        </PUI.Container.card_header>
-        <PUI.Container.card_content>
+          </.card_description>
+        </.card_header>
+        <.card_content>
           <p class="text-sm text-muted-foreground">
             The card component is a versatile container for grouping related content.
           </p>
-        </PUI.Container.card_content>
-        <PUI.Container.card_footer class="flex justify-end gap-2">
+        </.card_content>
+        <.card_footer class="flex justify-end gap-2">
           <.button variant="outline" size="sm">Cancel</.button>
           <.button size="sm">Save</.button>
-        </PUI.Container.card_footer>
-      </PUI.Container.card>
+        </.card_footer>
+      </.card>
     </.surface>
 
     <.surface title="Card with Action" description="Header action slot for buttons or menus.">
-      <PUI.Container.card class="max-w-md">
-        <PUI.Container.card_header>
-          <PUI.Container.card_title>Team Members</PUI.Container.card_title>
-          <PUI.Container.card_description>Manage your team.</PUI.Container.card_description>
-          <PUI.Container.card_action>
+      <.card class="max-w-md">
+        <.card_header>
+          <.card_title>Team Members</.card_title>
+          <.card_description>Manage your team.</.card_description>
+          <.card_action>
             <.button size="sm" variant="outline">
               <.icon name="hero-plus" class="size-4 mr-1" /> Add
             </.button>
-          </PUI.Container.card_action>
-        </PUI.Container.card_header>
-        <PUI.Container.card_content>
+          </.card_action>
+        </.card_header>
+        <.card_content>
           <div class="space-y-2">
             <div :for={name <- ["Alice", "Bob"]} class="flex items-center gap-3 py-2">
               <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
@@ -970,8 +1014,34 @@ defmodule AppWeb.Live.DemoPages do
               </div>
             </div>
           </div>
-        </PUI.Container.card_content>
-      </PUI.Container.card>
+        </.card_content>
+      </.card>
+    </.surface>
+    """
+  end
+
+  def container_page(assigns) do
+    ~H"""
+    <.page_intro page={@page} />
+
+    <.surface
+      title="Page Header"
+      description="A page-level heading with optional subtitle and actions."
+    >
+      <PUI.Container.header>
+        Workspace settings
+        <:subtitle>Manage the settings for this workspace.</:subtitle>
+        <:actions>
+          <.button size="sm">Save changes</.button>
+        </:actions>
+      </PUI.Container.header>
+    </.surface>
+
+    <.surface title="Icon" description="Render bundled Heroicons by name.">
+      <div class="flex items-center gap-3 text-sm">
+        <PUI.Container.icon name="hero-check-circle" class="size-5 text-primary" />
+        <span>Container keeps shared structural helpers available.</span>
+      </div>
     </.surface>
     """
   end

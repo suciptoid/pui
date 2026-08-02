@@ -91,8 +91,10 @@ end
 
 - `PUI.Accordion`
 - `PUI.Alert`
+- `PUI.Badge`
 - `PUI.Button`
 - `PUI.ButtonGroup`
+- `PUI.Card`
 - `PUI.Chart`
 - `PUI.Container`
 - `PUI.DatePicker`
@@ -101,10 +103,11 @@ end
 - `PUI.Input`
 - `PUI.Layout`
 - `PUI.Popover`
+- `PUI.Progress`
 - `PUI.Select`
 - `PUI.Table`
 - `PUI.Tabs`
-- `PUI.Components` (shared UI helpers)
+- `PUI.Components` (shared form and rendering helpers)
 
 Additional modules available directly:
 

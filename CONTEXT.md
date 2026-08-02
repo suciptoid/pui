@@ -24,6 +24,14 @@ _Avoid_: component bundle, module group
 Combining PUI primitives through attributes and slots to form an interface while keeping each primitive's semantics and interaction contract.
 _Avoid_: nesting, assembly
 
+**Canonical component module**:
+A public PUI namespace whose primary responsibility is one component family and its composition primitives.
+_Avoid_: utility module, catch-all component module
+
+**Shared helper**:
+A reusable function that supports multiple component families without defining a standalone visual primitive, such as form-error translation or icon rendering.
+_Avoid_: component family, primitive
+
 ## Presentation Modes
 
 **Styled component**:

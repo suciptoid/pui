@@ -265,19 +265,40 @@ PUI.Flash.send_flash(%PUI.Flash.Message{
 See the [Table guide](table.md) for LiveView streams, row actions, empty states,
 part-level customization, and unstyled mode.
 
-### Progress & Badge
+### Progress
 
 ```heex
 <!-- Progress bar -->
-<PUI.Components.progress value={75} />
-<PUI.Components.progress value={45} class="h-4" />
-
-<!-- Badge -->
-<PUI.Components.badge>Default</PUI.Components.badge>
-<PUI.Components.badge variant="secondary">Secondary</PUI.Components.badge>
-<PUI.Components.badge variant="destructive">Error</PUI.Components.badge>
-<PUI.Components.badge variant="outline">Outline</PUI.Components.badge>
+<.progress value={75} />
+<.progress value={45} class="h-4" />
 ```
+
+See the [Progress guide](progress.md) for accessible labels and value ranges.
+
+### Badge
+
+```heex
+<.badge>Default</.badge>
+<.badge variant="secondary">Secondary</.badge>
+<.badge variant="destructive">Error</.badge>
+<.badge variant="outline">Outline</.badge>
+```
+
+See the [Badge guide](badge.md) for status and count examples.
+
+### Card
+
+```heex
+<.card>
+  <.card_header>
+    <.card_title>Profile</.card_title>
+    <.card_description>Manage your account.</.card_description>
+  </.card_header>
+  <.card_content>Content</.card_content>
+</.card>
+```
+
+See the [Card guide](card.md) for the complete Card family API.
 
 ### Dialog
 

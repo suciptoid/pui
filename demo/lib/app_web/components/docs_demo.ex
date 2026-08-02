@@ -2131,23 +2131,23 @@ defmodule AppWeb.DocsDemo do
   def container_card_demo(assigns) do
     ~H"""
     <.demo_section title="Card Demo" id="container-card-demo">
-      <PUI.Container.card class="max-w-md">
-        <PUI.Container.card_header>
-          <PUI.Container.card_title>Card Title</PUI.Container.card_title>
-          <PUI.Container.card_description>
+      <PUI.Card.card class="max-w-md">
+        <PUI.Card.card_header>
+          <PUI.Card.card_title>Card Title</PUI.Card.card_title>
+          <PUI.Card.card_description>
             This is a card description.
-          </PUI.Container.card_description>
-        </PUI.Container.card_header>
-        <PUI.Container.card_content>
+          </PUI.Card.card_description>
+        </PUI.Card.card_header>
+        <PUI.Card.card_content>
           <p class="text-sm text-muted-foreground">
             The card component is a versatile container for grouping related content.
           </p>
-        </PUI.Container.card_content>
-        <PUI.Container.card_footer class="flex justify-end gap-2">
+        </PUI.Card.card_content>
+        <PUI.Card.card_footer class="flex justify-end gap-2">
           <.button variant="outline" size="sm">Cancel</.button>
           <.button size="sm">Save</.button>
-        </PUI.Container.card_footer>
-      </PUI.Container.card>
+        </PUI.Card.card_footer>
+      </PUI.Card.card>
     </.demo_section>
     """
   end
@@ -2155,17 +2155,17 @@ defmodule AppWeb.DocsDemo do
   def container_card_action_demo(assigns) do
     ~H"""
     <.demo_section title="Card Action Demo" id="container-card-action-demo">
-      <PUI.Container.card class="max-w-md">
-        <PUI.Container.card_header>
-          <PUI.Container.card_title>Team Members</PUI.Container.card_title>
-          <PUI.Container.card_description>Manage your team.</PUI.Container.card_description>
-          <PUI.Container.card_action>
+      <PUI.Card.card class="max-w-md">
+        <PUI.Card.card_header>
+          <PUI.Card.card_title>Team Members</PUI.Card.card_title>
+          <PUI.Card.card_description>Manage your team.</PUI.Card.card_description>
+          <PUI.Card.card_action>
             <.button size="sm" variant="outline">
               <.icon name="hero-plus" class="size-4 mr-1" /> Add
             </.button>
-          </PUI.Container.card_action>
-        </PUI.Container.card_header>
-        <PUI.Container.card_content>
+          </PUI.Card.card_action>
+        </PUI.Card.card_header>
+        <PUI.Card.card_content>
           <div class="space-y-2">
             <div class="flex items-center gap-3 py-2">
               <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
@@ -2186,8 +2186,8 @@ defmodule AppWeb.DocsDemo do
               </div>
             </div>
           </div>
-        </PUI.Container.card_content>
-      </PUI.Container.card>
+        </PUI.Card.card_content>
+      </PUI.Card.card>
     </.demo_section>
     """
   end
@@ -2534,37 +2534,37 @@ defmodule AppWeb.DocsDemo do
       </h2>
 
       <.demo_section title="Card" id="card-demo">
-        <PUI.Container.card class="max-w-md">
-          <PUI.Container.card_header>
-            <PUI.Container.card_title>Card Title</PUI.Container.card_title>
-            <PUI.Container.card_description>
+        <PUI.Card.card class="max-w-md">
+          <PUI.Card.card_header>
+            <PUI.Card.card_title>Card Title</PUI.Card.card_title>
+            <PUI.Card.card_description>
               This is a card description.
-            </PUI.Container.card_description>
-          </PUI.Container.card_header>
-          <PUI.Container.card_content>
+            </PUI.Card.card_description>
+          </PUI.Card.card_header>
+          <PUI.Card.card_content>
             <p class="text-sm text-muted-foreground">
               The card component is a versatile container for grouping related content.
             </p>
-          </PUI.Container.card_content>
-          <PUI.Container.card_footer class="flex justify-end gap-2">
+          </PUI.Card.card_content>
+          <PUI.Card.card_footer class="flex justify-end gap-2">
             <.button variant="outline" size="sm">Cancel</.button>
             <.button size="sm">Save</.button>
-          </PUI.Container.card_footer>
-        </PUI.Container.card>
+          </PUI.Card.card_footer>
+        </PUI.Card.card>
       </.demo_section>
 
       <.demo_section title="Card with Action" id="card-action-demo">
-        <PUI.Container.card class="max-w-md">
-          <PUI.Container.card_header>
-            <PUI.Container.card_title>Team Members</PUI.Container.card_title>
-            <PUI.Container.card_description>Manage your team.</PUI.Container.card_description>
-            <PUI.Container.card_action>
+        <PUI.Card.card class="max-w-md">
+          <PUI.Card.card_header>
+            <PUI.Card.card_title>Team Members</PUI.Card.card_title>
+            <PUI.Card.card_description>Manage your team.</PUI.Card.card_description>
+            <PUI.Card.card_action>
               <.button size="sm" variant="outline">
                 <.icon name="hero-plus" class="size-4 mr-1" /> Add
               </.button>
-            </PUI.Container.card_action>
-          </PUI.Container.card_header>
-          <PUI.Container.card_content>
+            </PUI.Card.card_action>
+          </PUI.Card.card_header>
+          <PUI.Card.card_content>
             <div class="space-y-2">
               <div class="flex items-center gap-3 py-2">
                 <div class="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium text-primary">
@@ -2585,8 +2585,8 @@ defmodule AppWeb.DocsDemo do
                 </div>
               </div>
             </div>
-          </PUI.Container.card_content>
-        </PUI.Container.card>
+          </PUI.Card.card_content>
+        </PUI.Card.card>
       </.demo_section>
     </section>
     """
@@ -2609,13 +2609,9 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
-  def progress_badges_demo(assigns) do
+  def progress_demo(assigns) do
     ~H"""
     <section class="space-y-8">
-      <h2 id="interactive-demo" class="text-2xl font-semibold text-foreground">
-        Interactive Demo
-      </h2>
-
       <.demo_section title="Progress Bar" id="progress-demo">
         <div class="space-y-4 max-w-md">
           <.progress value={@progress_value} />
@@ -2635,8 +2631,14 @@ defmodule AppWeb.DocsDemo do
           </div>
         </div>
       </.demo_section>
+    </section>
+    """
+  end
 
-      <.demo_section title="Badges" id="badges-demo">
+  def badge_demo(assigns) do
+    ~H"""
+    <section class="space-y-8">
+      <.demo_section title="Badge Variants" id="badges-demo">
         <div class="flex flex-wrap items-center gap-3">
           <.badge>Default</.badge>
           <.badge variant="secondary">Secondary</.badge>
@@ -2647,6 +2649,8 @@ defmodule AppWeb.DocsDemo do
     </section>
     """
   end
+
+  def card_demo(assigns), do: container_card_demo(assigns)
 
   def chart_base_demo(assigns) do
     ~H"""

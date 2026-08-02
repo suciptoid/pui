@@ -79,8 +79,8 @@ PUI provides components in several categories:
 | **Actions** | Button, Dropdown, Menu |
 | **Overlays** | Dialog, Popover, Tooltip |
 | **Feedback** | Alert, Toast/Flash, Loading |
-| **Layout** | Container, Card, Header |
-| **Data Display** | Table, Progress, Badge |
+| **Layout** | Card, Container, Header |
+| **Data Display** | Badge, Progress, Table |
 
 <AppWeb.DocsDemo.getting_started_quick_demo />
 

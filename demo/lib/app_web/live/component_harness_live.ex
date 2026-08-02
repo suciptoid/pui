@@ -350,18 +350,18 @@ defmodule AppWeb.Live.ComponentHarness do
 
   defp render_component(assigns) when assigns.live_action == :container do
     ~H"""
-    <PUI.Container.card id="profile-card">
-      <PUI.Container.card_header>
-        <PUI.Container.card_title>Profile</PUI.Container.card_title>
-        <PUI.Container.card_description>Manage account details.</PUI.Container.card_description>
-      </PUI.Container.card_header>
-      <PUI.Container.card_content>
+    <PUI.Card.card id="profile-card">
+      <PUI.Card.card_header>
+        <PUI.Card.card_title>Profile</PUI.Card.card_title>
+        <PUI.Card.card_description>Manage account details.</PUI.Card.card_description>
+      </PUI.Card.card_header>
+      <PUI.Card.card_content>
         <p id="profile-email">john@example.com</p>
-      </PUI.Container.card_content>
-      <PUI.Container.card_footer class="gap-2">
+      </PUI.Card.card_content>
+      <PUI.Card.card_footer class="gap-2">
         <.button id="save-profile">Save Changes</.button>
-      </PUI.Container.card_footer>
-    </PUI.Container.card>
+      </PUI.Card.card_footer>
+    </PUI.Card.card>
     """
   end
 

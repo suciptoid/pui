@@ -19,12 +19,12 @@ The boundary is intentionally not a client/server ownership split for every valu
 
 | Area | Component families | Primary responsibility |
 | --- | --- | --- |
-| Composition and structure | Accordion, ButtonGroup, Container, Layout | Group content and actions into reusable structural shapes |
+| Composition and structure | Accordion, ButtonGroup, Card, Container, Layout | Group content and actions into reusable structural shapes |
 | Actions and navigation | Button, Dropdown | Provide actionable controls, links, menu triggers, and menu items |
 | Forms | Input, Select, DatePicker | Render field-aware controls, normalize values, and expose validation feedback |
 | Disclosure and overlays | Dialog, Popover, Tooltip, Tabs | Coordinate triggers, content, focus, visibility, and relationships |
-| Feedback | Alert, Flash, Loading, Progress, Badge | Communicate status, transient messages, progress, and loading |
-| Data display | Table, Progress, Badge | Present collections, completion values, and compact status labels |
+| Feedback | Alert, Badge, Flash, Loading, Progress | Communicate status, transient messages, progress, and loading |
+| Data display | Badge, Progress, Table | Present compact labels, completion values, and collections |
 | Data visualization | Chart, BarChart, LineChart | Render serializable chart configuration and data through browser chart hooks |
 | Shared vocabulary | Components, icon helpers | Supply small cross-family presentation and error helpers |
 
@@ -112,6 +112,7 @@ When extending PUI:
 ## Current boundary notes
 
 - `use PUI` is the primary convenience surface for the main component families. `PUI.Flash` and `PUI.Loading` remain directly addressed modules rather than imports from the macro.
+- Canonical component modules own one component family and are the preferred public namespace for new code. Shared helpers remain grouped when they support multiple families without owning a visual primitive.
 - The current package contains both `PUI.Dropdown.menu_button/1` and a separate `PUI.MenuButton` module. The `use PUI` macro imports `PUI.Dropdown`; the latter is therefore the canonical documented menu-button path until the duplicate surface is intentionally consolidated.
 - The package's public hook registry includes loading, popover, date picker, select, tabs, tooltip, flash group, sidebar, and chart hooks. A component that renders a hook declaration still requires the consuming application to merge PUI's exported hooks into its `LiveSocket`.
 - The demo application is a consumer and executable documentation surface. It demonstrates the package, but it is not part of PUI's host-application domain boundary.

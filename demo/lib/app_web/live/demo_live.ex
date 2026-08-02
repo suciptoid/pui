@@ -125,6 +125,30 @@ defmodule AppWeb.Live.DemoLive do
                 </:subitem>
                 <:subitem>
                   <.link
+                    navigate={~p"/docs/badge"}
+                    class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Badge
+                  </.link>
+                </:subitem>
+                <:subitem>
+                  <.link
+                    navigate={~p"/docs/progress"}
+                    class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Progress
+                  </.link>
+                </:subitem>
+                <:subitem>
+                  <.link
+                    navigate={~p"/docs/card"}
+                    class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Card
+                  </.link>
+                </:subitem>
+                <:subitem>
+                  <.link
                     navigate={~p"/docs/table"}
                     class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
                   >
@@ -197,6 +221,12 @@ defmodule AppWeb.Live.DemoLive do
               <AppWeb.Live.DemoPages.alert_page page={@page} />
             <% :flash -> %>
               <AppWeb.Live.DemoPages.flash_page page={@page} toast_count={@toast_count} />
+            <% :badge -> %>
+              <AppWeb.Live.DemoPages.badge_page page={@page} />
+            <% :progress -> %>
+              <AppWeb.Live.DemoPages.progress_page page={@page} />
+            <% :card -> %>
+              <AppWeb.Live.DemoPages.card_page page={@page} />
             <% :tabs -> %>
               <AppWeb.Live.DemoPages.tabs_page page={@page} />
             <% :accordion -> %>
@@ -1205,6 +1235,9 @@ defmodule AppWeb.Live.DemoLive do
         :dropdown,
         :alert,
         :flash,
+        :badge,
+        :progress,
+        :card,
         :tabs,
         :accordion,
         :container,
@@ -1426,10 +1459,46 @@ defmodule AppWeb.Live.DemoLive do
           action: :container,
           title: "Container",
           eyebrow: "Container component",
-          description: "Card with header, content, action, and footer slots.",
+          description: "Page headers and Heroicon helpers for structural composition.",
           breadcrumb_parent: "Components",
           breadcrumb_current: "Container",
           icon: "hero-square-3-stack-3d",
+          path: path
+        }
+
+      :badge ->
+        %{
+          action: :badge,
+          title: "Badge",
+          eyebrow: "Badge component",
+          description: "Compact labels for statuses, categories, and counts.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Badge",
+          icon: "hero-tag",
+          path: path
+        }
+
+      :progress ->
+        %{
+          action: :progress,
+          title: "Progress",
+          eyebrow: "Progress component",
+          description: "Accessible progress bars for completion and loading states.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Progress",
+          icon: "hero-chart-bar",
+          path: path
+        }
+
+      :card ->
+        %{
+          action: :card,
+          title: "Card",
+          eyebrow: "Card component",
+          description: "Composable surfaces for grouping related content.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Card",
+          icon: "hero-square-2-stack",
           path: path
         }
 
@@ -1498,6 +1567,9 @@ defmodule AppWeb.Live.DemoLive do
   defp normalize_page_action("dropdown"), do: :dropdown
   defp normalize_page_action("alert"), do: :alert
   defp normalize_page_action("flash"), do: :flash
+  defp normalize_page_action("badge"), do: :badge
+  defp normalize_page_action("progress"), do: :progress
+  defp normalize_page_action("card"), do: :card
   defp normalize_page_action("tabs"), do: :tabs
   defp normalize_page_action("accordion"), do: :accordion
   defp normalize_page_action("container"), do: :container
@@ -1522,6 +1594,9 @@ defmodule AppWeb.Live.DemoLive do
               :dropdown,
               :alert,
               :flash,
+              :badge,
+              :progress,
+              :card,
               :tabs,
               :accordion,
               :container,
@@ -1548,6 +1623,9 @@ defmodule AppWeb.Live.DemoLive do
   defp page_path(:dropdown), do: ~p"/demo/dropdown"
   defp page_path(:alert), do: ~p"/demo/alert"
   defp page_path(:flash), do: ~p"/demo/flash"
+  defp page_path(:badge), do: ~p"/demo/badge"
+  defp page_path(:progress), do: ~p"/demo/progress"
+  defp page_path(:card), do: ~p"/demo/card"
   defp page_path(:tabs), do: ~p"/demo/tabs"
   defp page_path(:accordion), do: ~p"/demo/accordion"
   defp page_path(:container), do: ~p"/demo/container"

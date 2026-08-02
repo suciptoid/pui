@@ -43,6 +43,22 @@ defmodule AppWeb.LayoutAppFeatureTest do
     |> assert_has(css("a[href='/docs/table']", text: "Table"))
   end
 
+  feature "layout demo exposes canonical catalog pages", %{session: session} do
+    session
+    |> visit("/demo/badge")
+    |> assert_has(css("h1", text: "Badge"))
+    |> assert_has(css("#badges-demo", text: "Default"))
+    |> visit("/demo/progress")
+    |> assert_has(css("h1", text: "Progress"))
+    |> assert_has(css("[role='progressbar']"))
+    |> visit("/demo/card")
+    |> assert_has(css("h1", text: "Card"))
+    |> assert_has(css(".bg-card", text: "Profile"))
+    |> visit("/demo/container")
+    |> assert_has(css("h1", text: "Container"))
+    |> assert_has(css("h1", text: "Workspace settings"))
+  end
+
   feature "layout demo renders collapsed state from the app-owned cookie", %{session: session} do
     session
     |> visit("/demo/overview")

@@ -23,9 +23,24 @@ defmodule PUI do
       import PUI.Tabs
       import PUI.Dialog
       import PUI.Layout
+      import PUI.Badge
+      import PUI.Progress
+      import PUI.Card
       import PUI.Table
-      import PUI.Container, except: [icon: 1]
-      import PUI.Components
+
+      import PUI.Container,
+        except: [
+          icon: 1,
+          card: 1,
+          card_header: 1,
+          card_title: 1,
+          card_description: 1,
+          card_action: 1,
+          card_content: 1,
+          card_footer: 1
+        ]
+
+      import PUI.Components, except: [badge: 1, progress: 1]
     end
   end
 

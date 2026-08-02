@@ -41,4 +41,16 @@ defmodule AppWeb.DocsFeatureTest do
     |> assert_has(css("#docs-empty", text: "No projects found."))
     |> assert_has(css("#table-styled-demo", text: "Design Systems"))
   end
+
+  feature "catalog docs expose canonical Badge, Progress, and Card pages", %{session: session} do
+    session
+    |> visit("/docs/badge")
+    |> assert_has(css("article", text: "Badge"))
+    |> assert_has(css("#badges-demo", text: "Default"))
+    |> visit("/docs/progress")
+    |> assert_has(css("article", text: "Progress"))
+    |> assert_has(css("#progress-demo"))
+    |> visit("/docs/card")
+    |> assert_has(css("article", text: "Card"))
+  end
 end
