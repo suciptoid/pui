@@ -616,8 +616,7 @@ defmodule PUI.DatePickerComponent do
     [
       "group relative inline-flex h-7 w-full items-center justify-center p-0 outline-none",
       day.disabled? && "cursor-not-allowed",
-      (not day.disabled? and not day.selected? and not day.in_range?) &&
-        "hover:text-accent-foreground"
+      selectable_day?(day) && "hover:text-accent-foreground"
     ]
   end
 
@@ -625,21 +624,32 @@ defmodule PUI.DatePickerComponent do
     [
       "relative z-10 inline-flex size-7 items-center justify-center rounded-md text-[0.8125rem] transition-colors",
       "group-focus-visible:border-ring group-focus-visible:ring-ring/50 group-focus-visible:ring-[3px]",
-      (not day.disabled? and day.selected?) &&
-        "bg-primary font-medium text-primary-foreground hover:bg-primary/90",
-      (not day.disabled? and not day.selected? and day.in_range?) &&
-        "text-accent-foreground hover:bg-accent/35",
-      (not day.disabled? and not day.selected? and not day.in_range?) &&
-        "hover:bg-accent hover:text-accent-foreground",
+      selected_day?(day) && "bg-primary font-medium text-primary-foreground hover:bg-primary/90",
+      in_range_day?(day) && "text-accent-foreground hover:bg-accent/35",
+      selectable_day?(day) && "hover:bg-accent hover:text-accent-foreground",
       day.disabled? && "text-muted-foreground opacity-35",
       day.outside_month? && "text-muted-foreground opacity-60",
-      (not day.outside_month? and not day.selected? and not day.disabled?) && "text-foreground",
-      (day.today? and not day.selected? and not day.disabled?) &&
+      regular_day?(day) && "text-foreground",
+      today_day?(day) &&
         "font-medium text-primary underline decoration-primary decoration-2 underline-offset-4"
     ]
   end
 
   defp show_range_background?(day), do: day.in_range? or day.range_start? or day.range_end?
+
+  defp selectable_day?(day), do: not day.disabled? and not day.selected? and not day.in_range?
+
+  defp selected_day?(day), do: not day.disabled? and day.selected?
+
+  defp in_range_day?(day), do: not day.disabled? and not day.selected? and day.in_range?
+
+  defp regular_day?(day), do: not day.outside_month? and not day.selected? and not day.disabled?
+
+  defp today_day?(day), do: day.today? and not day.selected? and not day.disabled?
+
+  defp range_start_day?(day), do: day.range_start? and not day.range_end?
+
+  defp range_end_day?(day), do: day.range_end? and not day.range_start?
 
   defp day_range_aria_label(%{range_start?: true} = day),
     do: "Start of selected range, #{format_day_aria_date(day.value)}"
@@ -665,8 +675,8 @@ defmodule PUI.DatePickerComponent do
     [
       "absolute inset-y-0 bg-accent/75",
       day.in_range? && "inset-x-0",
-      (day.range_start? and not day.range_end?) && "left-1/2 right-0",
-      (day.range_end? and not day.range_start?) && "left-0 right-1/2"
+      range_start_day?(day) && "left-1/2 right-0",
+      range_end_day?(day) && "left-0 right-1/2"
     ]
   end
 
