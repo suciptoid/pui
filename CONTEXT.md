@@ -95,3 +95,7 @@ _Avoid_: toast, notification
 **Layout shell**:
 The structural page frame around application content, including navigation, sidebar state, and content headers.
 _Avoid_: dashboard, page layout
+
+**Data table**:
+A presentation surface that organizes a collection into labeled columns and rows while leaving data loading and row meaning to the host application.
+_Avoid_: query table, grid controller

@@ -23,6 +23,7 @@ defmodule PUI do
       import PUI.Tabs
       import PUI.Dialog
       import PUI.Layout
+      import PUI.Table
       import PUI.Container, except: [icon: 1]
       import PUI.Components
     end

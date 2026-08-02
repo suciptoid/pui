@@ -80,7 +80,7 @@ PUI provides components in several categories:
 | **Overlays** | Dialog, Popover, Tooltip |
 | **Feedback** | Alert, Toast/Flash, Loading |
 | **Layout** | Container, Card, Header |
-| **Data Display** | Progress, Badge |
+| **Data Display** | Table, Progress, Badge |
 
 <AppWeb.DocsDemo.getting_started_quick_demo />
 

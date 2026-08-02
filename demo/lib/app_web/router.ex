@@ -25,6 +25,7 @@ defmodule AppWeb.Router do
 
     live "/docs", Live.DocsLive, :index
     live "/docs/:slug", Live.DocsLive, :show
+    live "/demo", Live.DemoLive, :show
     live "/demo/:params_name", Live.DemoLive, :show
 
     live "/", Live.LandingLive, :index

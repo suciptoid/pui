@@ -32,4 +32,13 @@ defmodule AppWeb.DocsFeatureTest do
     |> assert_has(css("p", text: "Please enter your full name."))
     |> assert_has(css("p", text: "Please enter a valid email address."))
   end
+
+  feature "table docs render styled, unstyled, and empty table demos", %{session: session} do
+    session
+    |> visit("/docs/table")
+    |> assert_has(css("#docs-projects"))
+    |> assert_has(css("#docs-custom-projects"))
+    |> assert_has(css("#docs-empty", text: "No projects found."))
+    |> assert_has(css("#table-styled-demo", text: "Design Systems"))
+  end
 end

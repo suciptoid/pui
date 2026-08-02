@@ -50,14 +50,18 @@ Use `variant="unstyled"` to get component behavior without styling:
 
 ### Available Unstyled Components
 
-All components support `variant="unstyled"`:
+These component families support `variant="unstyled"`:
 
 - `button`
+- `accordion`
 - `menu_button`
+- `popover_base`
 - `tooltip`
 - `dialog`
 - `select`
 - `alert`
+- `tabs`
+- `table`
 
 ### Slot Classes
 

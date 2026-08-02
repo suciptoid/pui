@@ -24,10 +24,13 @@ The boundary is intentionally not a client/server ownership split for every valu
 | Forms | Input, Select, DatePicker | Render field-aware controls, normalize values, and expose validation feedback |
 | Disclosure and overlays | Dialog, Popover, Tooltip, Tabs | Coordinate triggers, content, focus, visibility, and relationships |
 | Feedback | Alert, Flash, Loading, Progress, Badge | Communicate status, transient messages, progress, and loading |
+| Data display | Table, Progress, Badge | Present collections, completion values, and compact status labels |
 | Data visualization | Chart, BarChart, LineChart | Render serializable chart configuration and data through browser chart hooks |
 | Shared vocabulary | Components, icon helpers | Supply small cross-family presentation and error helpers |
 
 Accordion is the native-behavior exception within the interactive families: it uses `<details>` and `<summary>` so its core expand/collapse behavior does not require a JavaScript hook. Other richer interactions are progressively enhanced with hooks or LiveView JS commands.
+
+Tables are presentation primitives rather than data-querying components. A table can render ordinary lists or LiveView streams and expose row/slot callbacks, but the host application owns sorting, filtering, pagination, authorization, and data loading.
 
 ## Three usage levels
 

@@ -47,7 +47,7 @@ defmodule PUI.MixProject do
       links: %{"GitHub" => "https://github.com/suciptoid/pui"},
       maintainers: ["Sucipto"],
       files: ~w(
-        assets/js assets/css lib priv mix.exs package.json README.md guides
+        assets/js assets/css lib priv mix.exs package.json README.md CONTEXT.md docs guides
       )
     ]
   end
@@ -57,14 +57,22 @@ defmodule PUI.MixProject do
       main: "readme",
       extras: [
         "README.md",
+        "CONTEXT.md",
+        "docs/domain-model.md",
         "guides/usage.md",
+        "guides/table.md",
         "guides/headless-usage.md",
         "guides/layouts.md",
         "guides/migrate-to-pui.md"
       ],
       groups_for_extras: [
+        "Project Model": [
+          "CONTEXT.md",
+          "docs/domain-model.md"
+        ],
         Guides: [
           "guides/usage.md",
+          "guides/table.md",
           "guides/headless-usage.md",
           "guides/layouts.md",
           "guides/migrate-to-pui.md"

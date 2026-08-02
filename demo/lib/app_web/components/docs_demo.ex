@@ -2840,6 +2840,69 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def table_demo(assigns) do
+    assigns =
+      assign(assigns, :table_rows, [
+        %{id: "pui", name: "PUI", owner: "Design Systems", status: "Published"},
+        %{id: "keping", name: "Keping", owner: "Accounting", status: "In review"},
+        %{id: "bundar", name: "Bundar", owner: "Infrastructure", status: "Draft"}
+      ])
+
+    ~H"""
+    <section class="space-y-6" id="table-demo">
+      <.demo_section title="Styled table with row actions" id="table-styled-demo">
+        <.table id="docs-projects" rows={@table_rows}>
+          <:col :let={project} label="Project">{project.name}</:col>
+          <:col :let={project} label="Owner">{project.owner}</:col>
+          <:col :let={project} label="Status">
+            <.badge variant={if project.status == "Published", do: "default", else: "secondary"}>
+              {project.status}
+            </.badge>
+          </:col>
+          <:action :let={project}>
+            <.button
+              size="sm"
+              variant="ghost"
+              phx-click="add-new-item"
+              phx-value-item={project.id}
+            >
+              View
+            </.button>
+          </:action>
+        </.table>
+      </.demo_section>
+
+      <.demo_section title="Unstyled table with part classes" id="table-unstyled-demo">
+        <.table
+          id="docs-custom-projects"
+          rows={@table_rows}
+          variant="unstyled"
+          class="overflow-hidden rounded-lg border border-border"
+          table_class="w-full text-sm"
+          header_class="bg-muted"
+          header_cell_class="px-4 py-3 text-left text-xs uppercase tracking-wide text-muted-foreground"
+          row_class="border-b border-border last:border-b-0"
+          cell_class="px-4 py-3"
+        >
+          <:col :let={project} label="Project">{project.name}</:col>
+          <:col :let={project} label="Status" cell_class="text-right">{project.status}</:col>
+        </.table>
+      </.demo_section>
+
+      <.demo_section title="Empty list" id="table-empty-demo">
+        <.table id="docs-empty" rows={[]}>
+          <:col label="Project">Project</:col>
+          <:empty>
+            <div class="px-6 py-8 text-center text-sm text-muted-foreground">
+              No projects found.
+            </div>
+          </:empty>
+        </.table>
+      </.demo_section>
+    </section>
+    """
+  end
+
   attr :title, :string, required: true
   attr :id, :string, required: true
   slot :inner_block, required: true

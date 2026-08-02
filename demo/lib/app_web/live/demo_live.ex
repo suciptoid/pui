@@ -123,6 +123,14 @@ defmodule AppWeb.Live.DemoLive do
                     Tabs
                   </.link>
                 </:subitem>
+                <:subitem>
+                  <.link
+                    navigate={~p"/docs/table"}
+                    class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
+                  >
+                    Table
+                  </.link>
+                </:subitem>
               </.sidebar_menu_item>
             </div>
           </nav>
@@ -201,6 +209,8 @@ defmodule AppWeb.Live.DemoLive do
               <AppWeb.Live.DemoPages.popover_page page={@page} />
             <% :loading -> %>
               <AppWeb.Live.DemoPages.loading_page page={@page} />
+            <% :table -> %>
+              <AppWeb.Live.DemoPages.table_page page={@page} />
           <% end %>
         </div>
       </section>
@@ -1200,7 +1210,8 @@ defmodule AppWeb.Live.DemoLive do
         :container,
         :charts,
         :popover,
-        :loading
+        :loading,
+        :table
       ],
       &page_config/1
     )
@@ -1457,6 +1468,19 @@ defmodule AppWeb.Live.DemoLive do
           icon: "hero-arrow-path",
           path: path
         }
+
+      :table ->
+        %{
+          action: :table,
+          title: "Table",
+          eyebrow: "Table component",
+          description:
+            "Styled, stream-aware data tables with explicit slots and part-level customization.",
+          breadcrumb_parent: "Components",
+          breadcrumb_current: "Table",
+          icon: "hero-table-cells",
+          path: path
+        }
     end
   end
 
@@ -1480,6 +1504,7 @@ defmodule AppWeb.Live.DemoLive do
   defp normalize_page_action("charts"), do: :charts
   defp normalize_page_action("popover"), do: :popover
   defp normalize_page_action("loading"), do: :loading
+  defp normalize_page_action("table"), do: :table
 
   defp normalize_page_action(action)
        when action in [
@@ -1502,7 +1527,8 @@ defmodule AppWeb.Live.DemoLive do
               :container,
               :charts,
               :popover,
-              :loading
+              :loading,
+              :table
             ],
        do: action
 
@@ -1528,6 +1554,7 @@ defmodule AppWeb.Live.DemoLive do
   defp page_path(:charts), do: ~p"/demo/charts"
   defp page_path(:popover), do: ~p"/demo/popover"
   defp page_path(:loading), do: ~p"/demo/loading"
+  defp page_path(:table), do: ~p"/demo/table"
 
   defp overview_chart_labels do
     ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]

@@ -102,6 +102,7 @@ end
 - `PUI.Layout`
 - `PUI.Popover`
 - `PUI.Select`
+- `PUI.Table`
 - `PUI.Tabs`
 - `PUI.Components` (shared UI helpers)
 

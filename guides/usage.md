@@ -253,6 +253,18 @@ PUI.Flash.send_flash(%PUI.Flash.Message{
 })
 ```
 
+### Table
+
+```heex
+<.table id="projects" rows={@projects}>
+  <:col :let={project} label="Project">{project.name}</:col>
+  <:col :let={project} label="Status">{project.status}</:col>
+</.table>
+```
+
+See the [Table guide](table.md) for LiveView streams, row actions, empty states,
+part-level customization, and unstyled mode.
+
 ### Progress & Badge
 
 ```heex

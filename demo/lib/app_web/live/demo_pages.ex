@@ -976,6 +976,124 @@ defmodule AppWeb.Live.DemoPages do
     """
   end
 
+  # ── Table ───────────────────────────────────────────────────────────────
+
+  attr :page, :map, required: true
+
+  def table_page(assigns) do
+    ~H"""
+    <.page_intro page={@page}>
+      <:action>
+        <.button navigate={~p"/docs/table"} variant="outline">
+          <.icon name="hero-book-open" class="size-4" /> Read the guide
+        </.button>
+      </:action>
+    </.page_intro>
+
+    <.surface
+      title="Styled table"
+      description="The default variant supplies semantic borders, spacing, typography, and an overflow wrapper while the host owns the row data and actions."
+    >
+      <.table id="demo-table-projects" rows={table_projects()}>
+        <:caption>Active projects</:caption>
+        <:col :let={project} label="Project">
+          <div class="space-y-1">
+            <p class="font-medium text-foreground">{project.name}</p>
+            <p class="text-xs text-muted-foreground">{project.owner}</p>
+          </div>
+        </:col>
+        <:col :let={project} label="Status">
+          <span class={status_class(project.status)}>{project.status}</span>
+        </:col>
+        <:col :let={project} label="Updated">{project.updated}</:col>
+        <:action>
+          <.button size="sm" variant="ghost" navigate={~p"/docs/table"}>
+            View
+          </.button>
+        </:action>
+      </.table>
+    </.surface>
+
+    <.surface
+      title="Unstyled table"
+      description="Keep the semantic table and slot contract, then supply your own visual system through explicit part classes."
+    >
+      <.table
+        id="demo-table-custom-projects"
+        rows={table_projects()}
+        variant="unstyled"
+        class="overflow-hidden rounded-xl border border-primary/20 bg-primary/5"
+        table_class="w-full text-sm"
+        header_class="bg-primary/10"
+        header_cell_class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-primary"
+        row_class="border-t border-primary/10"
+        cell_class="px-4 py-3 text-muted-foreground"
+        action_header_class="px-4 py-3"
+        action_cell_class="px-4 py-3"
+        action_class="flex justify-end"
+      >
+        <:caption>Custom project table</:caption>
+        <:col :let={project} label="Project" cell_class="font-medium text-foreground">
+          {project.name}
+        </:col>
+        <:col :let={project} label="Owner">{project.owner}</:col>
+        <:col :let={project} label="Updated">{project.updated}</:col>
+      </.table>
+    </.surface>
+
+    <.surface
+      title="Empty state"
+      description="The empty slot is rendered inside the table body so the host can explain what to do next without rebuilding the table markup."
+    >
+      <.table id="demo-table-empty" rows={[]}>
+        <:col label="Project" />
+        <:col label="Owner" />
+        <:col label="Updated" />
+        <:empty>
+          <div class="px-6 py-10 text-center">
+            <.icon name="hero-folder-open" class="mx-auto size-8 text-muted-foreground/60" />
+            <p class="mt-3 text-sm font-medium text-foreground">No projects yet</p>
+            <p class="mt-1 text-sm text-muted-foreground">
+              Create a project to see it appear in this table.
+            </p>
+          </div>
+        </:empty>
+      </.table>
+    </.surface>
+    """
+  end
+
+  defp table_projects do
+    [
+      %{id: "pui", name: "PUI", owner: "Suka Cipta", status: "Ready", updated: "Just now"},
+      %{
+        id: "keping",
+        name: "Keping",
+        owner: "Ledger team",
+        status: "In review",
+        updated: "2 hours ago"
+      },
+      %{
+        id: "bundar",
+        name: "Bundar",
+        owner: "Product team",
+        status: "Draft",
+        updated: "Yesterday"
+      }
+    ]
+  end
+
+  defp status_class("Ready"),
+    do:
+      "rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300"
+
+  defp status_class("In review"),
+    do:
+      "rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700 dark:text-amber-300"
+
+  defp status_class(_status),
+    do: "rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
+
   # ── Chart ───────────────────────────────────────────────────────────────
 
   attr :page, :map, required: true
