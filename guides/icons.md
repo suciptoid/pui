@@ -144,20 +144,3 @@ an icon outside PUI's small semantic vocabulary:
 The slot can contain a Phoenix Heroicon, a Lucide component, a Tabler component,
 or custom SVG markup. PUI owns the surrounding layout and accessibility
 relationship, while the host owns the icon library.
-
-## Migration
-
-Replace the removed Heroicons-specific helper:
-
-```heex
-<PUI.Container.icon name="hero-check-circle" />
-```
-
-with a PUI-owned semantic token:
-
-```heex
-<PUI.Icon.icon name={:success} />
-```
-
-or use the host application's icon component directly when the icon is
-application-owned.

@@ -51,7 +51,7 @@ defmodule AppWeb.Live.LandingLive do
         <%!-- Hero --%>
         <main class="mx-auto max-w-4xl px-6 pt-12 pb-20 text-center lg:px-8 lg:pt-20 lg:pb-28">
           <div class="inline-flex items-center gap-2 rounded-full border border-blue-500/25 bg-blue-600/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:border-blue-400/25 dark:bg-blue-500/15 dark:text-blue-100">
-            <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> v1.0.0 beta
+            <span class="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> v1.0.0
           </div>
 
           <h1 class="mt-6 text-5xl font-bold tracking-tight leading-[1.1] text-gray-900 dark:text-gray-50 sm:text-6xl lg:text-7xl">

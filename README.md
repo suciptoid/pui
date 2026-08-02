@@ -26,7 +26,7 @@ Add `pui` to `mix.exs`:
 ```elixir
 defp deps do
   [
-    {:pui, "~> 1.0.0-beta.9"}
+    {:pui, "~> 1.0"}
   ]
 end
 ```
@@ -90,8 +90,10 @@ end
 ## Components Included by `use PUI`
 
 - `PUI.Accordion`
+- `PUI.Avatar`
 - `PUI.Alert`
 - `PUI.Badge`
+- `PUI.Breadcrumb`
 - `PUI.Button`
 - `PUI.ButtonGroup`
 - `PUI.Card`
@@ -100,11 +102,15 @@ end
 - `PUI.DatePicker`
 - `PUI.Dialog`
 - `PUI.Dropdown`
+- `PUI.Empty`
 - `PUI.Input`
 - `PUI.Layout`
+- `PUI.Pagination`
 - `PUI.Popover`
 - `PUI.Progress`
 - `PUI.Select`
+- `PUI.Separator`
+- `PUI.Skeleton`
 - `PUI.Table`
 - `PUI.Tabs`
 - `PUI.Components` (shared form and rendering helpers)
@@ -112,6 +118,7 @@ end
 Additional modules available directly:
 
 - `PUI.Flash` (flash/toast rendering and helpers)
+- `PUI.Icon` and `PUI.IconProvider` (provider-agnostic semantic icons)
 - `PUI.Loading` (loading indicators)
 - `PUI.MenuButton`
 
@@ -149,6 +156,13 @@ PUI supports three usage levels:
 ## Guides
 
 - [Usage Guide](guides/usage.md)
+- [Icons Guide](guides/icons.md)
+- [Breadcrumb Guide](guides/breadcrumb.md)
+- [Pagination Guide](guides/pagination.md)
+- [Empty Guide](guides/empty.md)
+- [Separator Guide](guides/separator.md)
+- [Skeleton Guide](guides/skeleton.md)
+- [Avatar Guide](guides/avatar.md)
 - [Headless Usage Guide](guides/headless-usage.md)
 - [Layouts Guide](guides/layouts.md)
 - [Migrate to PUI](guides/migrate-to-pui.md)

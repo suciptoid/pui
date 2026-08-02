@@ -2932,6 +2932,162 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def breadcrumb_demo(assigns) do
+    ~H"""
+    <section id="breadcrumb-demo" class="space-y-6">
+      <.demo_section title="Dashboard path" id="breadcrumb-basic-demo">
+        <.breadcrumb>
+          <.breadcrumb_list>
+            <.breadcrumb_item>
+              <.breadcrumb_link href="/">Home</.breadcrumb_link>
+            </.breadcrumb_item>
+            <.breadcrumb_separator />
+            <.breadcrumb_item>
+              <.breadcrumb_link patch="/docs/breadcrumb?section=layout">Layout</.breadcrumb_link>
+            </.breadcrumb_item>
+            <.breadcrumb_separator>
+              <span class="text-muted-foreground/60">/</span>
+            </.breadcrumb_separator>
+            <.breadcrumb_item>
+              <.breadcrumb_page>Breadcrumb</.breadcrumb_page>
+            </.breadcrumb_item>
+          </.breadcrumb_list>
+        </.breadcrumb>
+      </.demo_section>
+
+      <.demo_section title="Collapsed path" id="breadcrumb-collapsed-demo">
+        <.breadcrumb>
+          <.breadcrumb_list>
+            <.breadcrumb_item>
+              <.breadcrumb_link href="/">Home</.breadcrumb_link>
+            </.breadcrumb_item>
+            <.breadcrumb_separator />
+            <.breadcrumb_ellipsis />
+            <.breadcrumb_separator />
+            <.breadcrumb_item>
+              <.breadcrumb_page>Current page</.breadcrumb_page>
+            </.breadcrumb_item>
+          </.breadcrumb_list>
+        </.breadcrumb>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  def separator_demo(assigns) do
+    ~H"""
+    <section id="separator-demo" class="space-y-6">
+      <.demo_section title="Horizontal" id="separator-horizontal-demo">
+        <div class="space-y-4">
+          <p class="text-sm text-muted-foreground">Account details</p>
+          <.separator />
+          <p class="text-sm text-muted-foreground">Notification preferences</p>
+        </div>
+      </.demo_section>
+
+      <.demo_section title="Vertical" id="separator-vertical-demo">
+        <div class="flex h-8 items-center gap-3 text-sm">
+          <span>Overview</span>
+          <.separator orientation="vertical" class="h-5" />
+          <span>Activity</span>
+          <.separator orientation="vertical" class="h-5" />
+          <span>Settings</span>
+        </div>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  def empty_demo(assigns) do
+    ~H"""
+    <section id="empty-demo" class="space-y-6">
+      <.empty id="empty-projects-demo">
+        <:icon><PUI.Icon.icon name={:search} class="size-6" /></:icon>
+        <:title>No projects found</:title>
+        <:description>Try a different search or create your first project.</:description>
+        <:actions><.button>Create project</.button></:actions>
+      </.empty>
+
+      <.empty id="empty-notifications-demo" variant="unstyled" class="py-6">
+        <:title>No new notifications</:title>
+        <:description>You are all caught up.</:description>
+      </.empty>
+    </section>
+    """
+  end
+
+  def skeleton_demo(assigns) do
+    ~H"""
+    <section id="skeleton-demo" class="space-y-6">
+      <.demo_section title="Project loading state" id="skeleton-project-demo">
+        <div class="flex items-center gap-4">
+          <.skeleton class="size-12 rounded-full" />
+          <div class="flex-1 space-y-2">
+            <.skeleton class="h-4 w-40" />
+            <.skeleton class="h-3 w-64" />
+          </div>
+        </div>
+        <.skeleton class="mt-6 h-24 w-full rounded-xl" />
+      </.demo_section>
+    </section>
+    """
+  end
+
+  def pagination_demo(assigns) do
+    assigns = assign(assigns, :demo_page_url, fn page -> "/docs/pagination?page=#{page}" end)
+
+    ~H"""
+    <section id="pagination-demo" class="space-y-6">
+      <.demo_section title="Eight pages" id="pagination-basic-demo">
+        <.pagination
+          id="docs-pagination"
+          current_page={3}
+          total_pages={8}
+          page_url={@demo_page_url}
+          link_mode="href"
+        />
+      </.demo_section>
+
+      <.demo_section title="Custom labels" id="pagination-custom-demo">
+        <.pagination
+          id="docs-pagination-custom"
+          current_page={2}
+          total_pages={4}
+          page_url={@demo_page_url}
+          link_mode="href"
+        >
+          <:previous>Back</:previous>
+          <:next>Forward</:next>
+          <:page :let={page}>Page {page}</:page>
+        </.pagination>
+      </.demo_section>
+    </section>
+    """
+  end
+
+  def avatar_demo(assigns) do
+    ~H"""
+    <section id="avatar-demo" class="space-y-6">
+      <.demo_section title="Sizes and fallbacks" id="avatar-sizes-demo">
+        <div class="flex items-center gap-4">
+          <.avatar size="sm" alt="Sucipto" fallback_text="SC" />
+          <.avatar alt="PUI" fallback_text="PU" />
+          <.avatar size="lg" alt="Team">
+            <:fallback>TM</:fallback>
+          </.avatar>
+        </div>
+      </.demo_section>
+
+      <.demo_section title="Image source" id="avatar-image-demo">
+        <div class="flex items-center gap-3">
+          <.avatar src="/images/logo.svg" alt="PUI logo" size="lg" fallback_text="PU" />
+          <span class="text-sm text-muted-foreground">Host-owned image and alt text</span>
+        </div>
+      </.demo_section>
+    </section>
+    """
+  end
+
   attr :title, :string, required: true
   attr :id, :string, required: true
   slot :inner_block, required: true

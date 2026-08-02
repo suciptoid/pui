@@ -27,6 +27,12 @@ defmodule PUI do
       import PUI.Progress
       import PUI.Card
       import PUI.Table
+      import PUI.Breadcrumb
+      import PUI.Separator
+      import PUI.Empty
+      import PUI.Skeleton
+      import PUI.Pagination
+      import PUI.Avatar
 
       import PUI.Container,
         except: [

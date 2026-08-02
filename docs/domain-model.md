@@ -19,12 +19,12 @@ The boundary is intentionally not a client/server ownership split for every valu
 
 | Area | Component families | Primary responsibility |
 | --- | --- | --- |
-| Composition and structure | Accordion, ButtonGroup, Card, Container, Layout | Group content and actions into reusable structural shapes |
+| Composition and structure | Accordion, Avatar, Breadcrumb, ButtonGroup, Card, Container, Empty, Layout, Separator, Skeleton | Group content and actions into reusable structural shapes |
 | Actions and navigation | Button, Dropdown | Provide actionable controls, links, menu triggers, and menu items |
 | Forms | Input, Select, DatePicker | Render field-aware controls, normalize values, and expose validation feedback |
 | Disclosure and overlays | Dialog, Popover, Tooltip, Tabs | Coordinate triggers, content, focus, visibility, and relationships |
 | Feedback | Alert, Badge, Flash, Loading, Progress | Communicate status, transient messages, progress, and loading |
-| Data display | Badge, Progress, Table | Present compact labels, completion values, and collections |
+| Data display | Badge, Empty, Pagination, Progress, Table | Present compact labels, completion values, and collections |
 | Data visualization | Chart, BarChart, LineChart | Render serializable chart configuration and data through browser chart hooks |
 | Shared vocabulary | Components, icon provider | Supply small cross-family presentation and error helpers while leaving icon-library choice to the host |
 

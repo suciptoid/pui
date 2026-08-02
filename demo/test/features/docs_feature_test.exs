@@ -53,4 +53,24 @@ defmodule AppWeb.DocsFeatureTest do
     |> visit("/docs/card")
     |> assert_has(css("article", text: "Card"))
   end
+
+  feature "v1 primitive docs render their demos", %{session: session} do
+    session
+    |> visit("/docs/breadcrumb")
+    |> assert_has(css("#breadcrumb-demo"))
+    |> assert_has(css("[aria-current='page']", text: "Breadcrumb"))
+    |> visit("/docs/separator")
+    |> assert_has(css("#separator-demo"))
+    |> visit("/docs/empty")
+    |> assert_has(css("#empty-demo"))
+    |> assert_has(css("#empty-projects-demo", text: "No projects found"))
+    |> visit("/docs/skeleton")
+    |> assert_has(css("#skeleton-demo [data-slot='skeleton']"))
+    |> visit("/docs/pagination")
+    |> assert_has(css("#docs-pagination"))
+    |> assert_has(css("#docs-pagination [aria-current='page']"))
+    |> visit("/docs/avatar")
+    |> assert_has(css("#avatar-demo"))
+    |> assert_has(css("#avatar-sizes-demo [data-slot='avatar-fallback']"))
+  end
 end

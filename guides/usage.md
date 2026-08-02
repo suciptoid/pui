@@ -11,7 +11,7 @@ Add `pui` to your `mix.exs`:
 ```elixir
 defp deps do
   [
-    {:pui, "~> 1.0.0-alpha"}
+    {:pui, "~> 1.0"}
   ]
 end
 ```

@@ -4,7 +4,7 @@ defmodule PUI.MixProject do
   def project do
     [
       app: :pui,
-      version: "1.0.0-beta.18",
+      version: "1.0.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -22,6 +22,10 @@ defmodule PUI.MixProject do
     [
       extra_applications: [:logger]
     ]
+  end
+
+  def cli do
+    [preferred_envs: [precommit: :test]]
   end
 
   # Specifies which paths to compile per environment.
@@ -47,7 +51,8 @@ defmodule PUI.MixProject do
       links: %{"GitHub" => "https://github.com/suciptoid/pui"},
       maintainers: ["Sucipto"],
       files: ~w(
-        assets/js assets/css lib priv mix.exs package.json README.md CONTEXT.md docs guides
+        assets/js assets/css lib priv mix.exs package.json README.md LICENSE.md CHANGELOG.md
+        CONTEXT.md docs/adr docs/domain-model.md guides
       )
     ]
   end
@@ -64,6 +69,12 @@ defmodule PUI.MixProject do
         "guides/progress.md",
         "guides/card.md",
         "guides/icons.md",
+        "guides/breadcrumb.md",
+        "guides/separator.md",
+        "guides/empty.md",
+        "guides/skeleton.md",
+        "guides/pagination.md",
+        "guides/avatar.md",
         "guides/table.md",
         "guides/headless-usage.md",
         "guides/layouts.md",
@@ -80,6 +91,12 @@ defmodule PUI.MixProject do
           "guides/progress.md",
           "guides/card.md",
           "guides/icons.md",
+          "guides/breadcrumb.md",
+          "guides/separator.md",
+          "guides/empty.md",
+          "guides/skeleton.md",
+          "guides/pagination.md",
+          "guides/avatar.md",
           "guides/table.md",
           "guides/headless-usage.md",
           "guides/layouts.md",
@@ -100,6 +117,7 @@ defmodule PUI.MixProject do
       setup: ["deps.get", "assets.setup", "assets.build"],
       "assets.setup": ["esbuild.install --if-missing"],
       "assets.build": ["cmd --cd assets npm ci", "esbuild main", "esbuild module"],
+      precommit: ["compile --warnings-as-errors", "format --check-formatted", "test"],
       build: ["assets.build", "hex.build"],
       publish: ["build", "hex.publish"],
       dev: ["esbuild module --watch"]
