@@ -11,7 +11,7 @@ PUI does not own business entities, persistence, authorization, routing policy, 
 | Host application | Business meaning, LiveView state, events, forms, and persistence | Assigns, slots, IDs, values, JS commands, and event handlers |
 | PUI server components | HTML structure, semantic relationships, default presentation, normalization, and server-facing value plumbing | Rendered markup, ARIA state, `data-*` markers, hidden fields, and hook declarations |
 | PUI browser hooks | Ephemeral interaction, focus, keyboard navigation, positioning, resizing, animation state, and client-only persistence | Native events, custom PUI events, LiveView events, and DOM state |
-| Host application's design system | Brand presentation and application-specific composition | CSS variables, utility classes, custom slots, and unstyled-component classes |
+| Host application's design system | Brand presentation, icon vocabulary, and application-specific composition | CSS variables, utility classes, icon providers, custom slots, and unstyled-component classes |
 
 The boundary is intentionally not a client/server ownership split for every value. A selected form value may be server-owned while the open state of the select popup is browser-owned. The important question is whether the state must participate in LiveView rendering and application behavior.
 
@@ -26,7 +26,7 @@ The boundary is intentionally not a client/server ownership split for every valu
 | Feedback | Alert, Badge, Flash, Loading, Progress | Communicate status, transient messages, progress, and loading |
 | Data display | Badge, Progress, Table | Present compact labels, completion values, and collections |
 | Data visualization | Chart, BarChart, LineChart | Render serializable chart configuration and data through browser chart hooks |
-| Shared vocabulary | Components, icon helpers | Supply small cross-family presentation and error helpers |
+| Shared vocabulary | Components, icon provider | Supply small cross-family presentation and error helpers while leaving icon-library choice to the host |
 
 Accordion is the native-behavior exception within the interactive families: it uses `<details>` and `<summary>` so its core expand/collapse behavior does not require a JavaScript hook. Other richer interactions are progressively enhanced with hooks or LiveView JS commands.
 
@@ -52,6 +52,7 @@ PUI component families generally follow these rules:
 - Roles and ARIA attributes remain part of the component contract in unstyled mode.
 - A class passed to a styled component augments its default presentation; an unstyled component treats consumer classes as its visual implementation.
 - Global attributes are forwarded only where the component's public contract allows them.
+- PUI-owned icon intent crosses the host boundary as an icon token; application-owned icons cross it as slot content.
 
 For hook-backed families, the markup is an API. A change to a `data-pui` marker, derived ID, hook name, role, or event name can break browser behavior even when the rendered HTML still looks correct.
 

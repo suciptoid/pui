@@ -55,8 +55,12 @@ use PUI
       </:header>
 
       <nav class="space-y-1 p-3">
-        <.sidebar_menu_item title="Overview" icon="hero-home" href="/overview" current />
-        <.sidebar_menu_item title="Settings" icon="hero-cog-6-tooth" href="/settings" />
+        <.sidebar_menu_item title="Overview" href="/overview" current>
+          <:icon><.icon name="hero-home" class="size-4" /></:icon>
+        </.sidebar_menu_item>
+        <.sidebar_menu_item title="Settings" href="/settings">
+          <:icon><.icon name="hero-cog-6-tooth" class="size-4" /></:icon>
+        </.sidebar_menu_item>
       </nav>
     </.sidebar>
   </:sidebar>

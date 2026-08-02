@@ -2907,6 +2907,31 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def icons_demo(assigns) do
+    ~H"""
+    <section id="icons-demo" class="space-y-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex items-center gap-2 rounded-md border border-border px-3 py-2">
+          <PUI.Icon.icon name={:calendar} class="size-4 text-primary" />
+          <span class="text-sm">Default semantic provider</span>
+        </div>
+        <div class="flex items-center gap-2 rounded-md border border-border px-3 py-2">
+          <PUI.Icon.icon name={:success} class="size-4 text-green-600" />
+          <span class="text-sm">Provider-rendered status</span>
+        </div>
+      </div>
+
+      <.alert id="icons-slot-demo">
+        <:icon><.icon name="hero-sparkles" class="size-5" /></:icon>
+        <.alert_title>Application-owned icon slot</.alert_title>
+        <.alert_description>
+          The host application can render any icon library through a slot.
+        </.alert_description>
+      </.alert>
+    </section>
+    """
+  end
+
   attr :title, :string, required: true
   attr :id, :string, required: true
   slot :inner_block, required: true

@@ -4,6 +4,7 @@ defmodule PUI.ProgressTest do
   import Phoenix.Component
   import Phoenix.LiveViewTest
   import PUI.Progress
+  import PUI.TestComponentHelpers
 
   test "renders an accessible progressbar" do
     assigns = %{}
@@ -22,19 +23,15 @@ defmodule PUI.ProgressTest do
   end
 
   test "keeps the deprecated shared-module entry point rendering the same component" do
-    assigns = %{}
-
     html =
-      rendered_to_string(~H"""
-      <PUI.Components.progress
-        min={0}
-        max={10}
-        value={3}
-        label="Items"
-        value_text="3 of 10"
-        class="legacy-progress"
-      />
-      """)
+      render_deprecated_component(PUI.Components, :progress, %{
+        min: 0,
+        max: 10,
+        value: 3,
+        label: "Items",
+        value_text: "3 of 10",
+        class: "legacy-progress"
+      })
 
     assert html =~ "legacy-progress"
     assert html =~ ~s(aria-valuemax="10")

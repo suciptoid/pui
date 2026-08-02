@@ -257,7 +257,7 @@ defmodule PUI.Dialog do
               phx-click={@hide}
               aria-label="Close dialog"
             >
-              <span class="hero-x-mark size-5" />
+              <PUI.Icon.icon name={:close} class="size-5" />
             </button>
           </div>
           <div class={[

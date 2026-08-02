@@ -1,6 +1,6 @@
 %{
   title: "Container",
-  description: "Structural helpers for page headers and Heroicons.",
+  description: "Structural helpers for page headers and content composition.",
   group: "Layout",
   order: 1,
   icon: "hero-view-columns"
@@ -32,15 +32,6 @@ Use `header/1` for a page-level heading with an optional subtitle and actions:
 </.header>
 ```
 
-## Icon
-
-Render bundled Heroicons by name:
-
-```heex
-<.icon name="hero-check-circle" />
-<.icon name="hero-arrow-path" class="size-5 animate-spin" />
-```
-
 The canonical Card module is `PUI.Card`. Existing qualified
 `PUI.Container.card*` calls remain available as deprecated compatibility
 wrappers.
@@ -54,10 +45,3 @@ wrappers.
 | `inner_block` | yes | Page title |
 | `subtitle` | — | Supporting description |
 | `actions` | — | Right-aligned actions |
-
-### Icon attributes
-
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `name` | `string` | required | Heroicon name beginning with `hero-` |
-| `class` | `string` | `"size-4"` | Icon classes |

@@ -111,6 +111,7 @@ defmodule PUI.Flash do
   """
 
   use Phoenix.LiveComponent
+  import PUI.Icon, only: [icon: 1]
 
   defmodule Message do
     defstruct id: nil,
@@ -325,16 +326,7 @@ defmodule PUI.Flash do
         data-close
         class="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="2"
-          stroke="currentColor"
-          class="size-3"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-        </svg>
+        <.icon name={:close} class="size-3" />
       </button>
     </div>
     """
@@ -369,16 +361,7 @@ defmodule PUI.Flash do
         data-close
         class="absolute hidden group-hover:flex top-1.5 right-1.5 p-0.5 w-fit items-center justify-center rounded-sm hover:bg-popover/90"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="size-4"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-        </svg>
+        <.icon name={:close} class="size-4" />
       </button>
     </div>
     """
@@ -387,89 +370,23 @@ defmodule PUI.Flash do
   attr :type, :atom, required: true
 
   defp flash_icon(%{type: :success} = assigns) do
-    ~H"""
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="size-4 shrink-0 text-green-500"
-    >
-      <circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" />
-    </svg>
-    """
+    ~H|<.icon name={:success} class="size-4 shrink-0 text-green-500" />|
   end
 
   defp flash_icon(%{type: :error} = assigns) do
-    ~H"""
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="size-4 shrink-0 text-red-500"
-    >
-      <circle cx="12" cy="12" r="10" /><path d="m15 9-6 6" /><path d="m9 9 6 6" />
-    </svg>
-    """
+    ~H|<.icon name={:error} class="size-4 shrink-0 text-red-500" />|
   end
 
   defp flash_icon(%{type: :warning} = assigns) do
-    ~H"""
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="size-4 shrink-0 text-yellow-500"
-    >
-      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-      <path d="M12 9v4" /><path d="M12 17h.01" />
-    </svg>
-    """
+    ~H|<.icon name={:warning} class="size-4 shrink-0 text-yellow-500" />|
   end
 
   defp flash_icon(%{type: :info} = assigns) do
-    ~H"""
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="size-4 shrink-0 text-blue-500"
-    >
-      <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
-    </svg>
-    """
+    ~H|<.icon name={:info} class="size-4 shrink-0 text-blue-500" />|
   end
 
   defp flash_icon(assigns) do
-    ~H"""
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="size-4 shrink-0 text-blue-500"
-    >
-      <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
-    </svg>
-    """
+    ~H|<.icon name={:info} class="size-4 shrink-0 text-blue-500" />|
   end
 
   @doc """

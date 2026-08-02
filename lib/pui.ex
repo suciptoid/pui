@@ -30,7 +30,6 @@ defmodule PUI do
 
       import PUI.Container,
         except: [
-          icon: 1,
           card: 1,
           card_header: 1,
           card_title: 1,

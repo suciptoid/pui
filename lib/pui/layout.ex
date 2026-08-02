@@ -16,7 +16,9 @@ defmodule PUI.Layout do
             </:header>
 
             <nav class="p-3">
-              <.sidebar_menu_item title="Getting Started" icon="hero-rocket-launch" href="/docs" />
+              <.sidebar_menu_item title="Getting Started" href="/docs">
+                <:icon><.icon name="hero-rocket-launch" /></:icon>
+              </.sidebar_menu_item>
             </nav>
           </.sidebar>
         </:sidebar>
@@ -35,10 +37,10 @@ defmodule PUI.Layout do
 
       <.sidebar_menu_item
         title="Components"
-        icon="hero-squares-2x2"
         collapsible
         expanded
       >
+        <:icon><.icon name="hero-squares-2x2" /></:icon>
         <:subitem>
           <.link href="/docs/button" class="block rounded-md px-2 py-1.5 text-sm">Button</.link>
         </:subitem>
@@ -55,6 +57,7 @@ defmodule PUI.Layout do
   """
 
   use Phoenix.Component
+  import PUI.Icon, only: [icon: 1]
   import PUI.Popover, only: [tooltip: 1]
   import PUI.Dropdown, only: [menu_button: 1]
 
@@ -193,7 +196,6 @@ defmodule PUI.Layout do
   |------|------|---------|-------------|
   | `id` | `string` | derived from `title` | Stable DOM id |
   | `title` | `string` | required | Visible item label and link title |
-  | `icon` | `string` | required | Heroicon class, such as `"hero-home"` |
   | `navigate` | `string` | `nil` | LiveView navigation target |
   | `href` | `string` | `nil` | Link href |
   | `patch` | `string` | `nil` | LiveView patch target |
@@ -206,12 +208,12 @@ defmodule PUI.Layout do
 
   | Name | Required | Description |
   |------|----------|-------------|
+  | `icon` | Yes | Application-owned icon markup |
   | `trailing` | No | Badge, count, or secondary row content |
   | `subitem` | No | Repeated submenu rows for collapsible items |
   """
   attr :id, :string, default: nil
   attr :title, :string, required: true
-  attr :icon, :string, required: true
   attr :navigate, :string, default: nil
   attr :href, :string, default: nil
   attr :patch, :string, default: nil
@@ -220,6 +222,7 @@ defmodule PUI.Layout do
   attr :class, :string, default: ""
   attr :current, :boolean, default: false
 
+  slot :icon, required: true
   slot :trailing
   slot :subitem
 
@@ -254,7 +257,7 @@ defmodule PUI.Layout do
         class={sidebar_menu_item_class(@current, @class) <> " w-full group-data-[collapsed=true]/pui-layout:hidden"}
       >
         <span class="flex h-4 w-4 shrink-0 items-center justify-center">
-          <PUI.Container.icon name={@icon} class="h-4 w-4 shrink-0" />
+          {render_slot(@icon)}
         </span>
         <span class="truncate">{@title}</span>
         <%= if @trailing != [] do %>
@@ -262,8 +265,8 @@ defmodule PUI.Layout do
             {render_slot(@trailing)}
           </span>
         <% end %>
-        <PUI.Container.icon
-          name="hero-chevron-down"
+        <.icon
+          name={:chevron_down}
           class="sidebar-collapsible-chevron ml-auto h-4 w-4 shrink-0 transition-transform duration-200 data-[expanded=true]:rotate-180"
           data-expanded={to_string(@expanded)}
         />
@@ -279,7 +282,7 @@ defmodule PUI.Layout do
         content_class="z-[60] min-w-48 rounded-md border border-border bg-background p-1 shadow-lg"
       >
         <span class="flex h-4 w-4 shrink-0 items-center justify-center">
-          <PUI.Container.icon name={@icon} class="h-4 w-4 shrink-0" />
+          {render_slot(@icon)}
         </span>
         <span class="sr-only">{@title}</span>
         <:items>
@@ -323,7 +326,7 @@ defmodule PUI.Layout do
         class={sidebar_menu_item_class(@current, @class)}
       >
         <span class="flex h-4 w-4 shrink-0 items-center justify-center">
-          <PUI.Container.icon name={@icon} class="h-4 w-4 shrink-0" />
+          {render_slot(@icon)}
         </span>
         <span class="truncate group-data-[collapsed=true]/pui-layout:hidden">{@title}</span>
         <%= if @trailing != [] do %>
@@ -396,7 +399,7 @@ defmodule PUI.Layout do
           title="Toggle sidebar"
           aria-label="Toggle sidebar"
         >
-          <PUI.Container.icon name="hero-bars-3" class="h-4 w-4" />
+          <.icon name={:menu} class="h-4 w-4" />
         </button>
 
         <div class="min-w-0">

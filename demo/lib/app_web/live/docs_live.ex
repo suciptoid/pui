@@ -355,10 +355,10 @@ defmodule AppWeb.Live.DocsLive do
             <div :for={{group, docs} <- @docs}>
               <.sidebar_menu_item
                 title={group}
-                icon={group_icon(group)}
                 collapsible
                 expanded={true}
               >
+                <:icon><.icon name={group_icon(group)} /></:icon>
                 <:subitem :for={d <- docs}>
                   <.link
                     patch={~p"/docs/#{d.id}"}

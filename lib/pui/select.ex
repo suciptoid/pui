@@ -109,6 +109,7 @@ defmodule PUI.Select do
   """
 
   use Phoenix.Component
+  import PUI.Icon, only: [icon: 1]
   import PUI.Input, only: [label: 1]
   import PUI.Components, only: [field_error: 1]
 
@@ -353,21 +354,7 @@ defmodule PUI.Select do
   def select_search(assigns) do
     ~H"""
     <div data-pui="combobox-search" class="shrink-0 flex h-9 items-center gap-2 border-b px-3">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="lucide lucide-search size-4 shrink-0 opacity-50"
-      >
-        <circle cx="11" cy="11" r="8"></circle>
-        <path d="m21 21-4.3-4.3"></path>
-      </svg>
+      <.icon name={:search} class="size-4 shrink-0 opacity-50" />
       <input
         class="placeholder:text-muted-foreground flex w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50 h-9"
         placeholder="Search item..."
@@ -429,24 +416,12 @@ defmodule PUI.Select do
     """
   end
 
+  attr :class, :string, default: "size-4"
   attr :rest, :global
 
   def select_icon(assigns) do
     ~H"""
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      {@rest}
-    >
-      <path d="m7 15 5 5 5-5" /><path d="m7 9 5-5 5 5" />
-    </svg>
+    <.icon name={:chevron_up_down} class={@class} {@rest} />
     """
   end
 

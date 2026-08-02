@@ -90,6 +90,7 @@ defmodule PUI.Accordion do
   """
 
   use Phoenix.Component
+  import PUI.Icon, only: [icon: 1]
 
   attr :class, :string, default: ""
   attr :variant, :string, default: "default", values: ["default", "unstyled"]
@@ -217,20 +218,11 @@ defmodule PUI.Accordion do
       {@rest}
     >
       <span class="flex-1">{render_slot(@inner_block)}</span>
-      <svg
+      <.icon
         :if={@icon}
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        aria-hidden="true"
+        name={:chevron_down}
         class="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open:rotate-180"
-      >
-        <path
-          fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.512a.75.75 0 0 1-1.08 0L5.21 8.27a.75.75 0 0 1 .02-1.06Z"
-          clip-rule="evenodd"
-        />
-      </svg>
+      />
     </summary>
     """
   end

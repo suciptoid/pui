@@ -1,7 +1,7 @@
 defmodule PUI.DatePickerComponent do
   use Phoenix.LiveComponent
 
-  import PUI.Container, only: [icon: 1]
+  import PUI.Icon, only: [icon: 1]
 
   alias PUI.DatePicker
   alias Phoenix.LiveView.JS
@@ -245,7 +245,7 @@ defmodule PUI.DatePickerComponent do
         class={DatePicker.trigger_classes(@class)}
       >
         <span class="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-          <.icon name="hero-calendar" class="size-4 shrink-0 opacity-70" />
+          <.icon name={:calendar} class="size-4 shrink-0 opacity-70" />
           <span
             data-pui="date-picker-label"
             data-placeholder={@placeholder}
@@ -254,7 +254,7 @@ defmodule PUI.DatePickerComponent do
             {DatePicker.format_date_label(@value) || @placeholder}
           </span>
         </span>
-        <.icon name="hero-chevron-down" class="size-4 shrink-0 opacity-50" />
+        <.icon name={:chevron_down} class="size-4 shrink-0 opacity-50" />
       </button>
 
       <div
@@ -340,7 +340,7 @@ defmodule PUI.DatePickerComponent do
         class={DatePicker.trigger_classes(@class)}
       >
         <span class="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-          <.icon name="hero-calendar" class="size-4 shrink-0 opacity-70" />
+          <.icon name={:calendar} class="size-4 shrink-0 opacity-70" />
           <span
             data-pui="date-picker-label"
             data-placeholder={@placeholder}
@@ -349,7 +349,7 @@ defmodule PUI.DatePickerComponent do
             {DatePicker.format_range_label(@from_value, @to_value) || @placeholder}
           </span>
         </span>
-        <.icon name="hero-chevron-down" class="size-4 shrink-0 opacity-50" />
+        <.icon name={:chevron_down} class="size-4 shrink-0 opacity-50" />
       </button>
 
       <div
@@ -512,7 +512,7 @@ defmodule PUI.DatePickerComponent do
         aria-label="Go to previous month"
         disabled={!@can_navigate_prev?}
       >
-        <.icon name="hero-chevron-left" class="size-4" />
+        <.icon name={:chevron_left} class="size-4" />
       </button>
       <span :if={!@show_prev?} class="size-7 shrink-0" aria-hidden="true"></span>
 
@@ -565,7 +565,7 @@ defmodule PUI.DatePickerComponent do
         aria-label="Go to next month"
         disabled={!@can_navigate_next?}
       >
-        <.icon name="hero-chevron-right" class="size-4" />
+        <.icon name={:chevron_right} class="size-4" />
       </button>
       <span :if={!@show_next?} class="size-7 shrink-0" aria-hidden="true"></span>
     </div>

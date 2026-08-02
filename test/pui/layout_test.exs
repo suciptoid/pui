@@ -71,7 +71,8 @@ defmodule PUI.LayoutTest do
 
     html =
       rendered_to_string(~H"""
-      <.sidebar_menu_item title="Overview" icon="hero-home" href="/overview" current>
+      <.sidebar_menu_item title="Overview" href="/overview" current>
+        <:icon><span data-provider-icon="home" /></:icon>
         <:trailing><span>3</span></:trailing>
       </.sidebar_menu_item>
       """)
@@ -81,7 +82,7 @@ defmodule PUI.LayoutTest do
     assert html =~ ~s(title="Overview")
     assert html =~ ~s(phx-hook="PUI.Tooltip")
     assert html =~ "fixed hidden group-data-[collapsed=true]/pui-layout:block"
-    assert html =~ "hero-home"
+    assert html =~ ~s(data-provider-icon="home")
     assert html =~ "3"
   end
 
@@ -90,7 +91,8 @@ defmodule PUI.LayoutTest do
 
     html =
       rendered_to_string(~H"""
-      <.sidebar_menu_item title="Components" icon="hero-squares-2x2" collapsible expanded>
+      <.sidebar_menu_item title="Components" collapsible expanded>
+        <:icon><span data-provider-icon="components" /></:icon>
         <:subitem><span>Button</span></:subitem>
       </.sidebar_menu_item>
       """)

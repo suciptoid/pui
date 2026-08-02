@@ -54,10 +54,10 @@ defmodule AppWeb.Live.DemoLive do
               <.sidebar_menu_item
                 :for={item <- @pages}
                 title={item.title}
-                icon={item.icon}
                 patch={item.path}
                 current={item.action == @page.action}
               >
+                <:icon><.icon name={item.icon} /></:icon>
                 <:trailing :if={item[:badge]}>
                   <span class="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary group-data-[collapsed=true]/pui-layout:hidden">
                     {item.badge}
@@ -74,10 +74,11 @@ defmodule AppWeb.Live.DemoLive do
               <.sidebar_menu_item
                 :for={item <- @component_pages}
                 title={item.title}
-                icon={item.icon}
                 patch={item.path}
                 current={item.action == @page.action}
-              />
+              >
+                <:icon><.icon name={item.icon} /></:icon>
+              </.sidebar_menu_item>
             </div>
 
             <div class="flex flex-col gap-1 group-data-[collapsed=true]/pui-layout:gap-0">
@@ -87,10 +88,10 @@ defmodule AppWeb.Live.DemoLive do
 
               <.sidebar_menu_item
                 title="Component Docs"
-                icon="hero-squares-2x2"
                 collapsible
                 expanded
               >
+                <:icon><.icon name="hero-squares-2x2" /></:icon>
                 <:subitem>
                   <.link
                     navigate={~p"/docs/button"}
@@ -1459,7 +1460,7 @@ defmodule AppWeb.Live.DemoLive do
           action: :container,
           title: "Container",
           eyebrow: "Container component",
-          description: "Page headers and Heroicon helpers for structural composition.",
+          description: "Page headers and structural composition helpers.",
           breadcrumb_parent: "Components",
           breadcrumb_current: "Container",
           icon: "hero-square-3-stack-3d",

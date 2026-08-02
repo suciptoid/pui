@@ -4,6 +4,7 @@ defmodule PUI.CardTest do
   import Phoenix.Component
   import Phoenix.LiveViewTest
   import PUI.Card
+  import PUI.TestComponentHelpers
 
   test "renders the canonical Card family" do
     assigns = %{}
@@ -32,12 +33,12 @@ defmodule PUI.CardTest do
   end
 
   test "keeps the deprecated Container Card entry point rendering" do
-    assigns = %{}
-
     html =
-      rendered_to_string(~H"""
-      <PUI.Container.card class="legacy-card">Legacy</PUI.Container.card>
-      """)
+      render_deprecated_component(PUI.Container, :card, %{
+        class: "legacy-card",
+        rest: %{},
+        inner_block: [%{inner_block: fn _, _ -> "Legacy" end}]
+      })
 
     assert html =~ "legacy-card"
     assert html =~ "bg-card"

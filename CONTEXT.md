@@ -29,8 +29,22 @@ A public PUI namespace whose primary responsibility is one component family and 
 _Avoid_: utility module, catch-all component module
 
 **Shared helper**:
-A reusable function that supports multiple component families without defining a standalone visual primitive, such as form-error translation or icon rendering.
+A reusable function that supports multiple component families without defining a standalone visual primitive, such as form-error translation.
 _Avoid_: component family, primitive
+
+## Icon language
+
+**Icon token**:
+A stable semantic name for a visual affordance owned by PUI, independent of any icon library.
+_Avoid_: icon class, provider name
+
+**Icon provider**:
+The host application's rendering boundary that turns an icon token into the markup or presentation used by its icon system.
+_Avoid_: icon library, icon helper
+
+**Application-owned icon**:
+An icon selected by the host application to communicate its navigation, business meaning, or brand vocabulary.
+_Avoid_: PUI icon, default icon
 
 ## Presentation Modes
 

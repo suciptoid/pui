@@ -46,17 +46,18 @@ def render(assigns) do
         <nav class="space-y-1 p-3">
           <.sidebar_menu_item
             title="Getting Started"
-            icon="hero-rocket-launch"
             href="/docs/getting-started"
             current
-          />
+          >
+            <:icon><.icon name="hero-rocket-launch" class="size-4" /></:icon>
+          </.sidebar_menu_item>
 
           <.sidebar_menu_item
             title="Components"
-            icon="hero-squares-2x2"
             collapsible
             expanded
           >
+            <:icon><.icon name="hero-squares-2x2" class="size-4" /></:icon>
             <:subitem>
               <.link href="/docs/button" class="block rounded-md px-2 py-1.5 text-sm hover:bg-accent">
                 Button

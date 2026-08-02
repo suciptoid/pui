@@ -4,6 +4,7 @@ defmodule PUI.BadgeTest do
   import Phoenix.Component
   import Phoenix.LiveViewTest
   import PUI.Badge
+  import PUI.TestComponentHelpers
 
   test "renders the canonical badge with its variants and custom class" do
     assigns = %{}
@@ -19,12 +20,12 @@ defmodule PUI.BadgeTest do
   end
 
   test "keeps the deprecated shared-module entry point rendering the same component" do
-    assigns = %{}
-
     html =
-      rendered_to_string(~H"""
-      <PUI.Components.badge variant="outline" class="legacy-badge">Legacy</PUI.Components.badge>
-      """)
+      render_deprecated_component(PUI.Components, :badge, %{
+        variant: "outline",
+        class: "legacy-badge",
+        inner_block: [%{inner_block: fn _, _ -> "Legacy" end}]
+      })
 
     assert html =~ "legacy-badge"
     assert html =~ "text-foreground"

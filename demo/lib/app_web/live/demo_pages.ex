@@ -1037,11 +1037,11 @@ defmodule AppWeb.Live.DemoPages do
       </PUI.Container.header>
     </.surface>
 
-    <.surface title="Icon" description="Render bundled Heroicons by name.">
-      <div class="flex items-center gap-3 text-sm">
-        <PUI.Container.icon name="hero-check-circle" class="size-5 text-primary" />
-        <span>Container keeps shared structural helpers available.</span>
-      </div>
+    <.surface title="Composition" description="Container keeps structural helpers available.">
+      <p class="text-sm text-muted-foreground">
+        Use <code>PUI.Icon</code> for PUI-owned affordances and host icon slots for
+        application-specific visuals.
+      </p>
     </.surface>
     """
   end

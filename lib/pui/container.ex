@@ -2,7 +2,7 @@ defmodule PUI.Container do
   @moduledoc """
   Structural helpers for organizing page content.
 
-  `PUI.Container` provides a page-level header and Heroicon wrapper. The Card
+  `PUI.Container` provides a page-level header. The Card
   family now lives in `PUI.Card`; the qualified Card functions remain here as
   deprecated compatibility wrappers for existing consumers.
 
@@ -11,7 +11,6 @@ defmodule PUI.Container do
   | Component | Description |
   |-----------|-------------|
   | `header/1` | Page heading with optional subtitle and actions |
-  | `icon/1` | Heroicon component |
   """
 
   use Phoenix.Component
@@ -69,22 +68,6 @@ defmodule PUI.Container do
       </div>
       <div class="flex-none">{render_slot(@actions)}</div>
     </header>
-    """
-  end
-
-  @doc """
-  Renders a [Heroicon](https://heroicons.com) by name.
-
-  Icons use Heroicons' outline, solid, or mini naming conventions. Add a
-  suffix such as `-solid` or `-mini` to select another style.
-  """
-  attr :name, :string, required: true
-  attr :class, :string, default: "size-4"
-  attr :rest, :global
-
-  def icon(%{name: "hero-" <> _} = assigns) do
-    ~H"""
-    <span class={[@name, @class]} {@rest} />
     """
   end
 end
