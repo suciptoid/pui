@@ -507,25 +507,18 @@ defmodule AppWeb.DocsDemo do
 
       <.demo_section title="Unstyled / Headless" id="accordion-headless-demo">
         <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <.accordion variant="unstyled" class="space-y-3">
+          <.accordion class="space-y-3">
             <.accordion_item
-              variant="unstyled"
               class="rounded-2xl border border-primary/20 bg-primary/5 shadow-sm"
               open
             >
-              <.accordion_trigger
-                variant="unstyled"
-                class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground"
-              >
+              <.accordion_trigger class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground">
                 Custom styled item
                 <span class="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
                   Open
                 </span>
               </.accordion_trigger>
-              <.accordion_content
-                variant="unstyled"
-                class="px-5 pb-5 text-sm leading-6 text-muted-foreground"
-              >
+              <.accordion_content class="px-5 pb-5 text-sm leading-6 text-muted-foreground">
                 PUI keeps the semantic structure while you control spacing,
                 borders, colors, and decorative UI details yourself.
               </.accordion_content>
@@ -606,22 +599,15 @@ defmodule AppWeb.DocsDemo do
   def accordion_headless_demo(assigns) do
     ~H"""
     <.demo_section title="Headless Accordion Demo" id="accordion-headless-demo-card">
-      <.accordion variant="unstyled" class="max-w-2xl space-y-3">
+      <.accordion class="max-w-2xl space-y-3">
         <.accordion_item
-          variant="unstyled"
           class="overflow-hidden rounded-2xl border border-border bg-background shadow-sm"
           open
         >
-          <.accordion_trigger
-            variant="unstyled"
-            class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground"
-          >
+          <.accordion_trigger class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground">
             Bring your own layout <.icon name="hero-sparkles" class="size-4 text-primary" />
           </.accordion_trigger>
-          <.accordion_content
-            variant="unstyled"
-            class="border-t border-border px-5 py-4 text-sm leading-6 text-muted-foreground"
-          >
+          <.accordion_content class="border-t border-border px-5 py-4 text-sm leading-6 text-muted-foreground">
             This example drops the default shadcn-like treatment but keeps the
             composable building blocks for your own design system.
           </.accordion_content>
@@ -638,77 +624,82 @@ defmodule AppWeb.DocsDemo do
         Interactive Demo
       </h2>
 
-      <.demo_section title="Unstyled Button and Menu" id="unstyled-button-and-menu">
+      <.demo_section title="Select Primitive" id="select-primitive-demo">
         <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <div class="flex flex-wrap items-start gap-4">
-            <.button
-              variant="unstyled"
-              class="inline-flex items-center rounded-xl bg-zinc-950 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
-            >
-              Custom Trigger
-            </.button>
-
-            <.menu_button
-              variant="unstyled"
-              class="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
-              content_class="aria-hidden:hidden block min-w-48 rounded-xl border border-border bg-background p-1 shadow-xl"
-            >
-              Custom Menu
-              <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
-                <.icon name="hero-user" class="size-4" /> Profile
-              </:item>
-              <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
-                <.icon name="hero-cog-6-tooth" class="size-4" /> Settings
-              </:item>
-              <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10">
-                <.icon name="hero-trash" class="size-4" /> Delete
-              </:item>
-            </.menu_button>
+            <PUI.Select.Primitive.root id="docs-primitive-select" class="relative w-64">
+              <PUI.Select.Primitive.trigger
+                id="docs-primitive-select-trigger"
+                listbox_id="docs-primitive-select-listbox"
+                class="flex w-full items-center justify-between rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary"
+              >
+                Choose a workspace
+              </PUI.Select.Primitive.trigger>
+              <PUI.Select.Primitive.content
+                id="docs-primitive-select-listbox"
+                trigger_id="docs-primitive-select-trigger"
+                class="aria-hidden:hidden block min-w-64 rounded-lg border border-border bg-background p-1 shadow-xl"
+              >
+                <PUI.Select.Primitive.item
+                  value="design"
+                  class="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                >
+                  Design
+                </PUI.Select.Primitive.item>
+                <PUI.Select.Primitive.item
+                  value="engineering"
+                  class="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                >
+                  Engineering
+                </PUI.Select.Primitive.item>
+              </PUI.Select.Primitive.content>
+            </PUI.Select.Primitive.root>
           </div>
 
           <div class="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
             <p class="font-medium text-foreground">What PUI still handles</p>
             <ul class="mt-3 space-y-2">
               <li>ARIA attributes and keyboard navigation</li>
-              <li>Popover positioning, dismissal, and focus behavior</li>
-              <li>Slot-based composition for items and triggers</li>
+              <li>Select positioning, dismissal, and keyboard behavior</li>
+              <li>Only application classes control the appearance</li>
             </ul>
           </div>
         </div>
       </.demo_section>
 
-      <.demo_section title="Low-level Popover Hook" id="low-level-popover-hook">
+      <.demo_section title="Dropdown Primitive" id="dropdown-primitive-demo">
         <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <.popover_base
-            id="docs-headless-popover"
+          <PUI.Dropdown.Primitive.root
+            id="docs-primitive-dropdown"
             class="w-fit"
-            phx-hook="PUI.Popover"
-            data-placement="bottom-start"
+            placement="bottom-start"
           >
-            <:trigger class="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-accent">
-              <.icon name="hero-code-bracket" class="size-4" /> Open custom popover
-            </:trigger>
-            <:popup class="aria-hidden:hidden block w-72 rounded-2xl border border-border bg-background p-4 shadow-xl">
-              <div class="space-y-3">
-                <span class="inline-flex rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-                  Level 1
-                </span>
-                <h3 class="text-sm font-semibold text-foreground">Low-level hook example</h3>
-                <p class="text-sm text-muted-foreground">
-                  This example uses <code>popover_base</code>
-                  directly so you control the trigger markup,
-                  popup container, and every utility class yourself.
-                </p>
-              </div>
-            </:popup>
-          </.popover_base>
+            <PUI.Dropdown.Primitive.trigger
+              id="docs-primitive-dropdown-trigger"
+              controls="docs-primitive-dropdown-menu"
+              class="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent"
+            >
+              <.icon name="hero-code-bracket" class="size-4" /> Open custom menu
+            </PUI.Dropdown.Primitive.trigger>
+            <PUI.Dropdown.Primitive.content
+              id="docs-primitive-dropdown-menu"
+              class="aria-hidden:hidden block w-56 rounded-xl border border-border bg-background p-1 shadow-xl"
+            >
+              <PUI.Dropdown.Primitive.item class="block rounded-lg px-3 py-2 text-sm hover:bg-accent">
+                Profile
+              </PUI.Dropdown.Primitive.item>
+              <PUI.Dropdown.Primitive.item class="block rounded-lg px-3 py-2 text-sm hover:bg-accent">
+                Settings
+              </PUI.Dropdown.Primitive.item>
+            </PUI.Dropdown.Primitive.content>
+          </PUI.Dropdown.Primitive.root>
 
           <div class="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">
             <p class="font-medium text-foreground">When to use this</p>
             <ul class="mt-3 space-y-2">
-              <li>Building a custom design system on top of PUI behavior</li>
-              <li>Reusing Floating UI positioning with your own markup</li>
-              <li>Creating bespoke popovers, menus, or tooltips</li>
+              <li>Building a custom menu with PUI positioning behavior</li>
+              <li>Owning every visual class and menu item layout</li>
+              <li>Keeping stable ARIA and keyboard contracts</li>
             </ul>
           </div>
         </div>
@@ -2194,18 +2185,17 @@ defmodule AppWeb.DocsDemo do
 
   def headless_unstyled_demo(assigns) do
     ~H"""
-    <.demo_section title="Unstyled Menu Demo" id="headless-unstyled-demo">
+    <.demo_section title="Custom Menu Primitive" id="headless-menu-primitive">
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
         <div class="flex flex-wrap items-start gap-4">
-          <.button
-            variant="unstyled"
+          <button
+            type="button"
             class="inline-flex items-center rounded-xl bg-zinc-950 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
           >
             Custom Trigger
-          </.button>
+          </button>
 
           <.menu_button
-            variant="unstyled"
             class="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
             content_class="aria-hidden:hidden block min-w-48 rounded-xl border border-border bg-background p-1 shadow-xl"
           >
@@ -2876,11 +2866,10 @@ defmodule AppWeb.DocsDemo do
         </.table>
       </.demo_section>
 
-      <.demo_section title="Unstyled table with part classes" id="table-unstyled-demo">
+      <.demo_section title="Styled table with part classes" id="table-custom-demo">
         <.table
           id="docs-custom-projects"
           rows={@table_rows}
-          variant="unstyled"
           class="overflow-hidden rounded-lg border border-border"
           table_class="w-full text-sm"
           header_class="bg-muted"
@@ -3008,7 +2997,7 @@ defmodule AppWeb.DocsDemo do
         <:actions><.button>Create project</.button></:actions>
       </.empty>
 
-      <.empty id="empty-notifications-demo" variant="unstyled" class="py-6">
+      <.empty id="empty-notifications-demo" class="py-6">
         <:title>No new notifications</:title>
         <:description>You are all caught up.</:description>
       </.empty>

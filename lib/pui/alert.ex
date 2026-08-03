@@ -68,7 +68,7 @@ defmodule PUI.Alert do
   use Phoenix.Component
 
   attr :class, :string, default: ""
-  attr :variant, :string, values: ["default", "destructive", "unstyled"], default: "default"
+  attr :variant, :string, values: ["default", "destructive"], default: "default"
   attr :role, :string, default: nil
   attr :rest, :global
 
@@ -84,20 +84,14 @@ defmodule PUI.Alert do
 
   slot :inner_block
 
-  def alert(%{variant: variant} = assigns) do
-    is_unstyled = variant == "unstyled"
-
+  def alert(assigns) do
     variant_class =
-      if is_unstyled do
-        ""
-      else
-        case assigns[:variant] do
-          "default" ->
-            "bg-card text-card-foreground"
+      case assigns[:variant] do
+        "default" ->
+          "bg-card text-card-foreground"
 
-          "destructive" ->
-            "text-destructive bg-card [&>svg]:text-current *:data-[alert-desc]:text-destructive/90"
-        end
+        "destructive" ->
+          "text-destructive bg-card [&>svg]:text-current *:data-[alert-desc]:text-destructive/90"
       end
 
     role =
@@ -110,7 +104,7 @@ defmodule PUI.Alert do
       end
 
     assigns =
-      assign(assigns, variant_class: variant_class, is_unstyled: is_unstyled, role: role)
+      assign(assigns, variant_class: variant_class, role: role)
 
     ~H"""
     <div
@@ -118,26 +112,20 @@ defmodule PUI.Alert do
       aria-live={if @role == "alert", do: "assertive", else: "polite"}
       aria-atomic="true"
       {@rest}
-      class={
-        if @is_unstyled do
-          [@class]
-        else
-          [
-            "relative w-full rounded-lg border border-border px-4 py-3 text-sm grid grid-cols-[0_1fr] gap-y-0.5 items-start ",
-            "has-[>[data-icon]]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>[data-icon]]:gap-x-3 [&>[data-icon]]:size-4 [&>[data-icon]]:text-current",
-            @variant_class,
-            @class
-          ]
-        end
-      }
+      class={[
+        "relative w-full rounded-lg border border-border px-4 py-3 text-sm grid grid-cols-[0_1fr] gap-y-0.5 items-start ",
+        "has-[>[data-icon]]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>[data-icon]]:gap-x-3 [&>[data-icon]]:size-4 [&>[data-icon]]:text-current",
+        @variant_class,
+        @class
+      ]}
     >
       <div :if={@icon !== []} data-icon="alert-icon">
         {render_slot(@icon)}
       </div>
-      <.alert_title :if={@title !== []} is_unstyled={@is_unstyled}>
+      <.alert_title :if={@title !== []}>
         {render_slot(@title)}
       </.alert_title>
-      <.alert_description :if={@description !== []} is_unstyled={@is_unstyled}>
+      <.alert_description :if={@description !== []}>
         {render_slot(@description)}
       </.alert_description>
       {render_slot(@inner_block)}
@@ -149,18 +137,11 @@ defmodule PUI.Alert do
   Renders the title of an alert.
   """
   attr :class, :string, default: ""
-  attr :is_unstyled, :boolean, default: false
   slot :inner_block
 
-  def alert_title(%{is_unstyled: is_unstyled} = assigns) do
-    assigns = assign(assigns, :is_unstyled, is_unstyled)
-
+  def alert_title(assigns) do
     ~H"""
-    <div class={
-      if @is_unstyled,
-        do: [@class],
-        else: ["col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight", @class]
-    }>
+    <div class={["col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight", @class]}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -170,25 +151,16 @@ defmodule PUI.Alert do
   Renders the description of an alert.
   """
   attr :class, :string, default: ""
-  attr :is_unstyled, :boolean, default: false
   slot :inner_block
 
-  def alert_description(%{is_unstyled: is_unstyled} = assigns) do
-    assigns = assign(assigns, :is_unstyled, is_unstyled)
-
+  def alert_description(assigns) do
     ~H"""
     <div
       data-alert-desc
-      class={
-        if @is_unstyled do
-          [@class]
-        else
-          [
-            "text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed",
-            @class
-          ]
-        end
-      }
+      class={[
+        "text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed",
+        @class
+      ]}
     >
       {render_slot(@inner_block)}
     </div>

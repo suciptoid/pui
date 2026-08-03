@@ -127,7 +127,6 @@ defmodule PUI.Select do
     doc: "Use w-fit for a width that fits the selected item"
 
   attr :label, :string, default: nil
-  attr :variant, :string, default: "default", values: ["default", "unstyled"]
 
   attr :field, Phoenix.HTML.FormField,
     default: nil,
@@ -206,7 +205,6 @@ defmodule PUI.Select do
       value={@value}
       placeholder={@placeholder}
       searchable={@searchable}
-      variant={@variant}
       errors={@errors}
     >
       <%= for {opt, index} <- Enum.with_index(@options) do %>
@@ -223,9 +221,8 @@ defmodule PUI.Select do
     """
   end
 
-  def select(%{variant: variant} = assigns) do
+  def select(assigns) do
     assigns = map_field(assigns)
-    is_unstyled = variant == "unstyled"
     target = select_target_base(assigns)
     listbox_id = if target, do: "#{target}-listbox", else: nil
     trigger_id = if target, do: "#{target}-trigger", else: nil
@@ -233,7 +230,6 @@ defmodule PUI.Select do
 
     assigns =
       assigns
-      |> assign(:is_unstyled, is_unstyled)
       |> assign(:listbox_id, listbox_id)
       |> assign(:trigger_id, trigger_id)
       |> assign(:input_id, input_id)
@@ -263,18 +259,12 @@ defmodule PUI.Select do
         aria-expanded="false"
         aria-controls={@listbox_id}
         aria-invalid={if @has_errors, do: "true"}
-        class={
-          if @is_unstyled do
-            [@class]
-          else
-            [
-              "border-input data-placeholder:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground",
-              "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-              "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex min-w-0 items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring [3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-              @class
-            ]
-          end
-        }
+        class={[
+          "border-input data-placeholder:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground",
+          "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex min-w-0 items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring [3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          @class
+        ]}
       >
         <span
           data-pui="selected-label"
@@ -285,7 +275,7 @@ defmodule PUI.Select do
         >
           {@placeholder}
         </span>
-        <.select_icon :if={not @is_unstyled} class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        <.select_icon class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </button>
 
       <div
@@ -298,51 +288,37 @@ defmodule PUI.Select do
         data-side="bottom"
         data-floating-strategy="absolute"
         data-reference-hidden="false"
-        class={
-          if @is_unstyled do
-            [@class]
-          else
-            [
-              "aria-hidden:hidden block bg-popover text-popover-foreground",
-              "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
-              "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-              "z-50 min-w-52 max-h-[min(calc(var(--pui-select-content-available-height)-0.5rem),20rem)] overflow-hidden rounded-md border border-border shadow-md",
-              "flex flex-col origin-top data-[reference-hidden=true]:invisible data-[reference-hidden=true]:pointer-events-none data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom"
-            ]
-          end
-        }
+        class={[
+          "aria-hidden:hidden block bg-popover text-popover-foreground",
+          "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
+          "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          "z-50 min-w-52 max-h-[min(calc(var(--pui-select-content-available-height)-0.5rem),20rem)] overflow-hidden rounded-md border border-border shadow-md",
+          "flex flex-col origin-top data-[reference-hidden=true]:invisible data-[reference-hidden=true]:pointer-events-none data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom"
+        ]}
       >
-        <%= if @is_unstyled do %>
+        <div :if={@header != []} class="shrink-0">
           {render_slot(@header)}
+        </div>
+
+        <.select_search :if={@searchable} listbox_id={@listbox_id} />
+
+        <div data-pui="menu-viewport" class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
           <div data-pui="menu-items">
             {render_slot(@inner_block)}
-          </div>
-          {render_slot(@footer)}
-        <% else %>
-          <div :if={@header != []} class="shrink-0">
-            {render_slot(@header)}
-          </div>
-
-          <.select_search :if={@searchable} listbox_id={@listbox_id} />
-
-          <div data-pui="menu-viewport" class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-            <div data-pui="menu-items">
-              {render_slot(@inner_block)}
-              <div
-                :if={@searchable}
-                data-pui="no-results"
-                role="status"
-                class="hidden py-6 text-center text-sm text-muted-foreground"
-              >
-                No results for "<span data-pui="no-results-keyword"></span>"
-              </div>
+            <div
+              :if={@searchable}
+              data-pui="no-results"
+              role="status"
+              class="hidden py-6 text-center text-sm text-muted-foreground"
+            >
+              No results for "<span data-pui="no-results-keyword"></span>"
             </div>
           </div>
+        </div>
 
-          <div :if={@footer != []} class="shrink-0">
-            {render_slot(@footer)}
-          </div>
-        <% end %>
+        <div :if={@footer != []} class="shrink-0">
+          {render_slot(@footer)}
+        </div>
       </div>
     </div>
     <.field_error :if={@show_errors} errors={@errors} />
@@ -372,7 +348,6 @@ defmodule PUI.Select do
   attr :value, :string, required: true
   attr :id, :string, default: nil
   attr :class, :string, default: ""
-  attr :variant, :string, default: "default", values: ["default", "unstyled"]
   slot :inner_block
 
   @doc """
@@ -384,11 +359,7 @@ defmodule PUI.Select do
         <.icon name="hero-pencil" class="size-4" /> Edit
       </.select_item>
   """
-  def select_item(%{variant: variant} = assigns) do
-    is_unstyled = variant == "unstyled"
-
-    assigns = assign(assigns, :is_unstyled, is_unstyled)
-
+  def select_item(assigns) do
     ~H"""
     <div
       id={@id}
@@ -396,20 +367,14 @@ defmodule PUI.Select do
       aria-selected="false"
       tabindex="-1"
       data-value={@value}
-      class={
-        if @is_unstyled do
-          [@class]
-        else
-          [
-            "aria-hidden:hidden",
-            "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground",
-            "data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground",
-            "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
-            "data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-            @class
-          ]
-        end
-      }
+      class={[
+        "aria-hidden:hidden",
+        "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[active=true]:bg-accent data-[active=true]:text-accent-foreground",
+        "data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground",
+        "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
+        "data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        @class
+      ]}
     >
       {render_slot(@inner_block)}
     </div>

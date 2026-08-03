@@ -1,108 +1,17 @@
 defmodule PUI.Dropdown do
   @moduledoc """
-  Dropdown menu component for displaying actions and options.
+  Styled dropdown menus.
 
-  ## Basic Menu Button
-
-      <.menu_button>
-        Open Menu
-        <:item>Profile</:item>
-        <:item>Settings</:item>
-        <:item variant="destructive">Delete</:item>
-      </.menu_button>
-
-  ## With Shortcuts
-
-      <.menu_button content_class="w-52">
-        <.icon name="hero-user" class="size-4" /> Account
-        <:item shortcut="⌘P">Profile</:item>
-        <:item shortcut="⌘S">Settings</:item>
-        <:item shortcut="⇧⌘Q">Log out</:item>
-      </.menu_button>
-
-  ## With Links
-
-      <.menu_button>
-        Actions
-        <:item navigate="/profile">View Profile</:item>
-        <:item patch="/settings">Edit Settings</:item>
-        <:item href="/logout">Sign Out</:item>
-      </.menu_button>
-
-  ## Custom Items
-
-  For more control, use the `:items` slot with `menu_item`:
-
-      <.menu_button content_class="w-56">
-        Options
-        <:items>
-          <.menu_item navigate="/dashboard">
-            <.icon name="hero-home" class="size-4" /> Dashboard
-          </.menu_item>
-          <.menu_separator />
-          <.menu_item variant="destructive" phx-click="delete">
-            <.icon name="hero-trash" class="size-4" /> Delete
-          </.menu_item>
-        </:items>
-      </.menu_button>
-
-  ## Destructive Actions
-
-      <.menu_button>
-        Danger Zone
-        <:item variant="destructive" shortcut="⌘⌫">
-          <.icon name="hero-trash" class="size-4" /> Delete Account
-        </:item>
-      </.menu_button>
-
-  ## Attributes (menu_button/1)
-
-  | Attribute | Type | Default | Description |
-  |-----------|------|---------|-------------|
-  | `variant` | `string` | `"secondary"` | Button variant style |
-  | `placement` | `string` | `"bottom-start"` | Popup placement for Floating UI |
-  | `wrapper_class` | `string` | `"w-fit"` | Classes for the outer wrapper |
-  | `content_class` | `string` | `""` | CSS classes for dropdown content |
-  | `class` | `string` | `""` | Additional CSS classes for button |
-
-  ## Slots (menu_button/1)
-
-  | Slot | Description |
-  |------|-------------|
-  | `inner_block` | Button content (required) |
-  | `item` | Menu items with optional attributes |
-  | `items` | Custom menu content using `menu_item` |
-
-  ## Item Attributes
-
-  | Attribute | Type | Description |
-  |-----------|------|-------------|
-  | `variant` | `string` | Item style: "default" or "destructive" |
-  | `shortcut` | `string` | Keyboard shortcut display |
-  | `href` | `string` | Link URL |
-  | `navigate` | `string` | Phoenix navigate path |
-  | `patch` | `string` | Phoenix patch path |
-
-  ## Unstyled Mode
-
-  When `variant="unstyled"`, PUI still toggles `aria-hidden` on the popup.
-  Your `content_class` should include both the hidden and visible selectors,
-  for example:
-
-      <.menu_button
-        variant="unstyled"
-        content_class="aria-hidden:hidden not-aria-hidden:block min-w-48"
-      >
-        ...
-      </.menu_button>
+  Use `PUI.Dropdown.Primitive` when the application owns menu markup and CSS.
   """
 
   use Phoenix.Component
 
+  attr :id, :string, default: nil
+
   attr :variant, :string,
-    default: "secondary",
-    values: ["default", "secondary", "outline", "ghost", "destructive", "unstyled"],
-    doc: "see Button variant. Use 'unstyled' for headless mode"
+    values: ["default", "secondary", "outline", "ghost", "destructive"],
+    default: "secondary"
 
   attr :rest, :global
   attr :placement, :string, default: "bottom-start"
@@ -113,198 +22,97 @@ defmodule PUI.Dropdown do
 
   slot :item do
     attr :variant, :string
+    attr :class, :string
     attr :shortcut, :string
     attr :href, :string
     attr :navigate, :string
     attr :patch, :string
-    attr :class, :string
-    attr :"phx-click", :string
+    attr :"phx-click", :any
     attr :"phx-value-action", :string
   end
 
   slot :items
   slot :inner_block
 
-  def menu_button(%{rest: rest, variant: variant} = assigns) do
-    id = rest[:id] || "dropdown-#{System.unique_integer([:positive])}"
-    is_unstyled = variant == "unstyled"
-
-    assigns = assign(assigns, id: id, is_unstyled: is_unstyled)
+  def menu_button(assigns) do
+    id = assigns.id || "menu-button-#{System.unique_integer([:positive])}"
+    assigns = assign(assigns, :id, id)
 
     ~H"""
-    <div
+    <PUI.Dropdown.Primitive.root
       id={@id}
+      placement={@placement}
+      trigger={@trigger}
       class={@wrapper_class}
-      data-strategy="auto"
-      data-trigger={@trigger}
-      data-placement={@placement}
-      phx-hook="PUI.Popover"
     >
       <PUI.Button.button
-        :if={not @is_unstyled}
         id={"#{@id}-trigger"}
         variant={@variant}
         aria-haspopup="menu"
-        aria-expanded="false"
         aria-controls={"#{@id}-menu"}
-        type="button"
         class={@class}
       >
         {render_slot(@inner_block)}
       </PUI.Button.button>
-      <button
-        :if={@is_unstyled}
-        id={"#{@id}-trigger"}
-        type="button"
-        aria-haspopup="menu"
-        aria-expanded="false"
-        aria-controls={"#{@id}-menu"}
-        class={@class}
+      <PUI.Dropdown.Primitive.content
+        id={"#{@id}-menu"}
+        class={[
+          "aria-hidden:hidden block bg-popover text-popover-foreground z-50 min-w-32 overflow-x-hidden overflow-y-auto rounded-md border border-border p-1 shadow-md",
+          @content_class
+        ]}
       >
-        {render_slot(@inner_block)}
-      </button>
-      <.menu_content id={"#{@id}-menu"} class={@content_class} is_unstyled={@is_unstyled}>
         <.menu_item
           :for={item <- @item}
-          shortcut={Map.get(item, :shortcut)}
           variant={Map.get(item, :variant, "default")}
+          shortcut={Map.get(item, :shortcut)}
+          class={Map.get(item, :class)}
           href={Map.get(item, :href)}
           navigate={Map.get(item, :navigate)}
           patch={Map.get(item, :patch)}
-          class={Map.get(item, :class)}
           phx-click={Map.get(item, :"phx-click")}
           phx-value-action={Map.get(item, :"phx-value-action")}
-          is_unstyled={@is_unstyled}
         >
           {render_slot(item)}
         </.menu_item>
         {render_slot(@items)}
-      </.menu_content>
-    </div>
+      </PUI.Dropdown.Primitive.content>
+    </PUI.Dropdown.Primitive.root>
     """
   end
 
   attr :class, :string, default: ""
-  attr :rest, :global
-  attr :is_unstyled, :boolean, default: false
-  slot :inner_block
-
-  def menu_content(%{is_unstyled: is_unstyled} = assigns) do
-    assigns = assign(assigns, :is_unstyled, is_unstyled)
-
-    ~H"""
-    <div
-      data-side="bottom"
-      data-floating-strategy="absolute"
-      data-reference-hidden="false"
-      aria-hidden="true"
-      role="menu"
-      aria-orientation="vertical"
-      tabindex="-1"
-      class={
-        if @is_unstyled do
-          [
-            "hidden aria-hidden:hidden not-aria-hidden:block",
-            @class
-          ]
-        else
-          [
-            "aria-hidden:hidden block bg-popover text-popover-foreground",
-            "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
-            "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-            "z-50  min-w-32 overflow-x-hidden overflow-y-auto rounded-md border border-border p-1 shadow-md",
-            "origin-top data-[reference-hidden=true]:invisible data-[reference-hidden=true]:pointer-events-none data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom",
-            @class
-          ]
-        end
-      }
-      {@rest}
-    >
-      {render_slot(@inner_block)}
-    </div>
-    """
-  end
-
-  slot :inner_block
   attr :shortcut, :string, default: nil
-  attr :variant, :string, default: "default", values: ["default", "destructive"]
-  attr :is_unstyled, :boolean, default: false
-  attr :class, :string, default: ""
+  attr :variant, :string, values: ["default", "destructive"], default: "default"
 
   attr :rest, :global,
-    include:
-      ~w(href navigate patch method download name value disabled phx-click phx-value-action)
+    include: ~w(href navigate patch method download disabled phx-click phx-value-action)
 
-  def menu_item(%{rest: rest, is_unstyled: is_unstyled} = assigns) do
-    base_class =
-      if is_unstyled do
-        []
-      else
-        [
-          "aria-selected:bg-accent aria-selected:text-accent-foreground",
-          "focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground",
-          "data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive! [&_svg:not([class*='text-'])]:text-muted-foreground",
-          "relative flex w-full cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-hidden select-none",
-          "data-disabled:pointer-events-none data-disabled:opacity-50 data-inset:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-        ]
-      end
+  slot :inner_block
 
-    assigns =
-      assign(assigns, class: (base_class ++ [assigns[:class] || ""]) |> Enum.filter(&(&1 != "")))
+  def menu_item(%{rest: rest} = assigns) do
+    classes = [
+      "relative flex w-full cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground",
+      assigns.variant == "destructive" && "text-destructive",
+      assigns.class
+    ]
+
+    assigns = assign(assigns, :classes, classes)
 
     if rest[:href] || rest[:navigate] || rest[:patch] do
-      ~H"""
-      <.link data-variant={@variant} role="menuitem" class={@class} {@rest}>
-        {render_slot(@inner_block)}
-        <.menu_shortcut :if={@shortcut != nil} is_unstyled={@is_unstyled}>
-          {@shortcut}
-        </.menu_shortcut>
-      </.link>
-      """
+      ~H|<.link data-variant={@variant} role="menuitem" class={@classes} {@rest}>{render_slot(@inner_block)}<span
+  :if={@shortcut}
+  class="ml-auto text-xs tracking-widest text-muted-foreground"
+>{@shortcut}</span></.link>|
     else
-      ~H"""
-      <button
-        type="button"
-        data-variant={@variant}
-        role="menuitem"
-        class={@class}
-        {@rest}
-      >
-        {render_slot(@inner_block)}
-        <.menu_shortcut :if={@shortcut != nil} is_unstyled={@is_unstyled}>
-          {@shortcut}
-        </.menu_shortcut>
-      </button>
-      """
+      ~H|<button type="button" data-variant={@variant} role="menuitem" class={@classes} {@rest}>{render_slot(
+  @inner_block
+)}<span :if={@shortcut} class="ml-auto text-xs tracking-widest text-muted-foreground">{@shortcut}</span></button>|
     end
   end
 
-  slot :inner_block
   attr :rest, :global
-  attr :class, :string, default: ""
-  attr :is_unstyled, :boolean, default: false
 
-  def menu_shortcut(%{is_unstyled: is_unstyled} = assigns) do
-    base_class =
-      if is_unstyled do
-        []
-      else
-        ["text-muted-foreground ml-auto text-xs tracking-widest"]
-      end
-
-    assigns =
-      assign(assigns, class: (base_class ++ [assigns[:class] || ""]) |> Enum.filter(&(&1 != "")))
-
-    ~H"""
-    <span class={@class} {@rest}>
-      {render_slot(@inner_block)}
-    </span>
-    """
-  end
-
-  def menu_separator(assigns) do
-    ~H"""
-    <div role="separator" aria-orientation="horizontal" class="bg-border -mx-1 my-1 h-px"></div>
-    """
-  end
+  def menu_separator(assigns),
+    do:
+      ~H|<div role="separator" aria-orientation="horizontal" class="bg-border -mx-1 my-1 h-px" {@rest} />|
 end

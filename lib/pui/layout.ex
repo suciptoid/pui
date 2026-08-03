@@ -275,7 +275,6 @@ defmodule PUI.Layout do
       <.menu_button
         id={"#{@id}-collapsed-menu"}
         trigger="hover"
-        variant="unstyled"
         placement="right-start"
         wrapper_class="hidden group-data-[collapsed=true]/pui-layout:block"
         class={sidebar_menu_item_class(@current, @class)}

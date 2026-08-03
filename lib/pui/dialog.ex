@@ -169,7 +169,6 @@ defmodule PUI.Dialog do
   | `show_close` | `boolean` | `true` | Show the built-in close button on default dialogs |
   | `on_cancel` | `JS` | `%JS{}` | JS command to run on cancel |
   | `class` | `string` | `""` | Additional CSS classes applied to the content container. Use with `size=""` for full custom sizing (e.g. `max-w-[80vw] max-h-[80vh]`) |
-  | `variant` | `string` | `"default"` | Visual variant: `"default"` or `"unstyled"` |
 
   ## Slots
 
@@ -186,24 +185,15 @@ defmodule PUI.Dialog do
 
   attr :class, :string, default: ""
   attr :rest, :global
-  attr :is_unstyled, :boolean, default: false
   slot :inner_block
 
-  def backdrop(%{is_unstyled: is_unstyled} = assigns) do
-    assigns = assign(assigns, :is_unstyled, is_unstyled)
-
+  def backdrop(assigns) do
     ~H"""
     <div
-      class={
-        if @is_unstyled do
-          [@class]
-        else
-          [
-            "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 fixed inset-0 z-50 bg-black/50",
-            @class
-          ]
-        end
-      }
+      class={[
+        "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        @class
+      ]}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -214,63 +204,49 @@ defmodule PUI.Dialog do
   attr :id, :string, required: true
   attr :class, :string, default: ""
   attr :rest, :global
-  attr :is_unstyled, :boolean, default: false
   attr :title, :string, default: nil
   attr :show_close, :boolean, default: true
   attr :hide, JS, default: %JS{}
   slot :inner_block
   slot :footer
 
-  def content(%{is_unstyled: is_unstyled} = assigns) do
-    assigns = assign(assigns, :is_unstyled, is_unstyled)
-
+  def content(assigns) do
     ~H"""
     <div
       id={@id}
-      class={
-        if @is_unstyled do
-          [@class]
-        else
-          [
-            "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 [hidden]:zoom-out-95 not-[hidden]:zoom-in-95",
-            "bg-background fixed top-[50%] left-[50%] z-50 flex w-full translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg border shadow-lg duration-200",
-            @class
-          ]
-        end
-      }
+      class={[
+        "not-[hidden]:animate-in [hidden]:animate-out [hidden]:fade-out-0 not-[hidden]:fade-in-0 [hidden]:zoom-out-95 not-[hidden]:zoom-in-95",
+        "bg-background fixed top-[50%] left-[50%] z-50 flex w-full translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded-lg border shadow-lg duration-200",
+        @class
+      ]}
       {@rest}
     >
       <.focus_wrap
         id={"#{@id}-focus"}
-        class={if @is_unstyled, do: nil, else: "flex min-h-0 flex-1 flex-col"}
+        class="flex min-h-0 flex-1 flex-col"
       >
-        <%= if @is_unstyled do %>
+        <div :if={@show_close or @title} class="shrink-0 flex items-center gap-4 px-6 pt-4 pb-2">
+          <div class="flex-1 text-lg font-semibold leading-none tracking-tight">{@title || ""}</div>
+          <button
+            :if={@show_close}
+            type="button"
+            class="ring-offset-background focus-visible:ring-ring inline-flex shrink-0 items-center justify-center rounded opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            phx-click={@hide}
+            aria-label="Close dialog"
+          >
+            <PUI.Icon.icon name={:close} class="size-5" />
+          </button>
+        </div>
+        <div class={[
+          "min-h-0 flex-1 overflow-y-auto px-6",
+          if(@show_close or @title, do: "pt-2", else: "pt-4"),
+          if(@footer != [], do: "pb-2", else: "pb-4")
+        ]}>
           {render_slot(@inner_block)}
+        </div>
+        <div :if={@footer != []} class="shrink-0 px-6 pt-2 pb-4">
           {render_slot(@footer)}
-        <% else %>
-          <div :if={@show_close or @title} class="shrink-0 flex items-center gap-4 px-6 pt-4 pb-2">
-            <div class="flex-1 text-lg font-semibold leading-none tracking-tight">{@title || ""}</div>
-            <button
-              :if={@show_close}
-              type="button"
-              class="ring-offset-background focus-visible:ring-ring inline-flex shrink-0 items-center justify-center rounded opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              phx-click={@hide}
-              aria-label="Close dialog"
-            >
-              <PUI.Icon.icon name={:close} class="size-5" />
-            </button>
-          </div>
-          <div class={[
-            "min-h-0 flex-1 overflow-y-auto px-6",
-            if(@show_close or @title, do: "pt-2", else: "pt-4"),
-            if(@footer != [], do: "pb-2", else: "pb-4")
-          ]}>
-            {render_slot(@inner_block)}
-          </div>
-          <div :if={@footer != []} class="shrink-0 px-6 pt-2 pb-4">
-            {render_slot(@footer)}
-          </div>
-        <% end %>
+        </div>
       </.focus_wrap>
     </div>
     """
@@ -283,7 +259,6 @@ defmodule PUI.Dialog do
   attr :size, :string, default: "md"
   attr :title, :string, default: nil
   attr :show_close, :boolean, default: true
-  attr :variant, :string, default: "default", values: ["default", "unstyled"]
   attr :class, :string, default: ""
   attr :rest, :global, include: ~w(aria-label aria-labelledby aria-describedby)
 
@@ -292,21 +267,15 @@ defmodule PUI.Dialog do
   slot :trigger, required: false
   slot :content, required: false, doc: "To override the content container"
 
-  def dialog(%{variant: variant} = assigns) do
-    is_unstyled = variant == "unstyled"
-
+  def dialog(assigns) do
     size_class =
-      if is_unstyled do
-        ""
-      else
-        case assigns[:size] do
-          "sm" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] sm:max-w-sm"
-          "md" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] md:max-w-md"
-          "lg" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] lg:max-w-lg"
-          "xl" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] xl:max-w-xl"
-          "" -> ""
-          _ -> ""
-        end
+      case assigns[:size] do
+        "sm" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] sm:max-w-sm"
+        "md" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] md:max-w-md"
+        "lg" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] lg:max-w-lg"
+        "xl" -> "max-w-[calc(100%-2rem)] max-h-[calc(100vh-2rem)] xl:max-w-xl"
+        "" -> ""
+        _ -> ""
       end
 
     on_cancel = assigns[:on_cancel]
@@ -323,7 +292,6 @@ defmodule PUI.Dialog do
       assigns
       |> assign(:size_class, size_class)
       |> assign(:cancel_action, cancel_action)
-      |> assign(:is_unstyled, is_unstyled)
 
     ~H"""
     <div
@@ -339,7 +307,6 @@ defmodule PUI.Dialog do
       <.backdrop
         id={"#{@id}-backdrop"}
         hidden={not @show}
-        is_unstyled={@is_unstyled}
         phx-click={if @alert, do: nil, else: JS.exec("data-cancel", to: "##{@id}")}
       />
 
@@ -355,10 +322,9 @@ defmodule PUI.Dialog do
         :if={@content == []}
         role={if @alert, do: "alertdialog", else: "dialog"}
         aria-modal="true"
-        class={if @is_unstyled, do: @class, else: [@size_class, @class]}
+        class={[@size_class, @class] |> Enum.reject(&(&1 == "")) |> Enum.join(" ")}
         id={"#{@id}-content"}
         hidden={not @show}
-        is_unstyled={@is_unstyled}
         title={@title}
         show_close={@show_close}
         hide={JS.exec("data-cancel", to: "##{@id}")}

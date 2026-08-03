@@ -20,7 +20,6 @@ defmodule PUI.Empty do
 
   | Name | Type | Default | Description |
   |------|------|---------|-------------|
-  | `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
   | `class` | `string` | `""` | Additional CSS classes |
   | `rest` | `global` | — | Global HTML attributes |
 
@@ -37,7 +36,6 @@ defmodule PUI.Empty do
 
   use Phoenix.Component
 
-  attr :variant, :string, values: ["default", "unstyled"], default: "default"
   attr :class, :string, default: ""
   attr :rest, :global
 
@@ -48,38 +46,32 @@ defmodule PUI.Empty do
   slot :inner_block
 
   def empty(assigns) do
-    assigns = assign(assigns, :unstyled?, assigns.variant == "unstyled")
-
     ~H"""
     <section
       data-slot="empty"
       class={[
-        !@unstyled? &&
-          "flex min-h-56 flex-col items-center justify-center gap-6 rounded-xl border border-dashed p-8 text-center",
+        "flex min-h-56 flex-col items-center justify-center gap-6 rounded-xl border border-dashed p-8 text-center",
         @class
       ]}
       {@rest}
     >
       <div class={[
-        !@unstyled? && "mx-auto flex max-w-sm flex-col items-center gap-2 text-center"
+        "mx-auto flex max-w-sm flex-col items-center gap-2 text-center"
       ]}>
         <div
           :if={@icon != []}
           data-slot="empty-icon"
-          class={
-            !@unstyled? &&
-              "bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-full"
-          }
+          class="bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-full"
         >
           {render_slot(@icon)}
         </div>
-        <h2 data-slot="empty-title" class={!@unstyled? && "text-lg font-semibold"}>
+        <h2 data-slot="empty-title" class="text-lg font-semibold">
           {render_slot(@title)}
         </h2>
         <p
           :if={@description != []}
           data-slot="empty-description"
-          class={!@unstyled? && "text-muted-foreground text-sm"}
+          class="text-muted-foreground text-sm"
         >
           {render_slot(@description)}
         </p>

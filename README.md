@@ -17,7 +17,7 @@
 
 # PUI
 
-PUI is a Phoenix LiveView UI toolkit with styled components, headless usage paths, and bundled JavaScript hooks for interactive primitives.
+PUI is a Phoenix LiveView UI toolkit with styled components and bundled JavaScript hooks. Hook-managed families also expose zero-style primitive parts for application-owned markup.
 
 ## Installation
 
@@ -122,35 +122,26 @@ Additional modules available directly:
 - `PUI.Loading` (loading indicators)
 - `PUI.MenuButton`
 
-## Component Usage Levels
+## Component Usage
 
-PUI supports three usage levels:
-
-1. Low-level hooks (direct control):
-
-```heex
-<.popover_base phx-hook="PUI.Popover" data-placement="bottom">
-  <.button>Trigger</.button>
-  <:popup class="custom-popup">Content</:popup>
-</.popover_base>
-```
-
-2. Unstyled variants (behavior, no default visuals):
-
-```heex
-<.menu_button variant="unstyled" class="my-btn">
-  Open
-  <:item class="my-item">Profile</:item>
-</.menu_button>
-```
-
-3. Styled defaults (ready-to-use):
+PUI is styled by default:
 
 ```heex
 <.menu_button variant="secondary">
   Open
   <:item>Profile</:item>
 </.menu_button>
+```
+
+For custom markup around a hook-managed interaction, import its explicit
+primitive module instead of selecting an unstyled variant:
+
+```heex
+<PUI.Select.Primitive.root id="assignee">
+  <PUI.Select.Primitive.trigger id="assignee-trigger" listbox_id="assignee-listbox">
+    Choose an assignee
+  </PUI.Select.Primitive.trigger>
+</PUI.Select.Primitive.root>
 ```
 
 ## Guides

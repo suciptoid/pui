@@ -94,7 +94,6 @@ defmodule PUI.Table do
   attr :row_id, :any, default: nil
   attr :row_click, :any, default: nil
   attr :row_item, :any, default: &Function.identity/1
-  attr :variant, :string, values: ["default", "unstyled"], default: "default"
   attr :action_label, :string, default: "Actions"
   attr :class, :string, default: ""
   attr :caption_class, :string, default: "sr-only"
@@ -132,7 +131,7 @@ defmodule PUI.Table do
   lists this is the original row. With LiveView streams it is a `{dom_id, item}`
   tuple unless `row_item` maps it to another value.
   """
-  def table(%{variant: variant} = assigns) do
+  def table(assigns) do
     is_stream = match?(%Phoenix.LiveView.LiveStream{}, assigns.rows)
     row_id = assigns.row_id || (&default_row_id/1)
 
@@ -140,7 +139,7 @@ defmodule PUI.Table do
       assigns
       |> assign(:is_stream, is_stream)
       |> assign(:row_id, row_id)
-      |> assign(:classes, classes(variant))
+      |> assign(:classes, classes("default"))
 
     ~H"""
     <div data-pui="table" class={[@classes.wrapper, @class]}>
@@ -217,21 +216,6 @@ defmodule PUI.Table do
 
   defp normalize_dom_id(nil), do: nil
   defp normalize_dom_id(id), do: to_string(id)
-
-  defp classes("unstyled") do
-    %{
-      wrapper: "",
-      table: "",
-      header: "",
-      header_cell: "",
-      body: "",
-      row: "",
-      cell: "",
-      action_header: "",
-      action_cell: "",
-      action: ""
-    }
-  end
 
   defp classes("default") do
     %{

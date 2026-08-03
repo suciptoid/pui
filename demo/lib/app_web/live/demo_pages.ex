@@ -891,26 +891,22 @@ defmodule AppWeb.Live.DemoPages do
       </.accordion>
     </.surface>
 
-    <.surface title="Headless / Unstyled" description="Use variant=unstyled to bring your own design.">
-      <.accordion variant="unstyled" class="max-w-2xl space-y-3">
+    <.surface
+      title="Styled Accordion"
+      description="Use semantic classes to refine the default design."
+    >
+      <.accordion class="max-w-2xl space-y-3">
         <.accordion_item
-          variant="unstyled"
           class="rounded-2xl border border-primary/20 bg-primary/5 shadow-sm"
           open
         >
-          <.accordion_trigger
-            variant="unstyled"
-            class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground"
-          >
+          <.accordion_trigger class="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold text-foreground">
             Custom styled item
             <span class="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
               Open
             </span>
           </.accordion_trigger>
-          <.accordion_content
-            variant="unstyled"
-            class="px-5 pb-5 text-sm leading-6 text-muted-foreground"
-          >
+          <.accordion_content class="px-5 pb-5 text-sm leading-6 text-muted-foreground">
             PUI keeps the semantic structure while you control spacing, borders, colors, and decorative UI details yourself.
           </.accordion_content>
         </.accordion_item>
@@ -1091,7 +1087,6 @@ defmodule AppWeb.Live.DemoPages do
       <.table
         id="demo-table-custom-projects"
         rows={table_projects()}
-        variant="unstyled"
         class="overflow-hidden rounded-xl border border-primary/20 bg-primary/5"
         table_class="w-full text-sm"
         header_class="bg-primary/10"

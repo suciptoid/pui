@@ -1688,7 +1688,6 @@ defmodule AppWeb.Live.DemoLive do
     ~H"""
     <.menu_button
       id="layout-org-switcher"
-      variant="unstyled"
       wrapper_class="block border-b border-border px-1 py-2"
       class="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background px-2 py-1.5 text-left shadow-xs transition hover:bg-accent/60 group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
       content_class="z-[60] min-w-64 rounded-lg border border-border bg-background p-1 shadow-lg"
@@ -1748,7 +1747,6 @@ defmodule AppWeb.Live.DemoLive do
     ~H"""
     <.menu_button
       id="layout-user-menu"
-      variant="unstyled"
       wrapper_class="block border-t border-border px-1 py-2 group-data-[collapsed=true]/pui-layout:px-1"
       class="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background px-2 py-1.5 text-left shadow-xs transition hover:bg-accent/60 group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
       content_class="z-[60] min-w-56 rounded-lg border border-border bg-background p-1 shadow-lg"
