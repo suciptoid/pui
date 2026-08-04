@@ -14,5 +14,5 @@
 
 ## Headless Variants
 
-- If using variants like `unstyled`, provide explicit visibility and spacing classes.
+- If using a `.Primitive` module, provide explicit visibility and spacing classes.
 - Do not assume default styles in headless paths.

@@ -134,7 +134,8 @@ PUI is styled by default:
 ```
 
 For custom markup around a hook-managed interaction, import its explicit
-primitive module instead of selecting an unstyled variant:
+primitive module. There is no `variant="unstyled"`; each hook-managed family
+exposes a `.Primitive` module instead:
 
 ```heex
 <PUI.Select.Primitive.root id="assignee">

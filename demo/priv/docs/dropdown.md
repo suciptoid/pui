@@ -115,7 +115,7 @@ Use `menu_content`, `menu_item`, and `menu_separator` for full control:
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `string` | `"secondary"` | Trigger button variant: `"default"`, `"secondary"`, `"outline"`, `"ghost"`, `"destructive"`, `"unstyled"` |
+| `variant` | `string` | `"secondary"` | Trigger button variant: `"default"`, `"secondary"`, `"outline"`, `"ghost"`, or `"destructive"` |
 | `class` | `string` | `""` | Additional CSS classes for trigger |
 | `content_class` | `string` | `""` | Additional CSS classes for dropdown content |
 
@@ -134,10 +134,27 @@ Use `menu_content`, `menu_item`, and `menu_separator` for full control:
 | `variant` | `string` | `"default"` | `"default"` or `"destructive"` |
 | `shortcut` | `string` | `nil` | Keyboard shortcut display text |
 | `class` | `string` | `""` | Additional CSS classes |
-| `is_unstyled` | `boolean` | `false` | Remove default styles |
 
-### Unstyled Popups
+## Headless
 
-When `variant="unstyled"` is used on `menu_button`, the popup still toggles
-`aria-hidden`. Include both the hidden and visible display classes in
-`content_class`, for example `aria-hidden:hidden not-aria-hidden:block`.
+`menu_button/1` always renders a styled `PUI.Button` trigger. When the
+application owns the trigger markup, compose `PUI.Dropdown.Primitive` instead.
+The parts keep the popover hook, `role="menu"` semantics, and keyboard
+navigation, and add no visual classes — so include both the hidden and visible
+display classes on the content, for example `aria-hidden:hidden block`:
+
+```heex
+<PUI.Dropdown.Primitive.root id="actions" placement="bottom-start" class="w-fit">
+  <PUI.Dropdown.Primitive.trigger id="actions-trigger" controls="actions-menu" class="my-trigger">
+    Options
+  </PUI.Dropdown.Primitive.trigger>
+  <PUI.Dropdown.Primitive.content id="actions-menu" class="aria-hidden:hidden block my-menu">
+    <PUI.Dropdown.Primitive.item phx-click="edit" class="my-item">Edit</PUI.Dropdown.Primitive.item>
+    <PUI.Dropdown.Primitive.separator class="my-separator" />
+    <PUI.Dropdown.Primitive.item phx-click="delete" class="my-item">Delete</PUI.Dropdown.Primitive.item>
+  </PUI.Dropdown.Primitive.content>
+</PUI.Dropdown.Primitive.root>
+```
+
+`PUI.Dropdown.menu_content/1`, `menu_item/1`, `menu_shortcut/1`, and
+`menu_separator/1` stay available when only the trigger needs custom markup.

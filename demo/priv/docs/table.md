@@ -152,15 +152,15 @@ Columns can override the defaults independently:
 </.table>
 ```
 
-## Unstyled mode
+## Host-owned presentation
 
-Use `variant="unstyled"` when the host design system owns every visual class:
+Every part class attribute defaults to `""`, so setting all of them hands the
+full presentation to the host design system:
 
 ```heex
 <.table
   id="custom-table"
   rows={@rows}
-  variant="unstyled"
   class="overflow-hidden rounded-xl border"
   table_class="w-full text-sm"
   header_class="bg-slate-900 text-white"
@@ -172,7 +172,7 @@ Use `variant="unstyled"` when the host design system owns every visual class:
 </.table>
 ```
 
-Unstyled mode preserves table semantics, stream metadata, stable IDs, slots, and callbacks while removing PUI's visual defaults.
+Overriding the part classes preserves table semantics, stream metadata, stable IDs, slots, and callbacks. A table has no hook-managed behavior, so write a plain `<table>` when PUI's structure is not wanted at all.
 
 ## Responsibility boundary
 
@@ -189,7 +189,6 @@ PUI.Table deliberately does not implement sorting, filtering, pagination, databa
 | `row_id` | function | derived | Returns the DOM ID for a rendered row |
 | `row_click` | function | `nil` | Returns the `phx-click` value for data cells |
 | `row_item` | function | identity | Maps rows before passing them to slots |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `action_label` | `string` | `"Actions"` | Accessible label for the action column |
 | `class` | `string` | `""` | Outer overflow wrapper classes |
 | `caption_class` | `string` | `"sr-only"` | Table caption classes |

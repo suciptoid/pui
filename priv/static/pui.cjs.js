@@ -1911,7 +1911,7 @@ var Popover = class extends import_phoenix_live_view.ViewHook {
   }
   cacheElements() {
     this.trigger = this.el.querySelector("[aria-haspopup],[role='combobox']");
-    this.popup = this.el.querySelector("[role='menu'],[role='listbox']");
+    this.popup = this.el.querySelector("[role='menu'],[role='listbox'],[role='dialog']");
     this.items = this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
   }
   getOpenPlacement() {
@@ -2438,7 +2438,7 @@ var DatePicker = class extends import_phoenix_live_view2.ViewHook {
   }
   cacheElements() {
     this.trigger = this.el.querySelector("[aria-haspopup],[role='combobox']");
-    this.popup = this.el.querySelector("[role='menu'],[role='listbox']");
+    this.popup = this.el.querySelector("[role='menu'],[role='listbox'],[role='dialog']");
     this.items = this.popup?.querySelectorAll("[role='option'],[role='menuitem']") ?? [];
   }
   ignoreHookManagedAttributes() {

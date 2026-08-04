@@ -52,12 +52,12 @@ _Avoid_: PUI icon, default icon
 A PUI primitive that supplies default visual treatment while still accepting consumer customization.
 _Avoid_: default component, opinionated widget
 
-**Unstyled component**:
-A PUI primitive that keeps its structure, semantics, and supported behavior but omits PUI's default visual classes so the host application owns presentation.
-_Avoid_: bare component, styleless widget
+**Primitive module**:
+A per-family `PUI.<Family>.Primitive` module that keeps a component's structure, semantics, and hook contract but adds no visual classes, so the host application owns presentation.
+_Avoid_: unstyled component, bare component, styleless widget
 
 **Headless path**:
-The PUI usage path where consumers keep PUI's markup and interaction semantics while controlling presentation themselves. It includes unstyled components and direct hook usage.
+The PUI usage path where consumers keep PUI's interaction semantics while controlling markup and presentation themselves. It includes the `.Primitive` modules and direct hook usage.
 _Avoid_: custom component, CSS-only mode
 
 **Low-level hook**:

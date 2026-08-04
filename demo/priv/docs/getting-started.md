@@ -9,7 +9,7 @@
 
 PUI is a comprehensive collection of Phoenix LiveView UI components built with Tailwind CSS. It provides beautiful, accessible, and highly customizable components that work seamlessly with Phoenix LiveView.
 
-Need complete control over presentation? The [Headless Components](/docs/headless) guide shows how to use low-level hooks and unstyled primitives.
+Need complete control over presentation? The [Headless Components](/docs/headless) guide shows how to use low-level hooks and the `.Primitive` modules.
 
 ## Installation
 
@@ -88,5 +88,5 @@ PUI provides components in several categories:
 
 - **Accessible** — Built with WAI-ARIA patterns and keyboard navigation
 - **Composable** — Mix and match components freely with slots
-- **Customizable** — Override styles with Tailwind classes or use unstyled/headless variants
+- **Customizable** — Override styles with Tailwind classes or drop down to the `.Primitive` modules
 - **LiveView Native** — Designed specifically for Phoenix LiveView with server-side state management

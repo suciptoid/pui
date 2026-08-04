@@ -33,7 +33,7 @@ defmodule AppWeb.DocsFeatureTest do
     |> assert_has(css("p", text: "Please enter a valid email address."))
   end
 
-  feature "table docs render styled, unstyled, and empty table demos", %{session: session} do
+  feature "table docs render styled, custom, and empty table demos", %{session: session} do
     session
     |> visit("/docs/table")
     |> assert_has(css("#docs-projects"))

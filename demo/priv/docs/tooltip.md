@@ -100,18 +100,22 @@ The light variant uses a white background with a border, suitable for lighter in
 </.tooltip>
 ```
 
-### Unstyled / Headless
+### Headless
 
-Use `variant="unstyled"` when you want to provide all tooltip classes yourself:
+Compose `PUI.Tooltip.Primitive` to provide all tooltip markup and classes
+yourself. The parts keep the hook contract and ARIA semantics and add no
+visual classes, so supply the visibility classes too:
 
 ```heex
-<.tooltip
-  variant="unstyled"
-  class="rounded bg-zinc-950 px-3 py-1.5 text-sm text-white aria-hidden:pointer-events-none aria-hidden:opacity-0 invisible not-aria-hidden:visible not-aria-hidden:opacity-100"
->
+<PUI.Tooltip.Primitive.root id="custom-tip" placement="top" class="group w-fit">
   <button type="button" class="underline">Hover me</button>
-  <:tooltip>Custom tooltip styling</:tooltip>
-</.tooltip>
+  <PUI.Tooltip.Primitive.content
+    id="custom-tip-tooltip"
+    class="rounded bg-zinc-950 px-3 py-1.5 text-sm text-white aria-hidden:pointer-events-none aria-hidden:opacity-0 invisible not-aria-hidden:visible not-aria-hidden:opacity-100"
+  >
+    Custom tooltip styling
+  </PUI.Tooltip.Primitive.content>
+</PUI.Tooltip.Primitive.root>
 ```
 
 <AppWeb.DocsDemo.tooltip_variant_demo />
@@ -146,7 +150,7 @@ Override the default arrow color with `arrow_class`. The arrow automatically mat
 |------|------|---------|-------------|
 | `id` | `string` | auto-generated | Unique identifier |
 | `placement` | `string` | `"top"` | Position: `"top"`, `"bottom"`, `"left"`, `"right"` |
-| `variant` | `string` | `"default"` | `"default"`, `"light"`, `"dark"`, or `"unstyled"` |
+| `variant` | `string` | `"default"` | `"default"`, `"light"`, or `"dark"` |
 | `arrow_class` | `string` | `""` | Custom CSS classes for the arrow element |
 | `class` | `string` | `""` | Additional CSS classes |
 

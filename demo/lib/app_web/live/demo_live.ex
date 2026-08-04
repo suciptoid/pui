@@ -7,6 +7,8 @@ defmodule AppWeb.Live.DemoLive do
 
   import AppWeb.Live.DemoPages, only: [page_intro: 1, surface: 1]
 
+  alias PUI.Dropdown.Primitive, as: Menu
+
   @impl true
   def mount(_params, session, socket) do
     {:ok,
@@ -1686,24 +1688,28 @@ defmodule AppWeb.Live.DemoLive do
 
   defp org_switcher(assigns) do
     ~H"""
-    <.menu_button
-      id="layout-org-switcher"
-      wrapper_class="block border-b border-border px-1 py-2"
-      class="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background px-2 py-1.5 text-left shadow-xs transition hover:bg-accent/60 group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
-      content_class="z-[60] min-w-64 rounded-lg border border-border bg-background p-1 shadow-lg"
-    >
-      <div class="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
-        SC
-      </div>
-      <div class="min-w-0 flex-1 group-data-[collapsed=true]/pui-layout:hidden">
-        <p class="truncate text-sm font-semibold text-foreground">Suka Cipta</p>
-      </div>
-      <.icon
-        name="hero-chevron-up-down"
-        class="size-4 text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden"
-      />
+    <Menu.root id="layout-org-switcher" class="block border-b border-border px-1 py-2">
+      <Menu.trigger
+        id="layout-org-switcher-trigger"
+        controls="layout-org-switcher-menu"
+        class="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background px-2 py-1.5 text-left shadow-xs transition hover:bg-accent/60 group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
+      >
+        <div class="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
+          SC
+        </div>
+        <div class="min-w-0 flex-1 group-data-[collapsed=true]/pui-layout:hidden">
+          <p class="truncate text-sm font-semibold text-foreground">Suka Cipta</p>
+        </div>
+        <.icon
+          name="hero-chevron-up-down"
+          class="size-4 text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden"
+        />
+      </Menu.trigger>
 
-      <:items>
+      <Menu.content
+        id="layout-org-switcher-menu"
+        class="aria-hidden:hidden block z-[60] min-w-64 rounded-lg border border-border bg-background p-1 shadow-lg"
+      >
         <div class="space-y-1">
           <p class="px-2 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Organizations
@@ -1738,32 +1744,39 @@ defmodule AppWeb.Live.DemoLive do
             <.icon name="hero-plus" class="size-4" /> Create new Org
           </button>
         </div>
-      </:items>
-    </.menu_button>
+      </Menu.content>
+    </Menu.root>
     """
   end
 
   defp user_menu(assigns) do
     ~H"""
-    <.menu_button
+    <Menu.root
       id="layout-user-menu"
-      wrapper_class="block border-t border-border px-1 py-2 group-data-[collapsed=true]/pui-layout:px-1"
-      class="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background px-2 py-1.5 text-left shadow-xs transition hover:bg-accent/60 group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
-      content_class="z-[60] min-w-56 rounded-lg border border-border bg-background p-1 shadow-lg"
+      class="block border-t border-border px-1 py-2 group-data-[collapsed=true]/pui-layout:px-1"
     >
-      <div class="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-muted text-xs font-semibold text-foreground">
-        S
-      </div>
-      <div class="min-w-0 flex-1 group-data-[collapsed=true]/pui-layout:hidden">
-        <p class="truncate text-sm font-semibold text-foreground">Sucipto</p>
-        <p class="truncate text-xs text-muted-foreground">Developer</p>
-      </div>
-      <.icon
-        name="hero-chevron-up-down"
-        class="size-4 text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden"
-      />
+      <Menu.trigger
+        id="layout-user-menu-trigger"
+        controls="layout-user-menu-content"
+        class="flex w-full items-center gap-2.5 rounded-lg border border-border bg-background px-2 py-1.5 text-left shadow-xs transition hover:bg-accent/60 group-data-[collapsed=true]/pui-layout:mx-auto group-data-[collapsed=true]/pui-layout:h-10 group-data-[collapsed=true]/pui-layout:w-10 group-data-[collapsed=true]/pui-layout:justify-center group-data-[collapsed=true]/pui-layout:px-0"
+      >
+        <div class="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-muted text-xs font-semibold text-foreground">
+          S
+        </div>
+        <div class="min-w-0 flex-1 group-data-[collapsed=true]/pui-layout:hidden">
+          <p class="truncate text-sm font-semibold text-foreground">Sucipto</p>
+          <p class="truncate text-xs text-muted-foreground">Developer</p>
+        </div>
+        <.icon
+          name="hero-chevron-up-down"
+          class="size-4 text-muted-foreground group-data-[collapsed=true]/pui-layout:hidden"
+        />
+      </Menu.trigger>
 
-      <:items>
+      <Menu.content
+        id="layout-user-menu-content"
+        class="aria-hidden:hidden block z-[60] min-w-56 rounded-lg border border-border bg-background p-1 shadow-lg"
+      >
         <div class="space-y-1">
           <div class="rounded-lg px-2 py-2">
             <p class="text-sm font-medium text-foreground">Sucipto</p>
@@ -1781,8 +1794,8 @@ defmodule AppWeb.Live.DemoLive do
             {action.label}
           </.menu_item>
         </div>
-      </:items>
-    </.menu_button>
+      </Menu.content>
+    </Menu.root>
     """
   end
 end

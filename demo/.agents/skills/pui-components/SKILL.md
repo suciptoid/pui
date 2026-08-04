@@ -56,7 +56,7 @@ When a component appears but does not behave correctly:
 1. Re-run `IEx.Helpers.h/1` for that module.
 2. Verify required attrs and `:global` passthrough values.
 3. Check for stale local wrappers overriding behavior.
-4. Check whether headless variants (`variant=\"unstyled\"`) require explicit styling/visibility classes.
+4. Check whether a `.Primitive` module is the better fit, and give its parts explicit styling/visibility classes.
 
 ## References
 

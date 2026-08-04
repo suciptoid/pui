@@ -1,6 +1,6 @@
 # Keep tables presentation-only
 
-PUI.Table will provide styled and unstyled table structure, LiveView stream rendering, row identity, and composable column/action slots, while host applications retain ownership of sorting, filtering, pagination, authorization, and data loading. This keeps the component reusable across PUI’s dogfood applications and avoids coupling a visual primitive to one application’s query or navigation model.
+PUI.Table will provide table structure with per-part class overrides, LiveView stream rendering, row identity, and composable column/action slots, while host applications retain ownership of sorting, filtering, pagination, authorization, and data loading. This keeps the component reusable across PUI’s dogfood applications and avoids coupling a visual primitive to one application’s query or navigation model.
 
 ## Consequences
 

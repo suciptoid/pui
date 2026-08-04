@@ -166,14 +166,26 @@ select, and you can also provide them manually:
 
 <AppWeb.DocsDemo.select_form_demo form={@form} />
 
-## Unstyled / Headless
+## Headless
 
-Use `variant="unstyled"` for full styling control:
+Compose `PUI.Select.Primitive` for full markup and styling control. The parts
+keep the `PUI.Select` hook contract, the hidden form input, and listbox
+semantics without any visual classes:
 
 ```heex
-<.select variant="unstyled" id="custom" name="custom" class="my-select">
-  <.select_item value="a" variant="unstyled">Option A</.select_item>
-</.select>
+<PUI.Select.Primitive.root id="custom" class="relative my-select">
+  <PUI.Select.Primitive.input id="custom-input" name="custom" value={@value} />
+  <PUI.Select.Primitive.trigger id="custom-trigger" listbox_id="custom-listbox" class="my-trigger">
+    <PUI.Select.Primitive.value placeholder="Select an item" />
+  </PUI.Select.Primitive.trigger>
+  <PUI.Select.Primitive.content
+    id="custom-listbox"
+    trigger_id="custom-trigger"
+    class="aria-hidden:hidden block my-listbox"
+  >
+    <PUI.Select.Primitive.item value="a" class="my-option">Option A</PUI.Select.Primitive.item>
+  </PUI.Select.Primitive.content>
+</PUI.Select.Primitive.root>
 ```
 
 ## API Reference
@@ -189,7 +201,6 @@ Use `variant="unstyled"` for full styling control:
 | `options` | `list` | `[]` | Options list (strings, tuples, or grouped) |
 | `searchable` | `boolean` | `false` | Enable search/filter |
 | `label` | `string` | `nil` | Label text |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `field` | `FormField` | `nil` | Phoenix form field |
 | `errors` | `list` | `[]` | Error messages rendered below the select |
 | `class` | `string` | `"w-fit"` | Additional CSS classes |
@@ -208,4 +219,3 @@ Use `variant="unstyled"` for full styling control:
 |------|------|---------|-------------|
 | `value` | `string` | **required** | Option value |
 | `class` | `string` | `""` | Additional CSS classes |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |

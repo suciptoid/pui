@@ -33,7 +33,7 @@ Use `accordion/1` as the wrapper and compose items with `accordion_item/1`, `acc
   <.accordion_item name="faq">
     <.accordion_trigger>Can I style it?</.accordion_trigger>
     <.accordion_content>
-      Yes. Use the default classes or switch to `variant="unstyled"`.
+      Yes. Every part takes a `class` that replaces its default styling.
     </.accordion_content>
   </.accordion_item>
 </.accordion>
@@ -79,21 +79,20 @@ Leave `name` unset to allow multiple sections to remain expanded at once.
 
 <AppWeb.DocsDemo.accordion_multiple_demo />
 
-## Headless / Unstyled
+## Host-owned presentation
 
-Use `variant="unstyled"` when you want to keep the semantic structure but take over the presentation completely.
+The accordion is built on native `<details>`/`<summary>`, so it has no
+hook-managed behavior and therefore no primitive module. Pass a `class` to each
+part to take over the presentation while keeping the semantic structure:
 
 ```heex
-<.accordion variant="unstyled" class="space-y-3">
-  <.accordion_item variant="unstyled" class="rounded-2xl border" open>
-    <.accordion_trigger
-      variant="unstyled"
-      class="flex w-full items-center justify-between px-4 py-3"
-    >
+<.accordion class="space-y-3">
+  <.accordion_item class="rounded-2xl border" open>
+    <.accordion_trigger class="flex w-full items-center justify-between px-4 py-3">
       Custom trigger
     </.accordion_trigger>
 
-    <.accordion_content variant="unstyled" class="px-4 pb-4 text-sm">
+    <.accordion_content class="px-4 pb-4 text-sm">
       Fully custom content styling.
     </.accordion_content>
   </.accordion_item>
@@ -119,7 +118,6 @@ Because the component is built on `<details>` and `<summary>`, it works well for
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `class` | `string` | `""` | Additional wrapper classes |
 
 ### `accordion_item/1` Attributes
@@ -128,7 +126,6 @@ Because the component is built on `<details>` and `<summary>`, it works well for
 |------|------|---------|-------------|
 | `name` | `string` | `nil` | Shared group name for single-open behavior |
 | `open` | `boolean` | `false` | Whether the item starts expanded |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `class` | `string` | `""` | Additional item classes |
 
 ### `accordion_trigger/1` Attributes
@@ -136,12 +133,10 @@ Because the component is built on `<details>` and `<summary>`, it works well for
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `icon` | `boolean` | `true` | Show the chevron icon |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `class` | `string` | `""` | Additional trigger classes |
 
 ### `accordion_content/1` Attributes
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `class` | `string` | `""` | Additional content classes |

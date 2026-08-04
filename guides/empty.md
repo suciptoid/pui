@@ -19,13 +19,13 @@ first-use screens.
 The title is required. Description, icon, actions, and additional content are
 optional slots owned by the application.
 
-## Unstyled usage
+## Host-owned presentation
 
-Use `variant="unstyled"` when PUI should provide the semantic structure but
-your design system owns the presentation:
+Pass a `class` when PUI should provide the semantic structure but your design
+system owns the presentation:
 
 ```heex
-<.empty variant="unstyled" class="gap-3">
+<.empty class="gap-3">
   <:title>No notifications</:title>
   <:description>You are all caught up.</:description>
 </.empty>

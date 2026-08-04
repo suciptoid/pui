@@ -52,6 +52,10 @@ defmodule PUI.Select.Primitive do
   attr :rest, :global
   slot :inner_block
 
+  def value(%{inner_block: []} = assigns) do
+    ~H|<span data-pui="selected-label" data-slot="select-value" data-placeholder={@placeholder} {@rest}>{@placeholder}</span>|
+  end
+
   def value(assigns) do
     ~H|<span data-pui="selected-label" data-slot="select-value" data-placeholder={@placeholder} {@rest}>{render_slot(
   @inner_block,

@@ -83,7 +83,7 @@ defmodule PUI.Tabs do
   | `orientation` | `string` | `"horizontal"` | `"horizontal"` or `"vertical"` |
   | `activation_mode` | `string` | `"manual"` | `"automatic"` or `"manual"` keyboard activation |
   | `client_controlled` | `boolean` | `true` | Whether the hook updates active state in the browser |
-  | `variant` | `string` | `"default"` | `"default"`, `"line"`, or `"unstyled"` |
+  | `variant` | `string` | `"default"` | `"default"` or `"line"` |
   | `class` | `string` | `""` | Additional root classes |
   | `list_class` | `string` | `""` | Additional classes for the tab list |
   | `panels_class` | `string` | `""` | Additional classes for the panels wrapper |
@@ -125,7 +125,7 @@ defmodule PUI.Tabs do
   attr :orientation, :string, default: "horizontal", values: ["horizontal", "vertical"]
   attr :activation_mode, :string, default: "manual", values: ["automatic", "manual"]
   attr :client_controlled, :boolean, default: true
-  attr :variant, :string, default: "default", values: ["default", "line", "unstyled"]
+  attr :variant, :string, default: "default", values: ["default", "line"]
   attr :class, :string, default: ""
   attr :list_class, :string, default: ""
   attr :panels_class, :string, default: ""
@@ -186,25 +186,23 @@ defmodule PUI.Tabs do
   def tabs(assigns) do
     assigns = assign_new(assigns, :id, fn -> "tabs-#{System.unique_integer([:positive])}" end)
     active_value = resolve_active_value(assigns.value, assigns.default_value, assigns.trigger)
-    is_unstyled = assigns.variant == "unstyled"
     has_content? = assigns.content != []
 
     assigns =
       assigns
       |> assign(:active_value, active_value)
-      |> assign(:is_unstyled, is_unstyled)
       |> assign(:has_content?, has_content?)
       |> assign(
         :root_classes,
-        root_classes(assigns.orientation, is_unstyled, has_content?, assigns.class)
+        root_classes(assigns.orientation, has_content?, assigns.class)
       )
       |> assign(
         :list_classes,
-        list_classes(assigns.variant, assigns.orientation, is_unstyled, assigns.list_class)
+        list_classes(assigns.variant, assigns.orientation, assigns.list_class)
       )
       |> assign(
         :panels_classes,
-        panels_classes(assigns.orientation, is_unstyled, assigns.panels_class)
+        panels_classes(assigns.orientation, assigns.panels_class)
       )
 
     ~H"""
@@ -235,14 +233,7 @@ defmodule PUI.Tabs do
           phx-click={tab[:"phx-click"]}
           phx-target={tab[:"phx-target"]}
           phx-value-tab={tab[:"phx-value-tab"] || tab[:value]}
-          class={
-            trigger_classes(
-              @variant,
-              @orientation,
-              @is_unstyled,
-              tab[:class]
-            )
-          }
+          class={trigger_classes(@variant, @orientation, tab[:class])}
         >
           {render_slot(tab)}
         </button>
@@ -258,7 +249,7 @@ defmodule PUI.Tabs do
           aria-labelledby={trigger_id(@id, panel[:value], @trigger)}
           tabindex="0"
           hidden={not active?(panel[:value], @active_value)}
-          class={panel_classes(@is_unstyled, panel[:class])}
+          class={panel_classes(panel[:class])}
         >
           {render_slot(panel)}
         </div>
@@ -285,53 +276,42 @@ defmodule PUI.Tabs do
     end
   end
 
-  defp root_classes("vertical", true, _has_content?, class), do: [class]
-  defp root_classes(_orientation, true, _has_content?, class), do: [class]
+  defp root_classes("vertical", _has_content?, class), do: ["flex items-start gap-6", class]
+  defp root_classes(_orientation, true, class), do: ["w-full space-y-4", class]
+  defp root_classes(_orientation, _has_content?, class), do: ["w-full", class]
 
-  defp root_classes("vertical", false, _has_content?, class),
-    do: ["flex items-start gap-6", class]
-
-  defp root_classes(_orientation, false, true, class), do: ["w-full space-y-4", class]
-  defp root_classes(_orientation, false, _has_content?, class), do: ["w-full", class]
-
-  defp list_classes(_variant, _orientation, true, class), do: [class]
-
-  defp list_classes("default", "vertical", false, class) do
+  defp list_classes("default", "vertical", class) do
     [
       "bg-muted text-muted-foreground inline-flex h-auto min-w-44 flex-col items-stretch justify-start rounded-lg p-1",
       class
     ]
   end
 
-  defp list_classes("default", _orientation, false, class) do
+  defp list_classes("default", _orientation, class) do
     [
       "bg-muted text-muted-foreground inline-flex h-10 w-fit items-center justify-center rounded-lg p-1",
       class
     ]
   end
 
-  defp list_classes("line", "vertical", false, class) do
+  defp list_classes("line", "vertical", class) do
     [
       "inline-flex h-auto min-w-44 flex-col items-stretch justify-start border-l border-border",
       class
     ]
   end
 
-  defp list_classes("line", _orientation, false, class) do
+  defp list_classes("line", _orientation, class) do
     [
       "inline-flex h-auto w-fit items-center justify-start border-b border-border",
       class
     ]
   end
 
-  defp panels_classes("vertical", true, class), do: ["min-w-0 flex-1", class]
-  defp panels_classes(_orientation, true, class), do: [class]
-  defp panels_classes("vertical", false, class), do: ["min-w-0 flex-1", class]
-  defp panels_classes(_orientation, false, class), do: ["space-y-4", class]
+  defp panels_classes("vertical", class), do: ["min-w-0 flex-1", class]
+  defp panels_classes(_orientation, class), do: ["space-y-4", class]
 
-  defp trigger_classes(_variant, _orientation, true, class), do: [class]
-
-  defp trigger_classes("default", "vertical", false, class) do
+  defp trigger_classes("default", "vertical", class) do
     [
       "focus-visible:border-ring focus-visible:ring-ring/50 inline-flex min-w-0 items-center justify-start gap-2 whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
       "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs",
@@ -340,7 +320,7 @@ defmodule PUI.Tabs do
     ]
   end
 
-  defp trigger_classes("default", _orientation, false, class) do
+  defp trigger_classes("default", _orientation, class) do
     [
       "focus-visible:border-ring focus-visible:ring-ring/50 inline-flex min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
       "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs",
@@ -349,7 +329,7 @@ defmodule PUI.Tabs do
     ]
   end
 
-  defp trigger_classes("line", "vertical", false, class) do
+  defp trigger_classes("line", "vertical", class) do
     [
       "focus-visible:border-ring focus-visible:ring-ring/50 -ml-px inline-flex min-w-0 items-center justify-start gap-2 whitespace-nowrap border-l-2 px-4 py-2 text-sm font-medium transition-[color,border-color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
       "data-[state=active]:border-primary data-[state=active]:text-foreground",
@@ -358,7 +338,7 @@ defmodule PUI.Tabs do
     ]
   end
 
-  defp trigger_classes("line", _orientation, false, class) do
+  defp trigger_classes("line", _orientation, class) do
     [
       "focus-visible:border-ring focus-visible:ring-ring/50 -mb-px inline-flex min-w-0 items-center justify-center gap-2 whitespace-nowrap border-b-2 px-4 py-2 text-sm font-medium transition-[color,border-color,box-shadow] outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50",
       "data-[state=active]:border-primary data-[state=active]:text-foreground",
@@ -367,9 +347,7 @@ defmodule PUI.Tabs do
     ]
   end
 
-  defp panel_classes(true, class), do: [class]
-
-  defp panel_classes(false, class) do
+  defp panel_classes(class) do
     [
       "focus-visible:border-ring focus-visible:ring-ring/50 outline-none focus-visible:ring-[3px]",
       class

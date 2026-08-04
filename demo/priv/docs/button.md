@@ -106,14 +106,13 @@ Combine buttons with icon components for rich visual cues:
 
 <AppWeb.DocsDemo.button_icons_demo />
 
-## Unstyled / Headless
+## Fully custom buttons
 
-Use `variant="unstyled"` to get a button with no default styles — perfect for building custom designs:
+A button has no hook-managed behavior, so PUI has no primitive module for it.
+When the application owns every visual class, write plain markup:
 
 ```heex
-<.button variant="unstyled" class="my-custom-btn">
-  Fully Custom
-</.button>
+<button type="button" class="my-custom-btn">Fully Custom</button>
 ```
 
 ## API Reference
@@ -122,7 +121,7 @@ Use `variant="unstyled"` to get a button with no default styles — perfect for 
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `string` | `"default"` | Visual style: `"default"`, `"secondary"`, `"destructive"`, `"outline"`, `"ghost"`, `"link"`, `"unstyled"` |
+| `variant` | `string` | `"default"` | Visual style: `"default"`, `"secondary"`, `"destructive"`, `"outline"`, `"ghost"`, `"link"` |
 | `size` | `string` | `"default"` | Button size: `"default"`, `"sm"`, `"lg"`, `"icon"` |
 | `class` | `string` | `""` | Additional CSS classes |
 | `disabled` | `boolean` | `false` | Disables the button |

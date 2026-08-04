@@ -59,7 +59,7 @@ defmodule PUI.Layout do
   use Phoenix.Component
   import PUI.Icon, only: [icon: 1]
   import PUI.Popover, only: [tooltip: 1]
-  import PUI.Dropdown, only: [menu_button: 1]
+  alias PUI.Dropdown.Primitive, as: Menu
 
   @doc """
   Renders a two-pane application shell.
@@ -272,26 +272,33 @@ defmodule PUI.Layout do
         />
       </button>
 
-      <.menu_button
+      <Menu.root
         id={"#{@id}-collapsed-menu"}
         trigger="hover"
         placement="right-start"
-        wrapper_class="hidden group-data-[collapsed=true]/pui-layout:block"
-        class={sidebar_menu_item_class(@current, @class)}
-        content_class="z-[60] min-w-48 rounded-md border border-border bg-background p-1 shadow-lg"
+        class="hidden group-data-[collapsed=true]/pui-layout:block"
       >
-        <span class="flex h-4 w-4 shrink-0 items-center justify-center">
-          {render_slot(@icon)}
-        </span>
-        <span class="sr-only">{@title}</span>
-        <:items>
+        <Menu.trigger
+          id={"#{@id}-collapsed-menu-trigger"}
+          controls={"#{@id}-collapsed-menu-content"}
+          class={sidebar_menu_item_class(@current, @class)}
+        >
+          <span class="flex h-4 w-4 shrink-0 items-center justify-center">
+            {render_slot(@icon)}
+          </span>
+          <span class="sr-only">{@title}</span>
+        </Menu.trigger>
+        <Menu.content
+          id={"#{@id}-collapsed-menu-content"}
+          class="aria-hidden:hidden block z-[60] min-w-48 rounded-md border border-border bg-background p-1 shadow-lg"
+        >
           <div class="space-y-1">
             <%= for subitem <- @subitem do %>
               {render_slot(subitem)}
             <% end %>
           </div>
-        </:items>
-      </.menu_button>
+        </Menu.content>
+      </Menu.root>
 
       <div
         id={"#{@id}-submenu"}
@@ -348,7 +355,7 @@ defmodule PUI.Layout do
       current && "bg-primary/10 text-primary",
       class
     ]
-    |> Enum.reject(&(&1 in [nil, ""]))
+    |> Enum.reject(&(&1 in [nil, false, ""]))
     |> Enum.join(" ")
   end
 

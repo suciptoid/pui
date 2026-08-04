@@ -39,17 +39,21 @@ The `popover_base` component is a low-level building block with `trigger` and `p
 
 <AppWeb.DocsDemo.popover_demo />
 
-## Unstyled / Headless
+## Headless
 
-Use `variant="unstyled"` for complete styling control:
+`popover_base/1` adds no visual classes of its own — the `class` on each slot
+is the whole presentation. For full control over the markup as well, compose
+`PUI.Popover.Primitive`:
 
 ```heex
-<.popover_base id="custom-popover" variant="unstyled">
-  <:trigger class="my-trigger">Open</:trigger>
-  <:popup class="my-popup-class">
+<PUI.Popover.Primitive.root id="custom-popover" placement="bottom-start" class="relative">
+  <PUI.Popover.Primitive.trigger id="custom-popover-trigger" controls="custom-popover-panel" class="my-trigger">
+    Open
+  </PUI.Popover.Primitive.trigger>
+  <PUI.Popover.Primitive.content id="custom-popover-panel" class="aria-hidden:hidden block my-popup-class">
     Custom styled content
-  </:popup>
-</.popover_base>
+  </PUI.Popover.Primitive.content>
+</PUI.Popover.Primitive.root>
 ```
 
 ## API Reference
@@ -59,7 +63,6 @@ Use `variant="unstyled"` for complete styling control:
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `id` | `string` | **required** | Unique identifier |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `hook` | `string` | `"Popover"` | JavaScript hook name |
 
 ### Base Slots

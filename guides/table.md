@@ -117,15 +117,14 @@ Column-specific `header_class` and `cell_class` values are useful for numeric al
 </.table>
 ```
 
-## Unstyled mode
+## Host-owned presentation
 
-Use `variant="unstyled"` when the application owns every visual class but still wants PUI's table structure, row identity, stream behavior, and slot contract:
+Every part class attribute defaults to `""`. Set all of them when the application owns every visual class but still wants PUI's table structure, row identity, stream behavior, and slot contract:
 
 ```heex
 <.table
   id="custom-table"
   rows={@rows}
-  variant="unstyled"
   class="overflow-hidden rounded-xl border"
   table_class="w-full text-sm"
   header_class="bg-slate-900 text-white"
@@ -137,7 +136,7 @@ Use `variant="unstyled"` when the application owns every visual class but still 
 </.table>
 ```
 
-In unstyled mode PUI does not add visual classes. The semantic table elements, stable body ID, stream metadata, slots, and row behavior remain intact.
+Overriding the part classes leaves the semantic table elements, stable body ID, stream metadata, slots, and row behavior intact. A table has no hook-managed behavior, so write a plain `<table>` when PUI's structure is not wanted at all.
 
 ## Responsibility boundary
 
@@ -163,7 +162,6 @@ Compose those behaviors in the host LiveView and pass the resulting rows, callba
 | `row_id` | function | derived | Returns a DOM ID for a rendered row |
 | `row_click` | function | `nil` | Returns the `phx-click` value for data cells |
 | `row_item` | function | identity | Maps a rendered row before passing it to slots |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `action_label` | `string` | `"Actions"` | Accessible label for the action column |
 | `class` | `string` | `""` | Outer overflow wrapper classes |
 | `caption_class` | `string` | `"sr-only"` | Table caption classes |

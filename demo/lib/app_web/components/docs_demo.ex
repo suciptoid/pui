@@ -530,7 +530,7 @@ defmodule AppWeb.DocsDemo do
             <ul class="mt-3 space-y-2">
               <li>Accessible native disclosure semantics</li>
               <li>Composable trigger and content primitives</li>
-              <li>Styled and unstyled usage patterns</li>
+              <li>Per-part class overrides for host-owned presentation</li>
             </ul>
           </div>
         </div>
@@ -628,12 +628,16 @@ defmodule AppWeb.DocsDemo do
         <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <div class="flex flex-wrap items-start gap-4">
             <PUI.Select.Primitive.root id="docs-primitive-select" class="relative w-64">
+              <PUI.Select.Primitive.input
+                id="docs-primitive-select-value"
+                name="workspace"
+              />
               <PUI.Select.Primitive.trigger
                 id="docs-primitive-select-trigger"
                 listbox_id="docs-primitive-select-listbox"
                 class="flex w-full items-center justify-between rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary"
               >
-                Choose a workspace
+                <PUI.Select.Primitive.value placeholder="Choose a workspace" />
               </PUI.Select.Primitive.trigger>
               <PUI.Select.Primitive.content
                 id="docs-primitive-select-listbox"
@@ -2183,33 +2187,34 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
-  def headless_unstyled_demo(assigns) do
+  def headless_menu_demo(assigns) do
     ~H"""
     <.demo_section title="Custom Menu Primitive" id="headless-menu-primitive">
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
         <div class="flex flex-wrap items-start gap-4">
-          <button
-            type="button"
-            class="inline-flex items-center rounded-xl bg-zinc-950 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
-          >
-            Custom Trigger
-          </button>
-
-          <.menu_button
-            class="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
-            content_class="aria-hidden:hidden block min-w-48 rounded-xl border border-border bg-background p-1 shadow-xl"
-          >
-            Custom Menu
-            <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
-              <.icon name="hero-user" class="size-4" /> Profile
-            </:item>
-            <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
-              <.icon name="hero-cog-6-tooth" class="size-4" /> Settings
-            </:item>
-            <:item class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10">
-              <.icon name="hero-trash" class="size-4" /> Delete
-            </:item>
-          </.menu_button>
+          <PUI.Dropdown.Primitive.root id="docs-primitive-menu" class="w-fit">
+            <PUI.Dropdown.Primitive.trigger
+              id="docs-primitive-menu-trigger"
+              controls="docs-primitive-menu-content"
+              class="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/15"
+            >
+              Custom Menu
+            </PUI.Dropdown.Primitive.trigger>
+            <PUI.Dropdown.Primitive.content
+              id="docs-primitive-menu-content"
+              class="aria-hidden:hidden block min-w-48 rounded-xl border border-border bg-background p-1 shadow-xl"
+            >
+              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
+                <.icon name="hero-user" class="size-4" /> Profile
+              </PUI.Dropdown.Primitive.item>
+              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
+                <.icon name="hero-cog-6-tooth" class="size-4" /> Settings
+              </PUI.Dropdown.Primitive.item>
+              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10">
+                <.icon name="hero-trash" class="size-4" /> Delete
+              </PUI.Dropdown.Primitive.item>
+            </PUI.Dropdown.Primitive.content>
+          </PUI.Dropdown.Primitive.root>
         </div>
 
         <div class="rounded-xl border border-dashed border-border bg-muted/20 p-4 text-sm text-muted-foreground">

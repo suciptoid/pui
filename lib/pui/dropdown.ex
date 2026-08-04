@@ -47,20 +47,16 @@ defmodule PUI.Dropdown do
     >
       <PUI.Button.button
         id={"#{@id}-trigger"}
+        type="button"
         variant={@variant}
         aria-haspopup="menu"
+        aria-expanded="false"
         aria-controls={"#{@id}-menu"}
         class={@class}
       >
         {render_slot(@inner_block)}
       </PUI.Button.button>
-      <PUI.Dropdown.Primitive.content
-        id={"#{@id}-menu"}
-        class={[
-          "aria-hidden:hidden block bg-popover text-popover-foreground z-50 min-w-32 overflow-x-hidden overflow-y-auto rounded-md border border-border p-1 shadow-md",
-          @content_class
-        ]}
-      >
+      <.menu_content id={"#{@id}-menu"} class={@content_class}>
         <.menu_item
           :for={item <- @item}
           variant={Map.get(item, :variant, "default")}
@@ -75,17 +71,51 @@ defmodule PUI.Dropdown do
           {render_slot(item)}
         </.menu_item>
         {render_slot(@items)}
-      </PUI.Dropdown.Primitive.content>
+      </.menu_content>
     </PUI.Dropdown.Primitive.root>
     """
   end
+
+  attr :id, :string, default: nil
+  attr :class, :string, default: ""
+  attr :rest, :global
+  slot :inner_block
+
+  def menu_content(assigns) do
+    ~H"""
+    <PUI.Dropdown.Primitive.content
+      id={@id}
+      class={[
+        "aria-hidden:hidden block bg-popover text-popover-foreground",
+        "not-aria-hidden:animate-in aria-hidden:animate-out aria-hidden:fade-out-0 not-aria-hidden:fade-in-0 aria-hidden:zoom-out-95 not-aria-hidden:zoom-in-95",
+        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "z-50 min-w-32 overflow-x-hidden overflow-y-auto rounded-md border border-border p-1 shadow-md",
+        "origin-top data-[reference-hidden=true]:invisible data-[reference-hidden=true]:pointer-events-none data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom",
+        @class
+      ]}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
+    </PUI.Dropdown.Primitive.content>
+    """
+  end
+
+  attr :rest, :global
+  slot :inner_block
+
+  def menu_shortcut(assigns),
+    do:
+      ~H|<span class="ml-auto text-xs tracking-widest text-muted-foreground" {@rest}>{render_slot(
+  @inner_block
+)}</span>|
 
   attr :class, :string, default: ""
   attr :shortcut, :string, default: nil
   attr :variant, :string, values: ["default", "destructive"], default: "default"
 
   attr :rest, :global,
-    include: ~w(href navigate patch method download disabled phx-click phx-value-action)
+    include:
+      ~w(href navigate patch method download name value disabled phx-click phx-value-action)
 
   slot :inner_block
 
@@ -99,14 +129,13 @@ defmodule PUI.Dropdown do
     assigns = assign(assigns, :classes, classes)
 
     if rest[:href] || rest[:navigate] || rest[:patch] do
-      ~H|<.link data-variant={@variant} role="menuitem" class={@classes} {@rest}>{render_slot(@inner_block)}<span
-  :if={@shortcut}
-  class="ml-auto text-xs tracking-widest text-muted-foreground"
->{@shortcut}</span></.link>|
+      ~H|<.link data-variant={@variant} role="menuitem" class={@classes} {@rest}>{render_slot(@inner_block)}
+<.menu_shortcut :if={@shortcut}>{@shortcut}</.menu_shortcut></.link>|
     else
       ~H|<button type="button" data-variant={@variant} role="menuitem" class={@classes} {@rest}>{render_slot(
   @inner_block
-)}<span :if={@shortcut} class="ml-auto text-xs tracking-widest text-muted-foreground">{@shortcut}</span></button>|
+)}
+<.menu_shortcut :if={@shortcut}>{@shortcut}</.menu_shortcut></button>|
     end
   end
 

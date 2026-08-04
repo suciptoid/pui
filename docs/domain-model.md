@@ -11,7 +11,7 @@ PUI does not own business entities, persistence, authorization, routing policy, 
 | Host application | Business meaning, LiveView state, events, forms, and persistence | Assigns, slots, IDs, values, JS commands, and event handlers |
 | PUI server components | HTML structure, semantic relationships, default presentation, normalization, and server-facing value plumbing | Rendered markup, ARIA state, `data-*` markers, hidden fields, and hook declarations |
 | PUI browser hooks | Ephemeral interaction, focus, keyboard navigation, positioning, resizing, animation state, and client-only persistence | Native events, custom PUI events, LiveView events, and DOM state |
-| Host application's design system | Brand presentation, icon vocabulary, and application-specific composition | CSS variables, utility classes, icon providers, custom slots, and unstyled-component classes |
+| Host application's design system | Brand presentation, icon vocabulary, and application-specific composition | CSS variables, utility classes, icon providers, custom slots, and primitive-module classes |
 
 The boundary is intentionally not a client/server ownership split for every value. A selected form value may be server-owned while the open state of the select popup is browser-owned. The important question is whether the state must participate in LiveView rendering and application behavior.
 
@@ -49,8 +49,8 @@ PUI component families generally follow these rules:
 - The outer primitive establishes the relationship and state boundary.
 - Slots provide consumer-owned content without requiring a host wrapper to duplicate the family structure.
 - IDs connect triggers, content, labels, panels, and hidden form fields.
-- Roles and ARIA attributes remain part of the component contract in unstyled mode.
-- A class passed to a styled component augments its default presentation; an unstyled component treats consumer classes as its visual implementation.
+- Roles and ARIA attributes remain part of the contract in the `.Primitive` modules.
+- A class passed to a styled component augments its default presentation; a primitive part treats consumer classes as its entire visual implementation.
 - Global attributes are forwarded only where the component's public contract allows them.
 - PUI-owned icon intent crosses the host boundary as an icon token; application-owned icons cross it as slot content.
 
@@ -107,7 +107,7 @@ When extending PUI:
 - Keep business decisions in the host application; accept values and events rather than introducing application policy into a primitive.
 - Prefer native HTML behavior when it satisfies the interaction, as with Accordion.
 - Keep browser-only state local to hooks unless the host explicitly needs it in LiveView state.
-- If a component has both styled and unstyled paths, make the semantic contract identical unless the API explicitly documents a deliberate difference.
+- If a family has both a styled component and a `.Primitive` module, make the semantic contract identical unless the API explicitly documents a deliberate difference.
 - Add deterministic rendered-markup tests for server contracts and browser-level coverage for hook behavior when the behavior cannot be proven from markup alone.
 
 ## Current boundary notes

@@ -4,13 +4,13 @@ defmodule PUI.PopoverTest do
   import Phoenix.Component
   import PUI.Popover
 
-  describe "base popover with variant='unstyled'" do
-    test "renders without default styles" do
+  describe "base/1" do
+    test "renders slot classes on the trigger and popup" do
       assigns = %{}
 
       html =
         rendered_to_string(~H"""
-        <.base id="test" variant="unstyled" phx-hook="PUI.Popover">
+        <.base id="test" phx-hook="PUI.Popover">
           <:trigger class="my-trigger">Click</:trigger>
           <:popup class="my-popup">Content</:popup>
         </.base>
@@ -25,7 +25,7 @@ defmodule PUI.PopoverTest do
 
       html =
         rendered_to_string(~H"""
-        <.base id="test" variant="unstyled" phx-hook="PUI.Popover">
+        <.base id="test" phx-hook="PUI.Popover">
           <:trigger>Click</:trigger>
           <:popup>Content</:popup>
         </.base>
@@ -37,33 +37,57 @@ defmodule PUI.PopoverTest do
     end
   end
 
-  describe "tooltip with variant='unstyled'" do
-    test "renders without default styles" do
+  describe "tooltip/1" do
+    test "appends class to the default styles" do
       assigns = %{}
 
       html =
         rendered_to_string(~H"""
-        <.tooltip variant="unstyled" class="my-tooltip">
+        <.tooltip class="my-tooltip">
           <span>Hover me</span>
           <:tooltip>Tooltip text</:tooltip>
         </.tooltip>
         """)
 
       assert html =~ "my-tooltip"
-      refute html =~ "bg-foreground"
+      assert html =~ "bg-foreground"
+      assert html =~ "data-arrow"
     end
 
-    test "hides arrow in unstyled mode" do
+    test "light variant swaps the surface colors" do
       assigns = %{}
 
       html =
         rendered_to_string(~H"""
-        <.tooltip variant="unstyled">
+        <.tooltip variant="light">
           <span>Hover</span>
           <:tooltip>Text</:tooltip>
         </.tooltip>
         """)
 
+      assert html =~ "bg-white"
+      refute html =~ "bg-foreground text-background"
+    end
+  end
+
+  describe "PUI.Tooltip.Primitive" do
+    test "keeps tooltip semantics without default classes" do
+      import PUI.Tooltip.Primitive
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.root id="tip" placement="right">
+          <button type="button">Hover</button>
+          <.content id="tip-tooltip" class="my-tip">Text</.content>
+        </.root>
+        """)
+
+      assert html =~ ~s(phx-hook="PUI.Tooltip")
+      assert html =~ ~s(role="tooltip")
+      assert html =~ ~s(aria-hidden="true")
+      assert html =~ "my-tip"
+      refute html =~ "bg-foreground"
       refute html =~ "data-arrow"
     end
   end

@@ -185,17 +185,24 @@ Use the `trigger` slot for inline trigger buttons:
 </.dialog>
 ```
 
-## Unstyled / Headless
+## Headless
+
+Compose `PUI.Dialog.Primitive` when the application owns the dialog markup. The
+parts keep the modal semantics, focus trap, and escape/backdrop dismissal
+without any presentation classes:
 
 ```heex
-<.dialog id="headless" variant="unstyled">
-  <:content>
-    <div class="my-custom-dialog-panel">
-      Custom styled dialog content
-    </div>
-  </:content>
-</.dialog>
+<PUI.Dialog.Primitive.root id="headless" show={@show} on_cancel={JS.push("close")}>
+  <PUI.Dialog.Primitive.backdrop id="headless-backdrop" show={@show} class="fixed inset-0 bg-black/50" />
+  <PUI.Dialog.Primitive.content id="headless-content" show={@show} class="my-custom-dialog-panel">
+    Custom styled dialog content
+  </PUI.Dialog.Primitive.content>
+</PUI.Dialog.Primitive.root>
 ```
+
+`backdrop/1` and `content/1` default to the `<root-id>-backdrop` and
+`<root-id>-content` naming convention. Pass `root_id` on the backdrop, and
+`backdrop_id`/`content_id` on the root, when using other IDs.
 
 ## API Reference
 
@@ -210,7 +217,6 @@ Use the `trigger` slot for inline trigger buttons:
 | `title` | `string` | `nil` | Optional built-in title for the default dialog header |
 | `show_close` | `boolean` | `true` | Show the built-in close button on default dialogs |
 | `on_cancel` | `JS` | `%JS{}` | JS command to run on cancel |
-| `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
 | `class` | `string` | `""` | Additional CSS classes applied to the content container. Use with `size=""` for full custom sizing (e.g. `max-w-[80vw] max-h-[80vh]`) |
 
 ### Slots

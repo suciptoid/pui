@@ -35,14 +35,14 @@ defmodule PUI.Table do
 
   Styled tables use PUI's semantic token classes by default. The component
   exposes separate class attributes for each rendered part, so an application
-  can customize the table without replacing its structure. Use
-  `variant="unstyled"` when the application wants to provide all visual
-  classes itself.
+  can customize the table without replacing its structure. Every part class
+  attribute defaults to `""`, so an application that sets all of them owns the
+  full presentation. A table is plain semantic markup, so write a `<table>`
+  directly when PUI's structure is not wanted at all.
 
       <.table
         id="invoices"
         rows={@invoices}
-        variant="unstyled"
         class="overflow-hidden rounded-xl border"
         table_class="w-full text-sm"
         header_class="bg-muted"
@@ -62,7 +62,6 @@ defmodule PUI.Table do
   | `row_id` | `function` | derived | Function receiving a rendered row and returning its DOM ID |
   | `row_click` | `function` | `nil` | Function receiving a rendered row and returning a `phx-click` value |
   | `row_item` | `function` | identity | Function mapping a rendered row before it is passed to slots |
-  | `variant` | `string` | `"default"` | `"default"` or `"unstyled"` |
   | `action_label` | `string` | `"Actions"` | Screen-reader label for the action column |
   | `class` | `string` | `""` | Classes for the outer overflow wrapper |
   | `caption_class` | `string` | `"sr-only"` | Classes for the table caption |

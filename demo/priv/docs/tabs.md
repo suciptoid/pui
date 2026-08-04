@@ -133,7 +133,7 @@ The default styles use the same theme tokens as the rest of PUI and follow shadc
 </.tabs>
 ```
 
-Use `variant="unstyled"` when you want to keep the semantics and hook behavior but supply all presentation classes yourself.
+Compose `PUI.Tabs.Primitive` when you want to keep the semantics and hook behavior but supply all markup and presentation classes yourself.
 
 ## Trigger-Only Tabs (no content panels)
 
@@ -163,7 +163,7 @@ This is useful for:
 | `orientation` | `string` | `"horizontal"` | `"horizontal"` or `"vertical"` |
 | `activation_mode` | `string` | `"manual"` | `"automatic"` or `"manual"` |
 | `client_controlled` | `boolean` | `true` | Whether the browser hook updates selection state |
-| `variant` | `string` | `"default"` | `"default"`, `"line"`, or `"unstyled"` |
+| `variant` | `string` | `"default"` | `"default"` or `"line"` |
 | `class` | `string` | `""` | Additional root classes |
 | `list_class` | `string` | `""` | Additional tab list classes |
 | `panels_class` | `string` | `""` | Additional panel wrapper classes |

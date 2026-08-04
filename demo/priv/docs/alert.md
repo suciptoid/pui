@@ -72,13 +72,16 @@ Use `inner_block` for fully custom alert content:
 </.alert>
 ```
 
-## Unstyled / Headless
+## Fully custom alerts
+
+An alert is static markup with an ARIA role, so PUI has no primitive module for
+it. When the application owns every visual class, write plain markup:
 
 ```heex
-<.alert variant="unstyled" class="my-custom-alert">
-  <:title>Custom Alert</:title>
-  <:description>With your own styles.</:description>
-</.alert>
+<div role="alert" class="my-custom-alert">
+  <p>Custom Alert</p>
+  <p>With your own styles.</p>
+</div>
 ```
 
 ## API Reference
@@ -87,7 +90,7 @@ Use `inner_block` for fully custom alert content:
 
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `string` | `"default"` | Visual style: `"default"`, `"destructive"`, `"unstyled"` |
+| `variant` | `string` | `"default"` | Visual style: `"default"` or `"destructive"` |
 | `class` | `string` | `""` | Additional CSS classes |
 | `role` | `string` | `nil` | ARIA role attribute |
 

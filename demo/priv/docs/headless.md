@@ -19,8 +19,9 @@ classes.
 import PUI.Select.Primitive
 
 <.root id="assignee" class="relative">
+  <.input id="assignee-value" name="assignee" />
   <.trigger id="assignee-trigger" listbox_id="assignee-listbox" class="my-trigger">
-    Choose an assignee
+    <.value placeholder="Choose an assignee" />
   </.trigger>
   <.content id="assignee-listbox" trigger_id="assignee-trigger" class="my-menu">
     <.item value="ada" class="my-option">Ada</.item>
@@ -43,6 +44,8 @@ import PUI.Select.Primitive
   </PUI.Dropdown.Primitive.content>
 </PUI.Dropdown.Primitive.root>
 ```
+
+<AppWeb.DocsDemo.headless_menu_demo />
 
 ## Dialog primitive
 

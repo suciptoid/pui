@@ -20,9 +20,18 @@ defmodule PUI.Dropdown.Primitive do
   attr :id, :string, required: true
   attr :rest, :global
   slot :inner_block, required: true
-  def content(assigns), do: PUI.Popover.Primitive.content(assign(assigns, :role, "menu"))
 
-  attr :rest, :global, include: ~w(href navigate patch method download disabled)
+  def content(assigns) do
+    assigns
+    |> assign(:role, "menu")
+    |> update(:rest, &Map.merge(%{"aria-orientation" => "vertical", "tabindex" => "-1"}, &1))
+    |> PUI.Popover.Primitive.content()
+  end
+
+  attr :rest, :global,
+    include:
+      ~w(href navigate patch method download name value disabled phx-click phx-value-action)
+
   slot :inner_block, required: true
 
   def item(%{rest: rest} = assigns) do

@@ -263,7 +263,7 @@ PUI.Flash.send_flash(%PUI.Flash.Message{
 ```
 
 See the [Table guide](table.md) for LiveView streams, row actions, empty states,
-part-level customization, and unstyled mode.
+part-level customization, and host-owned presentation.
 
 ### Progress
 

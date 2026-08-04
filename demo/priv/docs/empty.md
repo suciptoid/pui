@@ -12,4 +12,4 @@ providing a consistent accessible structure.
 
 <AppWeb.DocsDemo.empty_demo />
 
-Use `variant="unstyled"` when the host design system owns the presentation.
+Pass a `class` to each part when the host design system owns the presentation.
