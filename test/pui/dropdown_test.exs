@@ -60,6 +60,15 @@ defmodule PUI.DropdownTest do
     assert html =~ ~s(value="delete")
   end
 
+  test "menu_item matches keyboard selection to hover styling" do
+    assigns = %{}
+
+    html = rendered_to_string(~H|<.menu_item>Profile</.menu_item>|)
+
+    assert html =~ "hover:bg-accent"
+    assert html =~ "aria-selected:bg-accent"
+  end
+
   test "menu_content and menu_shortcut remain public parts" do
     assigns = %{}
 

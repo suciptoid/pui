@@ -149,12 +149,16 @@ display classes on the content, for example `aria-hidden:hidden block`:
     Options
   </PUI.Dropdown.Primitive.trigger>
   <PUI.Dropdown.Primitive.content id="actions-menu" class="aria-hidden:hidden block my-menu">
-    <PUI.Dropdown.Primitive.item phx-click="edit" class="my-item">Edit</PUI.Dropdown.Primitive.item>
+    <PUI.Dropdown.Primitive.item phx-click="edit" class="my-item w-full text-left aria-selected:bg-accent aria-selected:text-accent-foreground">Edit</PUI.Dropdown.Primitive.item>
     <PUI.Dropdown.Primitive.separator class="my-separator" />
-    <PUI.Dropdown.Primitive.item phx-click="delete" class="my-item">Delete</PUI.Dropdown.Primitive.item>
+    <PUI.Dropdown.Primitive.item phx-click="delete" class="my-item w-full text-left aria-selected:bg-accent aria-selected:text-accent-foreground">Delete</PUI.Dropdown.Primitive.item>
   </PUI.Dropdown.Primitive.content>
 </PUI.Dropdown.Primitive.root>
 ```
+
+Primitive items add no sizing or focus styles. Add `w-full` and `text-left` to
+button items that should fill the menu, and style `aria-selected` with the
+same surface used for hover.
 
 `PUI.Dropdown.menu_content/1`, `menu_item/1`, `menu_shortcut/1`, and
 `menu_separator/1` stay available when only the trigger needs custom markup.

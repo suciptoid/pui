@@ -183,10 +183,14 @@ semantics without any visual classes:
     trigger_id="custom-trigger"
     class="aria-hidden:hidden block my-listbox"
   >
-    <PUI.Select.Primitive.item value="a" class="my-option">Option A</PUI.Select.Primitive.item>
+    <PUI.Select.Primitive.item value="a" class="my-option data-[active=true]:bg-accent">Option A</PUI.Select.Primitive.item>
   </PUI.Select.Primitive.content>
 </PUI.Select.Primitive.root>
 ```
+
+When users navigate with the arrow keys, focus remains on the listbox and the
+current option receives `data-active="true"`. Include a
+`data-[active=true]:…` class on each item to make that state visible.
 
 ## API Reference
 

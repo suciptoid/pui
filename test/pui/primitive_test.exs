@@ -60,4 +60,24 @@ defmodule PUI.PrimitiveTest do
     assert html =~ ~s(tabindex="-1")
     refute html =~ "bg-popover"
   end
+
+  test "primitive options expose the active-state hook contract without styles" do
+    import PUI.Select.Primitive
+    assigns = %{}
+    html = rendered_to_string(~H|<.item value="design">Design</.item>|)
+
+    assert html =~ ~s(role="option")
+    assert html =~ ~s(tabindex="-1")
+    refute html =~ "bg-accent"
+  end
+
+  test "primitive dropdown items leave width and focus presentation to the application" do
+    import PUI.Dropdown.Primitive
+    assigns = %{}
+    html = rendered_to_string(~H|<.item>Profile</.item>|)
+
+    assert html =~ ~s(role="menuitem")
+    refute html =~ "w-full"
+    refute html =~ "focus-visible"
+  end
 end

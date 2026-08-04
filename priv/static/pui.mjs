@@ -1566,6 +1566,7 @@ var Popover = class extends ViewHook {
   #triggerFocusHandler;
   #triggerBlurHandler;
   #containerKeyDownHandler;
+  #containerPointerMoveHandler;
   #triggerKeyDownHandler;
   mounted() {
     this.defaultPlacement = this.el.dataset.placement || this.placement;
@@ -1582,6 +1583,7 @@ var Popover = class extends ViewHook {
     this.#triggerFocusHandler = this.handleTriggerFocus.bind(this);
     this.#triggerBlurHandler = this.handleTriggerBlur.bind(this);
     this.#containerKeyDownHandler = this.handleContainerKeyDown.bind(this);
+    this.#containerPointerMoveHandler = this.handleContainerPointerMove.bind(this);
     this.#triggerKeyDownHandler = this.handleTriggerKeyDown.bind(this);
     this.bindEventListeners();
     this.#outside_listener = (event) => {
@@ -1618,7 +1620,11 @@ var Popover = class extends ViewHook {
   handleTriggerKeyDown(event) {
     if (!this.expanded && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
       event.preventDefault();
-      this.openPopover({ placement: this.getPlacementForKey(event.key) });
+      event.stopPropagation();
+      this.openPopover({
+        placement: this.getPlacementForKey(event.key),
+        focusInitialItem: true
+      });
       return;
     }
     if (!this.expanded && this.isPrintableKeyEvent(event)) {
@@ -1682,6 +1688,16 @@ var Popover = class extends ViewHook {
         }
     }
   }
+  handleContainerPointerMove(event) {
+    if (!this.expanded || !this.popup) return;
+    const item = event.target.closest?.("[role='option'],[role='menuitem']");
+    if (!item || !this.popup.contains(item)) return;
+    const items = this.getNavigableItems();
+    const index = items.indexOf(item);
+    if (index >= 0 && index !== this.currentIndex) {
+      this.setCurrentItemByIndex(index, items);
+    }
+  }
   handleKeyEnter(event) {
   }
   handleTriggerTypeahead(_event) {
@@ -1737,6 +1753,7 @@ var Popover = class extends ViewHook {
   }
   bindEventListeners() {
     this.el.addEventListener("keydown", this.#containerKeyDownHandler);
+    this.el.addEventListener("pointermove", this.#containerPointerMoveHandler);
     this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
     if (this.event_trigger === "click") {
       this.trigger?.addEventListener("click", this.#triggerClickHandler);
@@ -1760,6 +1777,7 @@ var Popover = class extends ViewHook {
   }
   unbindEventListeners(trigger) {
     this.el.removeEventListener("keydown", this.#containerKeyDownHandler);
+    this.el.removeEventListener("pointermove", this.#containerPointerMoveHandler);
     trigger?.removeEventListener("keydown", this.#triggerKeyDownHandler);
     trigger?.removeEventListener("click", this.#triggerClickHandler);
     trigger?.removeEventListener("mouseenter", this.#triggerMouseEnterHandler);
@@ -1845,15 +1863,18 @@ var Popover = class extends ViewHook {
     }
   }
   openPopover(options = {}) {
+    const { focusInitialItem = false } = options;
     this.activePlacement = options.placement || this.getOpenPlacement();
     this.trigger?.setAttribute("aria-expanded", "true");
     this.popup?.setAttribute("aria-hidden", "false");
     this.popup?.setAttribute("data-reference-hidden", "false");
     this.focusElement(this.popup);
     this.expanded = true;
-    this.currentIndex = this.getInitialNavigationIndex(
-      this.getNavigableItems()
-    );
+    const items = this.getNavigableItems();
+    this.currentIndex = -1;
+    if (focusInitialItem) {
+      this.setCurrentItemByIndex(this.getInitialNavigationIndex(items), items);
+    }
     this.onPopupOpened();
     this.listenOutside();
     this.initFloatingUI();

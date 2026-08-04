@@ -121,7 +121,7 @@ defmodule PUI.Dropdown do
 
   def menu_item(%{rest: rest} = assigns) do
     classes = [
-      "relative flex w-full cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground",
+      "relative flex w-full cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground aria-selected:bg-accent aria-selected:text-accent-foreground",
       assigns.variant == "destructive" && "text-destructive",
       assigns.class
     ]

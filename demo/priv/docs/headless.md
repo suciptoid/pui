@@ -24,7 +24,7 @@ import PUI.Select.Primitive
     <.value placeholder="Choose an assignee" />
   </.trigger>
   <.content id="assignee-listbox" trigger_id="assignee-trigger" class="my-menu">
-    <.item value="ada" class="my-option">Ada</.item>
+    <.item value="ada" class="my-option data-[active=true]:bg-accent">Ada</.item>
   </.content>
 </.root>
 ```
@@ -39,8 +39,8 @@ import PUI.Select.Primitive
     Account
   </PUI.Dropdown.Primitive.trigger>
   <PUI.Dropdown.Primitive.content id="account-menu-content" class="aria-hidden:hidden block my-menu">
-    <PUI.Dropdown.Primitive.item>Profile</PUI.Dropdown.Primitive.item>
-    <PUI.Dropdown.Primitive.item>Settings</PUI.Dropdown.Primitive.item>
+    <PUI.Dropdown.Primitive.item class="w-full text-left aria-selected:bg-accent aria-selected:text-accent-foreground">Profile</PUI.Dropdown.Primitive.item>
+    <PUI.Dropdown.Primitive.item class="w-full text-left aria-selected:bg-accent aria-selected:text-accent-foreground">Settings</PUI.Dropdown.Primitive.item>
   </PUI.Dropdown.Primitive.content>
 </PUI.Dropdown.Primitive.root>
 ```
@@ -61,3 +61,8 @@ import PUI.Select.Primitive
 
 Use normal HTML for custom static controls such as buttons, alerts, cards,
 tables, empty states, and native accordions.
+
+For a Select, keyboard navigation keeps DOM focus on the listbox and marks its
+current option with `data-active="true"`; style that attribute. Dropdown items
+are native buttons or links, so give them `w-full` when each should fill the
+menu width and style `aria-selected` with the same surface used for hover.

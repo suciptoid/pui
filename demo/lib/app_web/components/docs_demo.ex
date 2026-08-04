@@ -646,13 +646,13 @@ defmodule AppWeb.DocsDemo do
               >
                 <PUI.Select.Primitive.item
                   value="design"
-                  class="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                  class="block rounded-md px-3 py-2 text-sm hover:bg-accent data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
                 >
                   Design
                 </PUI.Select.Primitive.item>
                 <PUI.Select.Primitive.item
                   value="engineering"
-                  class="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                  class="block rounded-md px-3 py-2 text-sm hover:bg-accent data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
                 >
                   Engineering
                 </PUI.Select.Primitive.item>
@@ -689,10 +689,10 @@ defmodule AppWeb.DocsDemo do
               id="docs-primitive-dropdown-menu"
               class="aria-hidden:hidden block w-56 rounded-xl border border-border bg-background p-1 shadow-xl"
             >
-              <PUI.Dropdown.Primitive.item class="block rounded-lg px-3 py-2 text-sm hover:bg-accent">
+              <PUI.Dropdown.Primitive.item class="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-accent aria-selected:bg-accent aria-selected:text-accent-foreground">
                 Profile
               </PUI.Dropdown.Primitive.item>
-              <PUI.Dropdown.Primitive.item class="block rounded-lg px-3 py-2 text-sm hover:bg-accent">
+              <PUI.Dropdown.Primitive.item class="block w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-accent aria-selected:bg-accent aria-selected:text-accent-foreground">
                 Settings
               </PUI.Dropdown.Primitive.item>
             </PUI.Dropdown.Primitive.content>
@@ -2204,13 +2204,13 @@ defmodule AppWeb.DocsDemo do
               id="docs-primitive-menu-content"
               class="aria-hidden:hidden block min-w-48 rounded-xl border border-border bg-background p-1 shadow-xl"
             >
-              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
+              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent aria-selected:bg-accent aria-selected:text-accent-foreground">
                 <.icon name="hero-user" class="size-4" /> Profile
               </PUI.Dropdown.Primitive.item>
-              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent">
+              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent aria-selected:bg-accent aria-selected:text-accent-foreground">
                 <.icon name="hero-cog-6-tooth" class="size-4" /> Settings
               </PUI.Dropdown.Primitive.item>
-              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10">
+              <PUI.Dropdown.Primitive.item class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10 aria-selected:bg-destructive/10">
                 <.icon name="hero-trash" class="size-4" /> Delete
               </PUI.Dropdown.Primitive.item>
             </PUI.Dropdown.Primitive.content>
