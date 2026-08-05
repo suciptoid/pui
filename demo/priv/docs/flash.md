@@ -212,11 +212,7 @@ PUI.Flash.send_flash(%PUI.Flash.Message{
 Messages with different positions are laid out in independent stacks in the
 same full-screen viewport.
 
-<AppWeb.DocsDemo.flash_demo
-  flash_position={@flash_position}
-  flash_stacked={@flash_stacked}
-  toast_count={@toast_count}
-/>
+<AppWeb.DocsDemo.flash_demo flash_position={@flash_position} flash_stacked={@flash_stacked} toast_count={@toast_count} />
 
 ## Stacking
 
