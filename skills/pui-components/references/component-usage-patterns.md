@@ -12,7 +12,8 @@
 - Prefer passing a `Phoenix.HTML.FormField` to `field` attrs when supported.
 - Only fall back to direct `name`/`value` usage when the component allows it.
 
-## Headless Variants
+## Primitive Modules
 
 - If using a `.Primitive` module, provide explicit visibility and spacing classes.
-- Do not assume default styles in headless paths.
+- Do not assume default styles in primitive paths; they intentionally add no
+  visual classes, icons, animation, or layout.

@@ -27,6 +27,9 @@ Collect:
 
 - Ensure the module has `use PUI` or explicit imports.
 - Confirm the template context is HEEx (`~H`) and attributes are valid in that context.
+- `use PUI` imports the primary styled component families. Use qualified
+  `PUI.Flash` and `PUI.Loading` calls because those modules remain outside the
+  convenience macro.
 
 ## 3. Implement Minimal, Doc-Accurate Markup
 

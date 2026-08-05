@@ -1,6 +1,6 @@
 ---
 name: pui-migrate
-description: Migrate a Phoenix app from generated UI patterns (core_components and daisyUI class usage) to PUI primitives, theme tokens, and layout shells. Use when replacing `CoreComponents` calls, cleaning daisyUI classes from HEEx templates, adopting `use PUI`, and moving dashboard shells to `PUI.Layout`.
+description: Migrate a Phoenix app from generated UI patterns (core_components and daisyUI class usage) to PUI components, primitive modules, theme tokens, and layout shells. Use when replacing `CoreComponents` calls, cleaning daisyUI classes from HEEx templates, adopting `use PUI`, and moving dashboard shells to `PUI.Layout`.
 ---
 
 # PUI Migrate
@@ -26,19 +26,22 @@ rg -n "<\\.flash|<\\.button|<\\.input|<\\.modal|<\\.table" lib/*_web
 
 Carry these setup steps before component replacement:
 
-- Add `{:pui, "~> 1.0.0-alpha"}` to `mix.exs` and run `mix deps.get`.
+- Add `{:pui, "~> 1.0"}` to `mix.exs` and run `mix deps.get`.
 - In `assets/css/app.css`, include PUI source and CSS import:
   - `@source "../../deps/pui";`
   - `@import "../../deps/pui/assets/css/pui.css";`
 - In `assets/js/app.js`, merge PUI hooks:
   - `import { Hooks as PUIHooks } from "pui";`
-  - `hooks: %{...PUIHooks, ...}` in `LiveSocket` config.
+  - `hooks: { ...PUIHooks, ... }` in `LiveSocket` config.
 - Enable PUI usage in LiveViews with `use PUI` (or import selected modules in `*_web.ex`).
 
 ## 3. Enable PUI Imports and Base Theme
 
 - Add the dependency and fetch deps.
 - Use `use PUI` in LiveView modules or import specific modules in `*_web.ex`.
+- Use styled PUI components for the standard visual system. When the app owns
+  markup and CSS for a hook-managed interaction, import its explicit
+  `PUI.<Family>.Primitive` module; do not use a `variant="unstyled"` escape hatch.
 - Keep project-level theme variables in CSS and use semantic names (`primary`, `secondary`, `accent`, `destructive`).
 
 Example:
@@ -76,6 +79,8 @@ For dashboard-style apps:
 - Use `PUI.Layout.app_layout/1` as the root shell.
 - Compose sidebar sections with `PUI.Layout.sidebar/1` and `sidebar_menu_item/1`.
 - Use `PUI.Layout.content_header/1` for header controls.
+- Use `PUI.Layout.Sidebar.Primitive` only when the app owns the sidebar markup
+  and styling.
 
 Keep public/auth surfaces split as needed by the host app.
 
