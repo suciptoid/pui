@@ -33,8 +33,9 @@ defmodule PUI.Flash do
   ## Phoenix Preset Toasts
 
   Flash keys commonly used by Phoenix (`:success`, `:error`, `:info`, `:warning`)
-  are rendered as compact pill-shaped toasts with a type-colored icon. They use
-  the group position unless a `PUI.Flash.Message` is sent directly.
+  are rendered as constrained card toasts with a type-colored icon. Their
+  messages wrap within the card while the icon and close button remain fixed.
+  They use the group position unless a `PUI.Flash.Message` is sent directly.
 
       {:noreply, put_flash(socket, :success, "Changes saved!")}
       {:noreply, put_flash(socket, :error, "Could not save changes")}
@@ -82,7 +83,7 @@ defmodule PUI.Flash do
         position: "bottom-right"
       })
 
-  Plain-string messages with a preset type still render as the compact built-in
+  Plain-string messages with a preset type still render as the built-in card
   toast with a type-colored icon.
 
   ## Updating Flashes
@@ -371,9 +372,10 @@ defmodule PUI.Flash do
       data-timeout={@timeout}
       data-auto-dismiss={to_string(@auto_dismiss)}
       class={[
-        "pointer-events-auto bg-black/95 text-white text-xs font-medium",
-        "w-fit max-w-[75vw] min-w-0 rounded-full shadow-lg",
-        "flex items-center gap-2 pl-2.5 pr-8 py-2",
+        "pointer-events-auto flex items-center gap-3",
+        "w-fit min-w-[200px] max-w-md",
+        "rounded-xl border border-border bg-background px-4 py-3 pr-12",
+        "text-sm text-secondary-foreground shadow-sm",
         "transition-[transform,opacity] duration-400 opacity-0",
         "absolute z-[calc(1000-var(--flash-index))] origin-top",
         "after:pointer-events-none after:absolute after:inset-x-0 after:content-[''] after:h-[10px]",
@@ -390,7 +392,7 @@ defmodule PUI.Flash do
     >
       <.flash_icon type={@type} />
 
-      <span class="flash-content truncate transition-opacity duration-200 data-[behind=true]:opacity-0 data-[expanded=true]:opacity-100 data-[behind=true]:pointer-events-none">
+      <span class="flash-content min-w-0 flex-1 break-words leading-6 transition-opacity duration-200 data-[behind=true]:opacity-0 data-[expanded=true]:opacity-100 data-[behind=true]:pointer-events-none">
         {render_slot(@inner_block)}
       </span>
 
@@ -399,7 +401,7 @@ defmodule PUI.Flash do
         type="button"
         data-close
         aria-label="Dismiss notification"
-        class="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full p-0.5 text-white/60 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        class="absolute right-3 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <.icon name={:close} class="size-3" />
       </button>

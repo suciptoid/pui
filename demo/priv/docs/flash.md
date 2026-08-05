@@ -39,7 +39,7 @@ end
 ### Phoenix Preset Toasts
 
 Phoenix flash keys such as `:success`, `:error`, `:info`, and `:warning` are
-automatically rendered as compact pill-shaped toasts with a type-colored icon:
+automatically rendered as constrained card toasts with a type-colored icon:
 
 ```elixir
 def handle_event("save", _params, socket) do
@@ -68,9 +68,9 @@ PUI.Flash.send_flash(%PUI.Flash.Message{
 })
 ```
 
-Preset toasts use a dark pill-shaped container, truncate to one line, and show a
-visible close button. Messages sent without a preset type keep the standard flash
-UI.
+Preset toasts use a bounded card container, wrap long messages, and keep the icon
+and visible close button in place. Messages sent without a preset type keep the
+standard flash UI.
 
 ### With Options
 
@@ -179,8 +179,8 @@ end
 Set `duration: -1` to keep the flash open until you explicitly update or dismiss it.
 
 When `message` is a HEEx template, the custom markup overrides the preset toast
-styling. Plain-string messages with a preset type still render as the compact
-built-in toast with a type-colored icon.
+styling. Plain-string messages with a preset type still render as the built-in
+card toast with a type-colored icon.
 
 <AppWeb.DocsDemo.custom_flash_demo ping_state={@ping_state} />
 
@@ -283,7 +283,7 @@ Control whether flash messages show a close button:
 | `id` | `string` | — | Flash message ID |
 | `position` | `string` | `"top-center"` | Position variant |
 | `type` | `atom` | `:info` | Message type: `:info`, `:success`, `:warning`, `:error` |
-| `preset` | `boolean` | `false` | Use compact preset toast styling |
+| `preset` | `boolean` | `false` | Use preset card toast styling |
 | `class` | `string` | `""` | Additional CSS classes |
 | `duration` | `integer` | `nil` | Message timeout in seconds; `-1` disables auto-dismiss |
 | `auto_dismiss` | `boolean` | `true` | Disable auto-dismiss for this message when `false` |

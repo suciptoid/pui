@@ -93,6 +93,28 @@ defmodule PUI.FlashTest do
     refute html =~ ~s(data-close)
   end
 
+  test "preset flashes use a constrained card layout for multiline messages" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Flash.flash id="preset-flash" preset type={:success}>
+        A message that can wrap onto more than one line.
+      </PUI.Flash.flash>
+      """)
+
+    assert html =~ "w-fit"
+    assert html =~ "min-w-[200px]"
+    assert html =~ "max-w-md"
+    assert html =~ "rounded-xl"
+    assert html =~ "shrink-0"
+    assert html =~ "min-w-0"
+    assert html =~ "flex-1"
+    refute html =~ "bg-black"
+    refute html =~ "rounded-full"
+    refute html =~ "truncate"
+  end
+
   test "stacked indicators keep only behind message bodies hidden" do
     assigns = %{flash: %{success: "Saved", info: "Synced"}}
 
