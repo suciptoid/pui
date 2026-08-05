@@ -51,7 +51,7 @@ defmodule PUI.MixProject do
       links: %{"GitHub" => "https://github.com/suciptoid/pui"},
       maintainers: ["Sucipto"],
       files: ~w(
-        assets/js assets/css lib priv mix.exs package.json README.md LICENSE.md CHANGELOG.md
+        assets/js assets/css lib priv skills mix.exs package.json README.md LICENSE.md CHANGELOG.md
         CONTEXT.md docs/adr docs/domain-model.md guides
       )
     ]

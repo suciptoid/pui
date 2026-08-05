@@ -37,6 +37,20 @@ Then fetch dependencies:
 mix deps.get
 ```
 
+## Agent Skills
+
+Install the bundled PUI skills with the Skills CLI:
+
+```bash
+npx skills add suciptoid/pui
+```
+
+To install one skill, pass its name:
+
+```bash
+npx skills add suciptoid/pui --skill pui-components
+```
+
 ## Setup in Your Phoenix App
 
 Import PUI CSS in your app stylesheet:
