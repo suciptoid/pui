@@ -112,7 +112,7 @@ defmodule PUI.Flash do
   | `id` | `string` | `"flash-container"` | Unique flash group ID |
   | `position` | `string` | `"top-center"` | Fallback container position |
   | `stacked` | `boolean` | `false` | Collapse messages into an expandable stack |
-  | `limit` | `integer` | `5` | Maximum number of mounted flashes |
+  | `limit` | `integer` | `3` | Maximum number of mounted flashes |
   | `auto_dismiss` | `integer \| false` | `5000` | Fallback auto-dismiss delay in milliseconds; `false` disables it |
   | `show_close` | `boolean` | `true` | Show close buttons |
 
@@ -159,7 +159,7 @@ defmodule PUI.Flash do
 
   @default_container_id "flash-container"
   @default_position "top-center"
-  @default_limit 5
+  @default_limit 3
   @default_timeout 5000
   @default_stacked false
   @positions [

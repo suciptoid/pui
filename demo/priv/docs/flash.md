@@ -270,7 +270,7 @@ Control whether flash messages show a close button:
 |------|------|---------|-------------|
 | `flash` | `map` | **required** | The flash map from socket assigns |
 | `live` | `boolean` | `false` | Enable LiveComponent mode |
-| `limit` | `integer` | `5` | Max visible messages |
+| `limit` | `integer` | `3` | Max visible messages |
 | `position` | `string` | `"top-center"` | Position: `"top-left"`, `"top-right"`, `"top-center"`, `"bottom-left"`, `"bottom-right"`, `"bottom-center"` |
 | `stacked` | `boolean` | `false` | Collapse messages into an expandable stack |
 | `auto_dismiss` | `integer \| false` | `5000` | Auto-dismiss time in ms; `false` disables it |

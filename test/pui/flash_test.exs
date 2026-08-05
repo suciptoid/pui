@@ -52,6 +52,24 @@ defmodule PUI.FlashTest do
     assert html =~ ~s(data-stacked="false")
   end
 
+  test "flash groups default to three messages" do
+    assigns = %{
+      flash: %{
+        success: "Saved",
+        info: "Synced",
+        warning: "Soon",
+        error: "Failed"
+      }
+    }
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Flash.flash_group flash={@flash} />
+      """)
+
+    assert html |> String.split(~s(data-preset="true")) |> length() == 4
+  end
+
   test "primitive flash containers default to expanded messages" do
     assigns = %{}
 
