@@ -3599,9 +3599,10 @@ var FlashGroup = class extends import_phoenix_live_view6.ViewHook {
     if (!flash || event.relatedTarget && flash.contains(event.relatedTarget)) {
       return;
     }
+    const position = this._positionFor(flash);
     this.#hoveredFlashes.add(flash);
-    this.#expandedPositions.add(this._positionFor(flash));
-    this._pauseTimer(flash);
+    this.#expandedPositions.add(position);
+    this._pausePositionTimers(position);
     this._updateFlashList();
   }
   _onPointerOut(event) {
@@ -3609,18 +3610,18 @@ var FlashGroup = class extends import_phoenix_live_view6.ViewHook {
     if (!flash || event.relatedTarget && flash.contains(event.relatedTarget)) {
       return;
     }
+    const position = this._positionFor(flash);
     const nextFlash = this._flashFromTarget(event.relatedTarget);
-    if (nextFlash && this._positionFor(nextFlash) === this._positionFor(flash)) {
+    if (nextFlash && this._positionFor(nextFlash) === position) {
       this.#hoveredFlashes.delete(flash);
       this.#hoveredFlashes.add(nextFlash);
-      this._resumeTimer(flash);
-      this._pauseTimer(nextFlash);
+      this._pausePositionTimers(position);
       this._updateFlashList();
       return;
     }
     this.#hoveredFlashes.delete(flash);
-    this._collapsePositionWhenIdle(flash);
-    this._resumeTimer(flash);
+    this._collapsePositionWhenIdle(position);
+    this._resumePositionTimers(position);
     this._updateFlashList();
   }
   _onFocusIn(event) {
@@ -3628,9 +3629,10 @@ var FlashGroup = class extends import_phoenix_live_view6.ViewHook {
     if (!flash) {
       return;
     }
+    const position = this._positionFor(flash);
     this.#focusedFlashes.add(flash);
-    this.#expandedPositions.add(this._positionFor(flash));
-    this._pauseTimer(flash);
+    this.#expandedPositions.add(position);
+    this._pausePositionTimers(position);
     this._updateFlashList();
   }
   _onFocusOut(event) {
@@ -3638,9 +3640,10 @@ var FlashGroup = class extends import_phoenix_live_view6.ViewHook {
     if (!flash || event.relatedTarget && flash.contains(event.relatedTarget)) {
       return;
     }
+    const position = this._positionFor(flash);
     this.#focusedFlashes.delete(flash);
-    this._collapsePositionWhenIdle(flash);
-    this._resumeTimer(flash);
+    this._collapsePositionWhenIdle(position);
+    this._resumePositionTimers(position);
     this._updateFlashList();
   }
   _onClick(event) {
@@ -3661,15 +3664,33 @@ var FlashGroup = class extends import_phoenix_live_view6.ViewHook {
     const flash = target?.closest('[role="alert"]');
     return flash && this.el.contains(flash) ? flash : null;
   }
-  _collapsePositionWhenIdle(flash) {
-    const position = this._positionFor(flash);
-    const active = (element) => this.#hoveredFlashes.has(element) || this.#focusedFlashes.has(element);
-    const stillActive = Array.from(
-      this.el.querySelectorAll('[role="alert"]')
-    ).some((element) => this._positionFor(element) === position && active(element));
-    if (!stillActive) {
+  _collapsePositionWhenIdle(position) {
+    if (!this._positionIsActive(position)) {
       this.#expandedPositions.delete(position);
     }
+  }
+  _positionIsActive(position) {
+    return this._flashesForPosition(position).some(
+      (flash) => this.#hoveredFlashes.has(flash) || this.#focusedFlashes.has(flash)
+    );
+  }
+  _flashesForPosition(position) {
+    return Array.from(this.el.querySelectorAll('[role="alert"]')).filter(
+      (flash) => flash.dataset.removing !== "true" && this._positionFor(flash) === position
+    );
+  }
+  _pausePositionTimers(position) {
+    this._flashesForPosition(position).forEach((flash) => {
+      this._pauseTimer(flash);
+    });
+  }
+  _resumePositionTimers(position) {
+    if (this._positionIsActive(position)) {
+      return;
+    }
+    this._flashesForPosition(position).forEach((flash) => {
+      this._resumeTimer(flash);
+    });
   }
   _removeFlash(flash) {
     if (!flash || flash.dataset.removing === "true") {
@@ -3739,7 +3760,7 @@ var FlashGroup = class extends import_phoenix_live_view6.ViewHook {
       return;
     }
     this._clearTimer(flash);
-    if (this.#hoveredFlashes.has(flash) || this.#focusedFlashes.has(flash)) {
+    if (this._positionIsActive(this._positionFor(flash))) {
       this.#pausedTimers.set(key, { remaining: timeout, timeout });
       return;
     }

@@ -111,7 +111,7 @@ defmodule PUI.FlashTest do
 
     assert hook =~ "flash.dataset.visible = String(visible);"
     assert hook =~ "content.dataset.behind = String(behind)"
-    assert hook =~ "this.#expandedPositions.add(this._positionFor(flash))"
+    assert hook =~ "this.#expandedPositions.add(position);"
   end
 
   test "collapsed stack cards use a peek offset from the front card" do
@@ -139,6 +139,15 @@ defmodule PUI.FlashTest do
     assert html =~ "data-[expanded=true]:after:pointer-events-auto"
     assert html =~ "data-[position^=&#39;top-&#39;]:after:-bottom-[10px]"
     assert html =~ "data-[position^=&#39;bottom-&#39;]:after:-top-[10px]"
+  end
+
+  test "hovering a flash pauses every timer in its position group" do
+    hook = File.read!(Path.join([File.cwd!(), "assets", "js", "flash.js"]))
+
+    assert hook =~ "const position = this._positionFor(flash);"
+    assert hook =~ "this._pausePositionTimers(position);"
+    assert hook =~ "this._resumePositionTimers(position);"
+    assert hook =~ "this._positionIsActive(position)"
   end
 
   test "collapsed stacks cap visible indicators and allow indicator hover" do
