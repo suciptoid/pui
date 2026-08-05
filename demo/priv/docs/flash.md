@@ -22,7 +22,7 @@ import PUI.Flash
 Add the `flash_group` component to your layout to enable flash messages:
 
 ```heex
-<.flash_group flash={@flash} />
+<PUI.Flash.flash_group flash={@flash} id="flash-basic-example" />
 ```
 
 ## Sending Flash Messages
@@ -79,7 +79,7 @@ UI.
 PUI.Flash.send_flash(%PUI.Flash.Message{
   type: :info,
   message: "Item created!",
-  duration: 3000
+  duration: 3
 })
 
 # Error message
@@ -189,15 +189,46 @@ built-in toast with a type-colored icon.
 Flash groups support six positions:
 
 ```heex
-<.flash_group flash={@flash} position="top-center" />
-<.flash_group flash={@flash} position="top-left" />
-<.flash_group flash={@flash} position="top-right" />
-<.flash_group flash={@flash} position="bottom-center" />
-<.flash_group flash={@flash} position="bottom-left" />
-<.flash_group flash={@flash} position="bottom-right" />
+<PUI.Flash.flash_group flash={@flash} id="flash-position-top-center" position="top-center" />
+<PUI.Flash.flash_group flash={@flash} id="flash-position-top-left" position="top-left" />
+<PUI.Flash.flash_group flash={@flash} id="flash-position-top-right" position="top-right" />
+<PUI.Flash.flash_group flash={@flash} id="flash-position-bottom-center" position="bottom-center" />
+<PUI.Flash.flash_group flash={@flash} id="flash-position-bottom-left" position="bottom-left" />
+<PUI.Flash.flash_group flash={@flash} id="flash-position-bottom-right" position="bottom-right" />
 ```
 
-<AppWeb.DocsDemo.flash_demo flash_position={@flash_position} toast_count={@toast_count} />
+The group position is the fallback for Phoenix flash-map messages. A trigger
+can override it for a single message:
+
+```elixir
+PUI.Flash.send_flash("Copied!", position: "bottom-right")
+
+PUI.Flash.send_flash(%PUI.Flash.Message{
+  message: "Saved in a different stack",
+  position: "top-right"
+})
+```
+
+Messages with different positions are laid out in independent stacks in the
+same full-screen viewport.
+
+<AppWeb.DocsDemo.flash_demo
+  flash_position={@flash_position}
+  flash_stacked={@flash_stacked}
+  toast_count={@toast_count}
+/>
+
+## Stacking
+
+Messages remain expanded by default. Set `stacked` to collapse them into a
+stack; hover or focus any visible stack indicator to expand all messages:
+
+```heex
+<PUI.Flash.flash_group flash={@flash} id="flash-stacking-example" stacked />
+```
+
+Collapsed stacks show at most three indicators behind the front message;
+additional messages appear when the stack expands.
 
 ## Auto-Dismiss
 
@@ -205,10 +236,10 @@ Control auto-dismiss timing (in milliseconds):
 
 ```heex
 <!-- Dismiss after 3 seconds -->
-<.flash_group flash={@flash} auto_dismiss={3000} />
+<PUI.Flash.flash_group flash={@flash} id="flash-timeout-short" auto_dismiss={3000} />
 
 <!-- Dismiss after 10 seconds -->
-<.flash_group flash={@flash} auto_dismiss={10000} />
+<PUI.Flash.flash_group flash={@flash} id="flash-timeout-long" auto_dismiss={10000} />
 ```
 
 ## Message Limit
@@ -216,7 +247,7 @@ Control auto-dismiss timing (in milliseconds):
 Limit the number of visible messages:
 
 ```heex
-<.flash_group flash={@flash} limit={3} />
+<PUI.Flash.flash_group flash={@flash} id="flash-limit-example" limit={3} />
 ```
 
 ## Live Component Mode
@@ -224,7 +255,7 @@ Limit the number of visible messages:
 Enable LiveComponent mode for richer flash management:
 
 ```heex
-<.flash_group flash={@flash} live={true} />
+<PUI.Flash.flash_group flash={@flash} id="flash-live-example" live={true} />
 ```
 
 ## Closeable
@@ -232,7 +263,7 @@ Enable LiveComponent mode for richer flash management:
 Control whether flash messages show a close button:
 
 ```heex
-<.flash_group flash={@flash} show_close={false} />
+<PUI.Flash.flash_group flash={@flash} id="flash-close-example" show_close={false} />
 ```
 
 ## API Reference
@@ -245,7 +276,8 @@ Control whether flash messages show a close button:
 | `live` | `boolean` | `false` | Enable LiveComponent mode |
 | `limit` | `integer` | `5` | Max visible messages |
 | `position` | `string` | `"top-center"` | Position: `"top-left"`, `"top-right"`, `"top-center"`, `"bottom-left"`, `"bottom-right"`, `"bottom-center"` |
-| `auto_dismiss` | `integer` | `5000` | Auto-dismiss time in ms |
+| `stacked` | `boolean` | `false` | Collapse messages into an expandable stack |
+| `auto_dismiss` | `integer \| false` | `5000` | Auto-dismiss time in ms; `false` disables it |
 | `show_close` | `boolean` | `true` | Show close button |
 
 ### Flash Attributes
@@ -257,4 +289,7 @@ Control whether flash messages show a close button:
 | `type` | `atom` | `:info` | Message type: `:info`, `:success`, `:warning`, `:error` |
 | `preset` | `boolean` | `false` | Use compact preset toast styling |
 | `class` | `string` | `""` | Additional CSS classes |
+| `duration` | `integer` | `nil` | Message timeout in seconds; `-1` disables auto-dismiss |
+| `auto_dismiss` | `boolean` | `true` | Disable auto-dismiss for this message when `false` |
+| `dismissable` | `boolean` | `true` | Allow manual dismissal |
 | `show_close` | `boolean` | `true` | Show close button |

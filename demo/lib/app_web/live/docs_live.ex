@@ -44,6 +44,7 @@ defmodule AppWeb.Live.DocsLive do
        progress_value: 45.0,
        toast_count: 0,
        flash_position: "top-center",
+       flash_stacked: true,
        ping_state: :idle,
        bg_orientation: "horizontal"
      )}
@@ -125,6 +126,16 @@ defmodule AppWeb.Live.DocsLive do
     count = socket.assigns.toast_count + 1
     PUI.Flash.send_flash("Toast notification ##{count}!")
     {:noreply, assign(socket, toast_count: count)}
+  end
+
+  def handle_event("send_positioned_toast", _params, socket) do
+    count = socket.assigns.toast_count + 1
+    PUI.Flash.send_flash("Trigger override ##{count}", position: "bottom-right")
+    {:noreply, assign(socket, toast_count: count)}
+  end
+
+  def handle_event("toggle_flash_stack", _params, socket) do
+    {:noreply, update(socket, :flash_stacked, &(!&1))}
   end
 
   def handle_event("send_preset_toast", %{"type" => type}, socket) do
@@ -278,7 +289,13 @@ defmodule AppWeb.Live.DocsLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <.docs_shell docs={@docs} doc={@doc} flash={@flash} flash_position={@flash_position}>
+    <.docs_shell
+      docs={@docs}
+      doc={@doc}
+      flash={@flash}
+      flash_position={@flash_position}
+      flash_stacked={@flash_stacked}
+    >
       <div :if={@doc} class="space-y-12">
         <%!-- Page Header --%>
         <div class="border-b border-border pb-8">
@@ -305,11 +322,17 @@ defmodule AppWeb.Live.DocsLive do
   attr :doc, :any, default: nil
   attr :flash, :map, required: true
   attr :flash_position, :string, default: "top-right"
+  attr :flash_stacked, :boolean, default: true
   slot :inner_block, required: true
 
   defp docs_shell(assigns) do
     ~H"""
-    <PUI.Flash.flash_group flash={@flash} live={true} position={@flash_position} />
+    <PUI.Flash.flash_group
+      flash={@flash}
+      live={true}
+      position={@flash_position}
+      stacked={@flash_stacked}
+    />
 
     <.app_layout id="docs-shell" content_class="p-0">
       <:sidebar>
@@ -512,6 +535,7 @@ defmodule AppWeb.Live.DocsLive do
       :chart_revision,
       :flash,
       :flash_position,
+      :flash_stacked,
       :bg_orientation,
       :form,
       :ping_state,

@@ -2479,6 +2479,13 @@ defmodule AppWeb.DocsDemo do
             <.button variant="outline" phx-click="send_custom_flash">
               <.icon name="hero-check-circle" class="size-4 mr-2 text-green-600" /> Custom
             </.button>
+            <.button variant="outline" phx-click="send_positioned_toast">
+              <.icon name="hero-arrow-down-right" class="size-4 mr-2" /> Override: bottom-right
+            </.button>
+            <.button variant="outline" phx-click="toggle_flash_stack">
+              <.icon name="hero-queue-list" class="size-4 mr-2" />
+              Stack: {if @flash_stacked, do: "On", else: "Off"}
+            </.button>
             <p class="text-sm text-muted-foreground self-center">
               Position: {@flash_position}. Count: {@toast_count}
             </p>

@@ -8,7 +8,7 @@ defmodule PUI.Flash do
 
       <PUI.Flash.flash_group flash={@flash} />
 
-  For LiveView pages with dynamic flashes:
+  For LiveView pages with dynamically-triggered flashes:
 
       <PUI.Flash.flash_group flash={@flash} live={true} />
 
@@ -18,21 +18,23 @@ defmodule PUI.Flash do
 
       PUI.Flash.send_flash("Operation completed successfully!")
 
-  With custom options:
+  Override the layout position for an individual trigger:
+
+      PUI.Flash.send_flash("Copied!", position: "bottom-right")
+
+  The same position can be stored on a message when it will be updated later:
 
       PUI.Flash.send_flash(%PUI.Flash.Message{
         type: :success,
         message: "Saved!",
-        duration: 8,
-        class: "border-green-500"
+        position: "top-right"
       })
 
   ## Phoenix Preset Toasts
 
   Flash keys commonly used by Phoenix (`:success`, `:error`, `:info`, `:warning`)
-  are rendered as compact pill-shaped toasts with a type-colored icon. They are
-  positioned at `top-center` by default, show a visible close button, and truncate
-  to a single line.
+  are rendered as compact pill-shaped toasts with a type-colored icon. They use
+  the group position unless a `PUI.Flash.Message` is sent directly.
 
       {:noreply, put_flash(socket, :success, "Changes saved!")}
       {:noreply, put_flash(socket, :error, "Could not save changes")}
@@ -47,16 +49,24 @@ defmodule PUI.Flash do
         message: "Connected!"
       })
 
-  ## Positioning
+  ## Positioning and Stacking
 
-  Position the flash container in different corners:
+  Position the default flash group in different corners:
 
       <PUI.Flash.flash_group flash={@flash} position="top-right" />
       <PUI.Flash.flash_group flash={@flash} position="top-center" />
       <PUI.Flash.flash_group flash={@flash} position="bottom-left" />
 
   Available positions: `top-left`, `top-center`, `top-right`,
-  `bottom-left`, `bottom-center`, `bottom-right`
+  `bottom-left`, `bottom-center`, `bottom-right`.
+
+  Multiple flashes remain expanded by default. Set `stacked` to `true` to
+  collapse them into a stack that expands on hover or focus:
+
+      <PUI.Flash.flash_group flash={@flash} stacked />
+
+  Collapsed stacks show at most three indicators behind the front message;
+  additional messages remain available and appear when the stack expands.
 
   ## Custom Content
 
@@ -68,7 +78,8 @@ defmodule PUI.Flash do
         message: ~H|<div class="flex items-center gap-2">
           <.icon name="hero-check-circle" class="size-5" />
           <span>Success!</span>
-        </div>|
+        </div>|,
+        position: "bottom-right"
       })
 
   Plain-string messages with a preset type still render as the compact built-in
@@ -83,16 +94,26 @@ defmodule PUI.Flash do
         message: "Updated!"
       })
 
+  ## Timeout and Dismissal
+
+  `Message.duration` is measured in seconds and defaults to the group timeout.
+  `duration: -1` keeps a message open. `auto_dismiss: false` disables its timer.
+  The group-level `auto_dismiss` value is measured in milliseconds:
+
+      <PUI.Flash.flash_group flash={@flash} auto_dismiss={3000} />
+
   ## Configuration
 
   | Attribute | Type | Default | Description |
   |-----------|------|---------|-------------|
   | `flash` | `map` | required | Phoenix flash map |
   | `live` | `boolean` | `false` | Enable LiveComponent for dynamic updates |
-  | `position` | `string` | `"top-center"` | Container position |
-  | `limit` | `integer` | `5` | Maximum number of visible flashes |
-  | `auto_dismiss` | `integer` | `5000` | Auto-dismiss delay in ms |
-  | `show_close` | `boolean` | `true` | Show close button |
+  | `id` | `string` | `"flash-container"` | Unique flash group ID |
+  | `position` | `string` | `"top-center"` | Fallback container position |
+  | `stacked` | `boolean` | `false` | Collapse messages into an expandable stack |
+  | `limit` | `integer` | `5` | Maximum number of mounted flashes |
+  | `auto_dismiss` | `integer \| false` | `5000` | Fallback auto-dismiss delay in milliseconds; `false` disables it |
+  | `show_close` | `boolean` | `true` | Show close buttons |
 
   ## Message Struct
 
@@ -101,11 +122,12 @@ defmodule PUI.Flash do
       %PUI.Flash.Message{
         message: "Hello!",           # Required
         type: nil,                    # :info, :success, :warning, :error, or nil
+        position: nil,                # Uses the group position when nil
         preset: false,                # True for Phoenix preset toast styling
-        duration: 5,                  # Seconds until auto-dismiss
+        duration: nil,                # Seconds; nil uses the group timeout
         auto_dismiss: true,           # Auto-dismiss enabled
-        dismissable: true,            # Allow manual dismiss
-        show_close: true,             # Show close button
+        dismissable: true,            # Allow manual dismissal
+        show_close: true,             # Show the close button when the group allows it
         class: ""                     # Additional CSS classes
       }
   """
@@ -118,8 +140,9 @@ defmodule PUI.Flash do
               icon: nil,
               message: nil,
               type: nil,
+              position: nil,
               preset: false,
-              duration: 5,
+              duration: nil,
               auto_dismiss: true,
               dismissable: true,
               class: "",
@@ -127,7 +150,7 @@ defmodule PUI.Flash do
 
     def new(message \\ "") do
       %__MODULE__{
-        id: "fl#{System.unique_integer()}",
+        id: "fl#{System.unique_integer([:positive])}",
         message: message
       }
     end
@@ -136,47 +159,79 @@ defmodule PUI.Flash do
   @default_container_id "flash-container"
   @default_position "top-center"
   @default_limit 5
+  @default_timeout 5000
+  @default_stacked false
+  @positions [
+    "top-left",
+    "top-right",
+    "top-center",
+    "bottom-left",
+    "bottom-right",
+    "bottom-center"
+  ]
   @preset_types [:info, :success, :warning, :error]
 
   defp preset_type?(type) when type in @preset_types, do: true
   defp preset_type?(_), do: false
 
   def mount(socket) do
-    socket = socket |> stream(:flashs, [])
+    socket =
+      socket
+      |> stream_configure(:flashs, dom_id: &"flash-#{&1.id}")
+      |> stream(:flashs, [])
+
     {:ok, socket}
   end
 
   def update(%{from: :send_flash, flash: flash}, socket) do
-    socket = stream_insert(socket, :flashs, flash, limit: socket.assigns.limit, at: 0)
+    limit = Map.get(socket.assigns, :limit, @default_limit)
+    flash = prepare_message(flash)
+    socket = stream_insert(socket, :flashs, flash, limit: limit, at: 0)
 
     {:ok, socket}
   end
 
   def update(%{from: :update_flash, flash: flash}, socket) do
+    limit = Map.get(socket.assigns, :limit, @default_limit)
+    flash = prepare_message(flash)
+
     socket =
-      stream_insert(socket, :flashs, flash, limit: socket.assigns.limit, at: 0, update_only: true)
+      stream_insert(socket, :flashs, flash,
+        limit: limit,
+        at: 0,
+        update_only: true
+      )
 
     {:ok, socket}
   end
 
   def update(assigns, socket) do
     flash = map_flash(assigns.flash)
-
-    limit = Map.get(assigns, :limit, @default_limit)
+    limit = max(Map.get(assigns, :limit, @default_limit), 0)
     position = Map.get(assigns, :position, @default_position)
+    stacked = Map.get(assigns, :stacked, @default_stacked)
+    auto_dismiss = normalize_timeout(Map.get(assigns, :auto_dismiss, @default_timeout))
+    show_close = Map.get(assigns, :show_close, true)
+    id = Map.get(assigns, :id, @default_container_id)
 
     socket =
-      socket
-      |> assign(position: position, limit: limit, id: assigns.id)
-      |> then(fn socket ->
-        if flash != [] do
-          Enum.reduce(flash, socket, fn item, sock ->
-            stream_insert(sock, :flashs, item, limit: limit, at: 0)
-          end)
-        else
-          socket
-        end
-      end)
+      assign(socket,
+        position: position,
+        stacked: stacked,
+        limit: limit,
+        auto_dismiss: auto_dismiss,
+        show_close: show_close,
+        id: id
+      )
+
+    socket =
+      if flash == [] do
+        socket
+      else
+        Enum.reduce(flash, socket, fn item, sock ->
+          stream_insert(sock, :flashs, item, limit: limit, at: 0)
+        end)
+      end
 
     {:ok, socket}
   end
@@ -189,20 +244,27 @@ defmodule PUI.Flash do
     ~H"""
     <div>
       <.container
-        id="flashs-stream"
+        id={"#{@id}-stream"}
         position={@position}
+        stacked={@stacked}
+        timeout={@auto_dismiss}
+        live_component={true}
         phx-update="stream"
       >
         <.flash
           :for={{id, flash} <- @streams.flashs}
           id={id}
           data-flash-id={flash.id}
-          data-duration={flash.duration}
-          position={@position}
+          data-flash-dom-id={id}
+          position={effective_position(flash, @position)}
+          duration={flash.duration}
+          timeout={effective_timeout(flash, @auto_dismiss)}
+          auto_dismiss={flash.auto_dismiss}
           type={flash.type}
           preset={flash.preset}
           class={flash.class}
-          show_close={flash.show_close}
+          dismissable={flash.dismissable}
+          show_close={show_close?(@show_close, flash)}
         >
           {flash.message}
         </.flash>
@@ -212,41 +274,26 @@ defmodule PUI.Flash do
   end
 
   @doc """
-  Use .flash_group to place flash container in your layout.
+  Renders the flash viewport and its messages.
 
-  If you want to use in liveview page, pass option `live={true}`
-
-  example:
-  ```elixir
-  <PUI.Flash.flash_group flash={@flash} live={true}>
-  ```
-
+  The group position is the fallback for Phoenix flash-map messages. A
+  `PUI.Flash.Message` can override it with `position`.
   """
   attr :flash, :map, required: true
   attr :live, :boolean, default: false
-  attr :limit, :integer, default: 5
+  attr :id, :string, default: @default_container_id
+  attr :limit, :integer, default: @default_limit
 
   attr :position, :string,
     default: @default_position,
-    values: [
-      "top-left",
-      "top-right",
-      "top-center",
-      "bottom-left",
-      "bottom-right",
-      "bottom-center"
-    ]
+    values: @positions
 
-  attr :auto_dismiss, :integer, default: 5000
+  attr :stacked, :boolean, default: @default_stacked
+  attr :auto_dismiss, :any, default: @default_timeout
   attr :show_close, :boolean, default: true
 
   def flash_group(assigns) do
-    assigns =
-      assign_new(assigns, :id, fn ->
-        @default_container_id
-      end)
-
-    if assigns[:live] do
+    if assigns.live do
       ~H"""
       <.live_component
         id={@id}
@@ -254,21 +301,37 @@ defmodule PUI.Flash do
         limit={@limit}
         flash={@flash}
         position={@position}
+        stacked={@stacked}
+        auto_dismiss={@auto_dismiss}
+        show_close={@show_close}
       />
       """
     else
-      flash = map_flash(assigns[:flash])
-      assigns = assign(assigns, :flashs, flash)
+      limit = max(assigns.limit, 0)
+      timeout = normalize_timeout(assigns.auto_dismiss)
+      flashs = assigns.flash |> map_flash() |> Enum.take(limit)
+      assigns = assign(assigns, flashs: flashs, timeout: timeout)
 
       ~H"""
-      <.container id={@id} position={@position}>
+      <.container
+        id={@id}
+        position={@position}
+        stacked={@stacked}
+        timeout={@timeout}
+      >
         <PUI.Flash.flash
           :for={flash <- @flashs}
           id={flash.id}
           data-flash-id={flash.id}
-          position={@position}
+          position={effective_position(flash, @position)}
+          duration={flash.duration}
+          timeout={effective_timeout(flash, @timeout)}
+          auto_dismiss={flash.auto_dismiss}
           type={flash.type}
           preset={flash.preset}
+          class={flash.class}
+          dismissable={flash.dismissable}
+          show_close={show_close?(@show_close, flash)}
         >
           {flash.message}
         </PUI.Flash.flash>
@@ -278,17 +341,20 @@ defmodule PUI.Flash do
   end
 
   @doc """
-  Individual flash message component.
+  Renders an individual flash message.
 
-  When `preset` is `true` (set automatically for Phoenix flash keys such as
-  `:success`, `:error`, `:info`, and `:warning`), the message renders as a
-  compact toast with a type-colored icon and a dark pill-shaped container.
+  `position` controls the message's named viewport position. The containing
+  flash group supplies the fallback position and stack behavior.
   """
   attr :id, :string
-  attr :position, :string, default: @default_position
+  attr :position, :string, default: @default_position, values: @positions
   attr :type, :atom, default: :info
   attr :preset, :boolean, default: false
   attr :class, :string, default: ""
+  attr :duration, :integer, default: nil
+  attr :timeout, :integer, default: nil
+  attr :auto_dismiss, :boolean, default: true
+  attr :dismissable, :boolean, default: true
   attr :show_close, :boolean, default: true
   attr :rest, :global
   slot :inner_block
@@ -301,30 +367,36 @@ defmodule PUI.Flash do
       aria-hidden="true"
       data-position={@position}
       data-preset="true"
+      data-duration={@duration}
+      data-timeout={@timeout}
+      data-auto-dismiss={to_string(@auto_dismiss)}
       class={[
-        "bg-black/95 text-white text-xs font-medium",
+        "pointer-events-auto bg-black/95 text-white text-xs font-medium",
         "w-fit max-w-[75vw] min-w-0 rounded-full shadow-lg",
         "flex items-center gap-2 pl-2.5 pr-8 py-2",
-        "transition-all duration-400 opacity-0",
-        "absolute z-[calc(1000-var(--flash-index))]",
+        "transition-[transform,opacity] duration-400 opacity-0",
+        "absolute z-[calc(1000-var(--flash-index))] origin-top",
         "data-[position$='-center']:left-0 data-[position$='-center']:right-0 data-[position$='-center']:m-auto",
-        "data-[position$='-right']:right-0 data-[position$='-left']:left-0",
-        "data-[position^='top-']:top-0 data-[position^='bottom-']:bottom-0",
-        "not-aria-hidden:translate-y-[calc(var(--flash-offset-y))] not-aria-hidden:opacity-100",
+        "data-[position$='-right']:right-[1rem] data-[position$='-left']:left-[1rem]",
+        "data-[position^='top-']:top-[1rem] data-[position^='bottom-']:bottom-[1rem]",
+        "data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto data-[visible=false]:pointer-events-none",
+        "data-[position^='bottom-']:origin-bottom",
         @class
       ]}
       {@rest}
     >
       <.flash_icon type={@type} />
 
-      <span class="truncate">
+      <span class="flash-content truncate transition-opacity duration-200 data-[behind=true]:opacity-0 data-[expanded=true]:opacity-100 data-[behind=true]:pointer-events-none">
         {render_slot(@inner_block)}
       </span>
 
       <button
-        :if={@show_close}
+        :if={@show_close and @dismissable}
+        type="button"
         data-close
-        class="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10"
+        aria-label="Dismiss notification"
+        class="absolute right-2 top-1/2 flex -translate-y-1/2 items-center justify-center rounded-full p-0.5 text-white/60 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
       >
         <.icon name={:close} class="size-3" />
       </button>
@@ -339,27 +411,33 @@ defmodule PUI.Flash do
       role="alert"
       aria-hidden="true"
       data-position={@position}
+      data-duration={@duration}
+      data-timeout={@timeout}
+      data-auto-dismiss={to_string(@auto_dismiss)}
       class={[
-        "bg-background text-secondary-foreground text-sm group",
+        "pointer-events-auto bg-background text-secondary-foreground text-sm group",
         "w-fit min-w-[200px] max-w-md rounded-md border border-border py-3 px-4 shadow-sm",
-        "transition-all duration-400 opacity-0",
-        "absolute z-[calc(1000-var(--flash-index))]",
+        "transition-[transform,opacity] duration-400 opacity-0",
+        "absolute z-[calc(1000-var(--flash-index))] origin-top",
         "data-[position$='-center']:left-0 data-[position$='-center']:right-0 data-[position$='-center']:m-auto",
-        "data-[position$='-right']:right-0 data-[position$='-left']:left-0",
-        "data-[position^='top-']:top-0 data-[position^='bottom-']:bottom-0",
-        "not-aria-hidden:translate-y-[calc(var(--flash-offset-y))] not-aria-hidden:opacity-100",
+        "data-[position$='-right']:right-[1rem] data-[position$='-left']:left-[1rem]",
+        "data-[position^='top-']:top-[1rem] data-[position^='bottom-']:bottom-[1rem]",
+        "data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto data-[visible=false]:pointer-events-none",
+        "data-[position^='bottom-']:origin-bottom",
         @class
       ]}
       {@rest}
     >
-      <div class="flash-content overflow-hidden relative">
+      <div class="flash-content relative overflow-hidden transition-opacity duration-200 data-[behind=true]:opacity-0 data-[expanded=true]:opacity-100 data-[behind=true]:pointer-events-none">
         {render_slot(@inner_block)}
       </div>
 
       <button
-        :if={@show_close}
+        :if={@show_close and @dismissable}
+        type="button"
         data-close
-        class="absolute hidden group-hover:flex top-1.5 right-1.5 p-0.5 w-fit items-center justify-center rounded-sm hover:bg-popover/90"
+        aria-label="Dismiss notification"
+        class="absolute right-1.5 top-1.5 flex w-fit items-center justify-center rounded-sm p-0.5 opacity-0 hover:bg-popover/90 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring group-hover:opacity-100"
       >
         <.icon name={:close} class="size-4" />
       </button>
@@ -390,34 +468,26 @@ defmodule PUI.Flash do
   end
 
   @doc """
-  Flash container with positioning support.
+  Flash viewport with positioning and hook support.
   """
-  slot :inner_block
-  attr :position, :string, default: @default_position
+  attr :id, :string, required: true
+  attr :position, :string, default: @default_position, values: @positions
+  attr :stacked, :boolean, default: @default_stacked
+  attr :timeout, :integer, default: @default_timeout
+  attr :live_component, :boolean, default: false
   attr :rest, :global
+  slot :inner_block
 
   def container(assigns) do
-    position_classes =
-      case assigns.position do
-        "top-right" -> "top-[1rem] right-[1rem]"
-        "top-center" -> "top-[1rem] inset-x-0"
-        "top-left" -> "top-[1rem] left-[1rem]"
-        "bottom-right" -> "bottom-[1rem] right-[1rem]"
-        "bottom-center" -> "bottom-[1rem] inset-x-0"
-        "bottom-left" -> "bottom-[1rem] left-[1rem]"
-        _ -> "bottom-[1rem] right-[1rem]"
-      end
-
-    assigns = assign(assigns, :position_classes, position_classes)
-
     ~H"""
     <div
+      id={@id}
       data-position={@position}
+      data-stacked={to_string(@stacked)}
+      data-flash-timeout={@timeout}
+      data-live-component={to_string(@live_component)}
       phx-hook="PUI.FlashGroup"
-      class={[
-        "fixed z-[1000] flex flex-col w-auto min-w-[200px]",
-        @position_classes
-      ]}
+      class="pointer-events-none fixed inset-0 z-[1000]"
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -426,33 +496,62 @@ defmodule PUI.Flash do
   end
 
   defp map_flash(flash) do
-    Enum.map(flash, fn {key, value} -> %{key: key, value: value} end)
-    |> Enum.filter(fn f ->
-      key =
-        case f.key do
-          k when is_atom(k) -> Atom.to_string(k)
-          k when is_binary(k) -> k
-          _ -> ""
-        end
+    flash
+    |> Enum.filter(fn {key, _value} -> allowed_flash_key?(key) end)
+    |> Enum.map(fn {key, value} -> message_from_flash(key, value) end)
+  end
 
-      String.starts_with?(key, ["error", "info", "flash", "toast", "success", "warning"])
-    end)
-    |> Enum.map(fn f ->
-      id = "fl#{System.unique_integer([:positive])}"
-      type = normalize_flash_key(f.key)
-      preset = preset_type?(type) and is_binary(f.value)
+  defp allowed_flash_key?(key) do
+    key
+    |> flash_key_string()
+    |> String.starts_with?(["error", "info", "flash", "toast", "success", "warning"])
+  end
 
-      case f.value do
-        v when is_binary(v) ->
-          %Message{id: id, type: type, preset: preset, message: v}
+  defp message_from_flash(key, %Message{} = message) do
+    type = normalize_flash_key(key)
 
-        {_, message} ->
-          %Message{id: id, type: type, preset: preset, message: message}
+    message
+    |> ensure_message_id(stable_flash_id(key))
+    |> Map.update(:type, type, fn value -> if is_nil(value), do: type, else: value end)
+    |> maybe_mark_preset()
+  end
 
-        _ ->
-          %Message{id: id, type: type, preset: preset, message: f.value}
-      end
-    end)
+  defp message_from_flash(key, value) do
+    id = stable_flash_id(key)
+    type = normalize_flash_key(key)
+    preset = preset_type?(type) and is_binary(value)
+
+    case value do
+      {position, message} when position in @positions ->
+        %Message{
+          id: id,
+          type: type,
+          position: position,
+          preset: preset,
+          message: message
+        }
+
+      {_, message} ->
+        %Message{id: id, type: type, preset: preset, message: message}
+
+      message ->
+        %Message{id: id, type: type, preset: preset, message: message}
+    end
+  end
+
+  defp flash_key_string(key) when is_atom(key), do: Atom.to_string(key)
+  defp flash_key_string(key) when is_binary(key), do: key
+  defp flash_key_string(_), do: ""
+
+  defp stable_flash_id(key) do
+    key = flash_key_string(key)
+    safe_key = String.replace(key, ~r/[^a-zA-Z0-9_-]/u, "-")
+
+    if safe_key == "" do
+      "fl-#{System.unique_integer([:positive])}"
+    else
+      "fl-#{safe_key}"
+    end
   end
 
   defp normalize_flash_key(key) when is_atom(key), do: key
@@ -465,15 +564,20 @@ defmodule PUI.Flash do
 
   defp normalize_flash_key(_), do: nil
 
-  def send_flash(pid \\ self(), message)
+  def send_flash(message), do: send_flash(self(), message, [])
 
-  def send_flash(pid, %Message{} = flash) do
-    flash =
-      flash
-      |> Map.update(:id, "fl-#{System.unique_integer([:positive])}", fn v ->
-        if is_nil(v), do: "fl-#{System.unique_integer([:positive])}", else: v
-      end)
-      |> maybe_mark_preset()
+  def send_flash(message, opts) when is_list(opts) do
+    send_flash(self(), message, opts)
+  end
+
+  def send_flash(pid, %Message{} = flash), do: send_flash(pid, flash, [])
+
+  def send_flash(pid, message) do
+    send_flash(pid, %Message{message: message}, [])
+  end
+
+  def send_flash(pid, %Message{} = flash, opts) when is_list(opts) do
+    flash = prepare_message(flash, opts)
 
     Phoenix.LiveView.send_update(pid, PUI.Flash,
       id: @default_container_id,
@@ -484,8 +588,8 @@ defmodule PUI.Flash do
     {:ok, flash}
   end
 
-  def send_flash(pid, message) do
-    send_flash(pid, %Message{id: "fl-#{System.unique_integer([:positive])}", message: message})
+  def send_flash(pid, message, opts) when is_list(opts) do
+    send_flash(pid, %Message{message: message}, opts)
   end
 
   defp maybe_mark_preset(%Message{type: type, message: message} = flash)
@@ -495,7 +599,17 @@ defmodule PUI.Flash do
 
   defp maybe_mark_preset(flash), do: flash
 
-  def update_flash(pid \\ self(), %Message{} = flash) do
+  def update_flash(flash) when is_struct(flash, Message) do
+    update_flash(self(), flash, [])
+  end
+
+  def update_flash(pid, %Message{} = flash) do
+    update_flash(pid, flash, [])
+  end
+
+  def update_flash(pid, %Message{} = flash, opts) when is_list(opts) do
+    flash = prepare_message(flash, opts)
+
     Phoenix.LiveView.send_update(pid, PUI.Flash,
       id: @default_container_id,
       flash: flash,
@@ -503,5 +617,56 @@ defmodule PUI.Flash do
     )
 
     {:ok, flash}
+  end
+
+  defp prepare_message(%Message{} = flash, opts \\ []) do
+    opts = Keyword.validate!(opts, position: nil)
+    position = Keyword.get(opts, :position) || flash.position
+
+    flash
+    |> ensure_message_id()
+    |> Map.put(:position, normalize_position(position))
+    |> maybe_mark_preset()
+  end
+
+  defp ensure_message_id(%Message{id: nil} = flash), do: ensure_message_id(flash, nil)
+  defp ensure_message_id(%Message{} = flash), do: flash
+
+  defp ensure_message_id(%Message{} = flash, fallback) do
+    id = fallback || "fl-#{System.unique_integer([:positive])}"
+    %{flash | id: id}
+  end
+
+  defp effective_position(%Message{position: position}, fallback) do
+    case normalize_position(position) do
+      nil -> fallback
+      position -> position
+    end
+  end
+
+  defp normalize_position(nil), do: nil
+  defp normalize_position(position) when position in @positions, do: position
+
+  defp normalize_position(position) do
+    raise ArgumentError,
+          "invalid flash position #{inspect(position)}; expected one of #{inspect(@positions)}"
+  end
+
+  defp effective_timeout(%Message{auto_dismiss: false}, _fallback), do: 0
+  defp effective_timeout(%Message{duration: -1}, _fallback), do: 0
+
+  defp effective_timeout(%Message{duration: duration}, _fallback)
+       when is_integer(duration) and duration >= 0 do
+    duration * 1000
+  end
+
+  defp effective_timeout(%Message{}, fallback), do: max(fallback, 0)
+
+  defp normalize_timeout(false), do: 0
+  defp normalize_timeout(timeout) when is_integer(timeout), do: max(timeout, 0)
+  defp normalize_timeout(_), do: @default_timeout
+
+  defp show_close?(group_show_close, %Message{} = flash) do
+    group_show_close and flash.show_close and flash.dismissable
   end
 end
