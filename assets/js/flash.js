@@ -384,6 +384,7 @@ export default class FlashGroup extends ViewHook {
       flash.dataset.mounted = "true";
       flash.dataset.index = String(index);
       flash.dataset.behind = String(behind);
+      flash.dataset.expanded = String(expanded);
       flash.dataset.visible = String(visible);
       flash.style.setProperty("--flash-index", String(index));
       flash.style.setProperty("--flash-height", heights[index] + "px");
@@ -439,6 +440,7 @@ export default class FlashGroup extends ViewHook {
         "data-index",
         "data-mounted",
         "data-removing",
+        "data-expanded",
         "data-visible",
         "inert",
         "style",

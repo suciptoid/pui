@@ -122,6 +122,25 @@ defmodule PUI.FlashTest do
     assert hook =~ "if (expanded)"
   end
 
+  test "expanded stack gaps keep pointer hover inside the notification" do
+    hook = File.read!(Path.join([File.cwd!(), "assets", "js", "flash.js"]))
+
+    assert hook =~ "flash.dataset.expanded = String(expanded);"
+    assert hook =~ "\"data-expanded\""
+
+    assigns = %{flash: %{success: "Saved", info: "Synced"}}
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Flash.flash_group flash={@flash} stacked />
+      """)
+
+    assert html =~ "after:pointer-events-none"
+    assert html =~ "data-[expanded=true]:after:pointer-events-auto"
+    assert html =~ "data-[position^=&#39;top-&#39;]:after:-bottom-[10px]"
+    assert html =~ "data-[position^=&#39;bottom-&#39;]:after:-top-[10px]"
+  end
+
   test "collapsed stacks cap visible indicators and allow indicator hover" do
     hook = File.read!(Path.join([File.cwd!(), "assets", "js", "flash.js"]))
 
