@@ -70,6 +70,27 @@ defmodule PUI.CatalogSurfaceTest do
     assert html =~ "Save"
   end
 
+  test "legacy menu button preserves popup classes and grouping" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.MenuButton.button id="grouped-menu">
+        <:button class="custom-trigger">Options</:button>
+        <:popup class="custom-popup">
+          <PUI.MenuButton.menu_group>
+            <PUI.MenuButton.menu_item phx-click="choose">Choose</PUI.MenuButton.menu_item>
+          </PUI.MenuButton.menu_group>
+        </:popup>
+      </PUI.MenuButton.button>
+      """)
+
+    assert html =~ "custom-trigger"
+    assert html =~ "custom-popup"
+    assert html =~ ~s(phx-click="choose")
+    assert html =~ "Choose"
+  end
+
   test "flash group renders Phoenix flash keys" do
     assigns = %{flash: %{success: "Saved"}}
 

@@ -17,6 +17,20 @@ defmodule PUI.InputTest do
       refute html =~ ~s(class="grid w-full items-center gap-3")
     end
 
+    test "renders labeled input feedback and accessibility metadata" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.input id="email" label="Email" name="email" errors={["Required"]} />
+        """)
+
+      assert html =~ ~s(for="email")
+      assert html =~ ~s(aria-invalid="true")
+      assert html =~ "Required"
+      assert html =~ "flex w-full flex-col"
+    end
+
     test "renders aria-invalid as an explicit true value" do
       assigns = %{}
 
@@ -122,6 +136,20 @@ defmodule PUI.InputTest do
       assert html =~ ~s(role="switch")
     end
 
+    test "renders labeled switch feedback" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.switch id="alerts" name="alerts" label="Enable alerts" errors={["Turn this on"]} />
+        """)
+
+      assert html =~ "Enable alerts"
+      assert html =~ ~s(role="switch")
+      assert html =~ ~s(aria-invalid="true")
+      assert html =~ "Turn this on"
+    end
+
     test "uses value=true and adds the checked attribute when field value is true" do
       assigns = %{form: Phoenix.Component.to_form(%{"notify" => true}, as: :user)}
 
@@ -202,6 +230,22 @@ defmodule PUI.InputTest do
         """)
 
       assert html =~ ~s(name="user[plan]")
+    end
+  end
+
+  describe "textarea/1" do
+    test "renders labeled textarea feedback" do
+      assigns = %{}
+
+      html =
+        rendered_to_string(~H"""
+        <.textarea id="notes" label="Notes" name="notes" value="Draft" errors={["Too short"]} />
+        """)
+
+      assert html =~ ~s(for="notes")
+      assert html =~ "Draft"
+      assert html =~ ~s(aria-invalid="true")
+      assert html =~ "Too short"
     end
   end
 end

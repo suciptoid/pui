@@ -117,4 +117,23 @@ defmodule PUI.LayoutTest do
     assert html =~ "Docs"
     assert html =~ "Layout"
   end
+
+  test "sidebar renders its primitive hook parts" do
+    assigns = %{collapsed: true}
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Layout.Sidebar.Primitive.root id="sidebar" collapsed={@collapsed}>
+        Navigation
+      </PUI.Layout.Sidebar.Primitive.root>
+      <PUI.Layout.Sidebar.Primitive.toggle id="toggle">Menu</PUI.Layout.Sidebar.Primitive.toggle>
+      """)
+
+    assert html =~ ~s(id="sidebar")
+    assert html =~ ~s(data-collapsed="true")
+    assert html =~ ~s(data-shell="sidebar")
+    assert html =~ ~s(phx-hook="PUI.Sidebar")
+    assert html =~ ~s(id="toggle")
+    assert html =~ "Menu"
+  end
 end

@@ -80,4 +80,39 @@ defmodule PUI.DropdownTest do
     assert html =~ ~s(role="menu")
     assert html =~ "⌘K"
   end
+
+  test "menu renders links, variants, shortcuts, placement, and custom classes" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <.menu_button
+        id="account-menu"
+        variant="destructive"
+        placement="top-end"
+        trigger="hover"
+        wrapper_class="menu-wrapper"
+        content_class="menu-content"
+        class="menu-trigger"
+      >
+        Options
+        <:item variant="destructive" href="/delete" shortcut="⌘D">Delete</:item>
+        <:item navigate="/profile">Profile</:item>
+        <:item patch="/settings">Settings</:item>
+        <:items><.menu_separator /></:items>
+      </.menu_button>
+      """)
+
+    assert html =~ ~s(data-placement="top-end")
+    assert html =~ ~s(data-trigger="hover")
+    assert html =~ "menu-wrapper"
+    assert html =~ "menu-content"
+    assert html =~ "menu-trigger"
+    assert html =~ ~s(data-variant="destructive")
+    assert html =~ ~s(href="/delete")
+    assert html =~ ~s(href="/profile")
+    assert html =~ ~s(href="/settings")
+    assert html =~ "⌘D"
+    assert html =~ ~s(role="separator")
+  end
 end

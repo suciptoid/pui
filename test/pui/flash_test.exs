@@ -232,4 +232,244 @@ defmodule PUI.FlashTest do
     assert html =~ ~s(data-flash-timeout="2000")
     assert html =~ ~s(data-timeout="1200")
   end
+
+  test "message defaults are stable except for the generated id" do
+    message = PUI.Flash.Message.new("Saved")
+    empty_message = PUI.Flash.Message.new()
+
+    assert message.message == "Saved"
+    assert empty_message.message == ""
+    assert message.type == nil
+    assert message.position == nil
+    assert message.preset == false
+    assert String.starts_with?(message.id, "fl")
+  end
+
+  test "preset flash icons cover every semantic type and fall back to info" do
+    for type <- [:success, :error, :warning, :info, :custom] do
+      html =
+        render_component(&PUI.Flash.flash/1,
+          id: "flash-#{type}",
+          type: type,
+          preset: true,
+          show_close: false,
+          inner_block: [%{inner_block: fn _, _ -> "Message" end}]
+        )
+
+      expected_icon =
+        %{
+          success: "hero-check-circle",
+          error: "hero-x-circle",
+          warning: "hero-exclamation-triangle",
+          info: "hero-information-circle",
+          custom: "hero-information-circle"
+        }[type]
+
+      assert html =~ expected_icon
+      refute html =~ ~s(data-close)
+    end
+  end
+
+  test "flash groups map message structs and string keys with overrides" do
+    message = %PUI.Flash.Message{
+      message: "Updated",
+      position: "bottom-left",
+      duration: 2_000,
+      auto_dismiss: false,
+      dismissable: false,
+      show_close: false
+    }
+
+    assigns = %{flash: %{"success" => message, warning: {"top-right", "Soon"}}}
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Flash.flash_group flash={@flash} position="top-center" show_close />
+      """)
+
+    assert html =~ "Updated"
+    assert html =~ "Soon"
+    assert html =~ ~s(data-position="bottom-left")
+    assert html =~ ~s(data-timeout="0")
+    assert html =~ ~s(data-position="top-right")
+    assert html =~ ~s(data-preset="true")
+  end
+
+  test "flash groups honor limits and disabled auto dismissal" do
+    assigns = %{
+      flash: %{success: "Saved", info: "Synced", warning: "Soon"},
+      limit: 2,
+      auto_dismiss: false
+    }
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Flash.flash_group flash={@flash} limit={@limit} auto_dismiss={@auto_dismiss} />
+      """)
+
+    assert html =~ ~s(data-flash-timeout="0")
+    assert html |> String.split(~s(role="alert")) |> length() == 3
+    assert Enum.count(["Saved", "Synced", "Soon"], &String.contains?(html, &1)) == 2
+  end
+
+  test "flash update helpers prepare positions and preset messages" do
+    assert {:ok, flash} =
+             PUI.Flash.send_flash(
+               self(),
+               %PUI.Flash.Message{message: "Saved", type: :success},
+               position: "bottom-center"
+             )
+
+    assert flash.position == "bottom-center"
+    assert flash.preset
+    assert_receive {:phoenix, :send_update, _message}
+
+    update = %PUI.Flash.Message{message: "Updated", type: :success}
+    assert {:ok, updated} = PUI.Flash.update_flash(self(), update)
+    assert updated.preset
+    assert is_binary(updated.id)
+    assert_receive {:phoenix, :send_update, _message}
+  end
+
+  test "flash groups handle indefinite and custom message durations" do
+    assigns = %{
+      flash: %{
+        info: %PUI.Flash.Message{message: "Open", duration: -1},
+        success: %PUI.Flash.Message{message: "Short", duration: 3}
+      }
+    }
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Flash.flash_group flash={@flash} auto_dismiss={2500} />
+      """)
+
+    assert html =~ "Open"
+    assert html =~ "Short"
+    assert html =~ ~s(data-timeout="0")
+    assert html =~ ~s(data-timeout="3000")
+  end
+
+  test "flash helpers support shorthand overloads and reject invalid positions" do
+    assert {:ok, sent} = PUI.Flash.send_flash("Copied!", position: "top-left")
+    assert sent.position == "top-left"
+    assert_receive {:phoenix, :send_update, _message}
+
+    assert {:ok, simple} = PUI.Flash.send_flash("Simple")
+    assert simple.message == "Simple"
+    assert_receive {:phoenix, :send_update, _message}
+
+    assert {:ok, direct} =
+             PUI.Flash.send_flash(%PUI.Flash.Message{message: "Direct", type: :info})
+
+    assert direct.preset
+    assert_receive {:phoenix, :send_update, _message}
+
+    assert {:ok, pid_direct} =
+             PUI.Flash.send_flash(self(), %PUI.Flash.Message{message: "PID direct"})
+
+    assert pid_direct.message == "PID direct"
+    assert_receive {:phoenix, :send_update, _message}
+
+    flash = %PUI.Flash.Message{id: "existing", message: "Updated"}
+    assert {:ok, updated} = PUI.Flash.update_flash(flash)
+    assert updated.id == "existing"
+    assert_receive {:phoenix, :send_update, _message}
+
+    assert {:ok, pid_updated} = PUI.Flash.update_flash(self(), flash)
+    assert pid_updated.id == "existing"
+    assert_receive {:phoenix, :send_update, _message}
+
+    assert_raise ArgumentError, ~r/invalid flash position/, fn ->
+      PUI.Flash.send_flash("Broken", position: "middle")
+    end
+  end
+
+  test "live component lifecycle mounts, updates, renders, and dismisses streams" do
+    {:ok, socket} = PUI.Flash.mount(flash_socket())
+
+    assert {:ok, socket} =
+             PUI.Flash.update(
+               %{
+                 id: "notifications",
+                 flash: %{success: "Saved"},
+                 limit: 2,
+                 position: "top-right",
+                 stacked: true,
+                 auto_dismiss: 1000,
+                 show_close: true
+               },
+               socket
+             )
+
+    assert socket.assigns.id == "notifications"
+    assert socket.assigns.limit == 2
+    assert socket.assigns.position == "top-right"
+    assert socket.assigns.stacked
+    assert socket.assigns.auto_dismiss == 1000
+    assert %Phoenix.LiveView.Rendered{} = PUI.Flash.render(socket.assigns)
+
+    flash = %PUI.Flash.Message{id: "existing", message: "First", type: :info}
+    assert {:ok, socket} = PUI.Flash.update(%{from: :send_flash, flash: flash}, socket)
+
+    updated = %{flash | message: "Updated"}
+    assert {:ok, socket} = PUI.Flash.update(%{from: :update_flash, flash: updated}, socket)
+
+    assert {:noreply, _socket} =
+             PUI.Flash.handle_event("dismiss_flash", %{"id" => "flash-existing"}, socket)
+  end
+
+  test "flash groups support the live component branch" do
+    rendered =
+      PUI.Flash.flash_group(%{
+        id: "live-flashes",
+        flash: %{},
+        live: true,
+        limit: 2,
+        position: "top-right",
+        stacked: true,
+        auto_dismiss: 1000,
+        show_close: false
+      })
+
+    assert %Phoenix.LiveView.Rendered{} = rendered
+  end
+
+  test "flash mapping ignores unsupported keys and preserves non-position tuples" do
+    assigns = %{
+      flash: %{
+        "flash.custom" => "Custom",
+        :ignored => "Ignored",
+        123 => "Skipped",
+        :success => {"invalid-position", "Fallback"}
+      },
+      auto_dismiss: "invalid"
+    }
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Flash.flash_group flash={@flash} auto_dismiss={@auto_dismiss} />
+      """)
+
+    assert html =~ "Custom"
+    assert html =~ "Fallback"
+    refute html =~ "Ignored"
+    refute html =~ "Skipped"
+    assert html =~ ~s(data-flash-timeout="5000")
+  end
+
+  defp flash_socket do
+    lifecycle = %{
+      after_render: [],
+      handle_async: [],
+      handle_event: [],
+      handle_info: [],
+      handle_params: [],
+      mount: []
+    }
+
+    %Phoenix.LiveView.Socket{
+      private: %{live_temp: %{}, lifecycle: lifecycle}
+    }
+  end
 end

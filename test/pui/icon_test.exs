@@ -59,4 +59,45 @@ defmodule PUI.IconTest do
       PUI.Icon.Heroicons.render(:unsupported, assigns)
     end
   end
+
+  test "the default provider renders every semantic token" do
+    assigns = %{
+      tokens: [
+        :close,
+        :chevron_down,
+        :chevron_left,
+        :chevron_right,
+        :chevron_up_down,
+        :search,
+        :calendar,
+        :menu,
+        :success,
+        :error,
+        :warning,
+        :info
+      ]
+    }
+
+    html =
+      rendered_to_string(~H"""
+      <span :for={token <- @tokens}><.icon name={token} /></span>
+      """)
+
+    for icon_class <- [
+          "hero-x-mark",
+          "hero-chevron-down",
+          "hero-chevron-left",
+          "hero-chevron-right",
+          "hero-chevron-up-down",
+          "hero-magnifying-glass",
+          "hero-calendar",
+          "hero-bars-3",
+          "hero-check-circle",
+          "hero-x-circle",
+          "hero-exclamation-triangle",
+          "hero-information-circle"
+        ] do
+      assert html =~ icon_class
+    end
+  end
 end

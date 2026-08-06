@@ -43,4 +43,43 @@ defmodule PUI.CardTest do
     assert html =~ "legacy-card"
     assert html =~ "bg-card"
   end
+
+  test "keeps all deprecated Container Card sections rendering" do
+    slot = [%{inner_block: fn _, _ -> "Legacy section" end}]
+
+    for function <- [
+          :card_header,
+          :card_title,
+          :card_description,
+          :card_action,
+          :card_content,
+          :card_footer
+        ] do
+      html =
+        render_deprecated_component(PUI.Container, function, %{
+          class: "legacy-section",
+          inner_block: slot
+        })
+
+      assert html =~ "Legacy section"
+    end
+  end
+
+  test "renders a page header with optional subtitle and actions" do
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Container.header>
+        <:subtitle>Manage your account</:subtitle>
+        <:actions><button type="button">Edit</button></:actions>
+        Profile
+      </PUI.Container.header>
+      """)
+
+    assert html =~ ~s(class="flex items-center justify-between gap-6 pb-4")
+    assert html =~ "Profile"
+    assert html =~ "Manage your account"
+    assert html =~ "Edit"
+  end
 end
