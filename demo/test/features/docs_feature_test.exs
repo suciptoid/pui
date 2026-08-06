@@ -22,7 +22,7 @@ defmodule AppWeb.DocsFeatureTest do
     |> visit("/docs/flash")
     |> assert_has(css("button[phx-value-position='top-left']"))
     |> assert_has(css("button[phx-value-position='bottom-right']"))
-    |> assert_has(css("#send-toast", text: "Position: top-right"))
+    |> assert_has(css("#send-toast", text: "Position: top-center"))
   end
 
   feature "input docs demonstrate field validation errors", %{session: session} do
@@ -65,12 +65,12 @@ defmodule AppWeb.DocsFeatureTest do
     |> assert_has(css("#empty-demo"))
     |> assert_has(css("#empty-projects-demo", text: "No projects found"))
     |> visit("/docs/skeleton")
-    |> assert_has(css("#skeleton-demo [data-slot='skeleton']"))
+    |> assert_has(css("#skeleton-demo [data-slot='skeleton']", count: 4))
     |> visit("/docs/pagination")
     |> assert_has(css("#docs-pagination"))
     |> assert_has(css("#docs-pagination [aria-current='page']"))
     |> visit("/docs/avatar")
     |> assert_has(css("#avatar-demo"))
-    |> assert_has(css("#avatar-sizes-demo [data-slot='avatar-fallback']"))
+    |> assert_has(css("#avatar-sizes-demo [data-slot='avatar-fallback']", count: 3))
   end
 end

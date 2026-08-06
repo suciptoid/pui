@@ -50,7 +50,7 @@ defmodule AppWeb.LayoutAppFeatureTest do
     |> assert_has(css("#badges-demo", text: "Default"))
     |> visit("/demo/progress")
     |> assert_has(css("h1", text: "Progress"))
-    |> assert_has(css("[role='progressbar']"))
+    |> assert_has(css("[role='progressbar']", count: 2))
     |> visit("/demo/card")
     |> assert_has(css("h1", text: "Card"))
     |> assert_has(css(".bg-card", text: "Profile"))
@@ -63,9 +63,7 @@ defmodule AppWeb.LayoutAppFeatureTest do
     session
     |> visit("/demo/overview")
     |> assert_has(css("#demo-app-shell[data-collapsed='false']"))
-    |> execute_script(
-      ~s|document.cookie = "demo_sidebar_collapsed=true; Path=/; Max-Age=31536000; SameSite=Lax"|
-    )
+    |> set_cookie("demo_sidebar_collapsed", "true", path: "/")
     |> visit("/demo/overview")
     |> assert_has(css("#demo-app-shell[data-collapsed='true']"))
   end

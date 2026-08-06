@@ -6,7 +6,9 @@ defmodule AppWeb.SelectFeatureTest do
     |> visit("/__test__/components/select")
     |> assert_has(css("label[for='harness-select-input']"))
     |> assert_has(
-      css("#harness-select-trigger[role='combobox'][aria-controls='harness-select-listbox']")
+      css(
+        "#harness-select-trigger[aria-haspopup='listbox'][aria-controls='harness-select-listbox']"
+      )
     )
     |> assert_has(css("#harness-select-trigger", text: "Beta"))
     |> assert_has(css("#harness-select [role='searchbox']", visible: false))
@@ -29,7 +31,7 @@ defmodule AppWeb.SelectFeatureTest do
       const poll = () => {
         const trigger = document.querySelector("#narrow-harness-select-trigger");
         const label = trigger?.querySelector("[data-pui='selected-label']");
-        const icon = trigger?.querySelector("svg");
+        const icon = trigger?.querySelector("[aria-hidden='true']");
         const labelRect = label?.getBoundingClientRect();
         const iconRect = icon?.getBoundingClientRect();
         const style = label ? getComputedStyle(label) : null;

@@ -5,6 +5,8 @@ defmodule AppWeb.FeatureCase do
     quote do
       use Wallaby.Feature
 
+      @sessions [[window_size: [width: 1280, height: 800]]]
+
       @endpoint AppWeb.Endpoint
 
       import Wallaby.Query

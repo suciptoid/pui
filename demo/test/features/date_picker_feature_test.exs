@@ -14,7 +14,7 @@ defmodule AppWeb.DatePickerFeatureTest do
       )
     )
     |> assert_has(css("#harness-date-picker-trigger", text: "Pick a date"))
-    |> execute_script(~s|document.querySelector("#harness-date-picker-trigger").click()|)
+    |> click(css("#harness-date-picker-trigger"))
     |> execute_script_async(
       """
       const done = arguments[arguments.length - 1];
@@ -61,7 +61,7 @@ defmodule AppWeb.DatePickerFeatureTest do
     |> assert_has(css("label[for='harness-range-picker-from-input']"))
     |> assert_has(css("#harness-range-picker-month-0-day-2026-04-20", visible: false))
     |> assert_has(css("#harness-range-picker-month-1-day-2026-05-10", visible: false))
-    |> execute_script(~s|document.querySelector("#harness-range-picker-trigger").click()|)
+    |> click(css("#harness-range-picker-trigger"))
     |> execute_script_async(
       """
       const done = arguments[arguments.length - 1];

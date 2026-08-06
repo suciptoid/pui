@@ -15,7 +15,7 @@ defmodule AppWeb.DialogFeatureTest do
     session
     |> visit("/__test__/components/dialog")
     |> click(button("Open Dialog"))
-    |> execute_script(~s|document.querySelector("#dialog-select-trigger").click()|)
+    |> click(css("#dialog-select-trigger"))
     |> execute_script_async(
       """
       const done = arguments[arguments.length - 1];
@@ -57,7 +57,7 @@ defmodule AppWeb.DialogFeatureTest do
       end
     )
     |> assert_has(css("#dialog-select-trigger", text: "Gamma"))
-    |> execute_script(~s|document.querySelector("#dialog-select-trigger").click()|)
+    |> click(css("#dialog-select-trigger"))
     |> execute_script_async(
       """
       const done = arguments[arguments.length - 1];

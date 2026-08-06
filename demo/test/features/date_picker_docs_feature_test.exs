@@ -5,7 +5,13 @@ defmodule AppWeb.DatePickerDocsFeatureTest do
     session
     |> visit("/docs/date-picker")
     |> assert_has(css("h1", text: "Date Picker"))
-    |> assert_has(css("a[href='/docs/date-picker']", text: "Date Picker"))
+    |> assert_has(
+      css(
+        "#sidebar-item-forms-submenu a[href='/docs/date-picker']",
+        text: "Date Picker",
+        visible: true
+      )
+    )
     |> assert_has(css("#date-picker-basic-demo"))
     |> assert_has(css("#date-picker-bounds-demo"))
     |> assert_has(css("#date-picker-footer-demo"))

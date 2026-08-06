@@ -23,7 +23,7 @@ defmodule AppWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :app,
-    gzip: not code_reloading?,
+    gzip: Mix.env() == :prod,
     only: AppWeb.static_paths()
 
   if Code.ensure_loaded?(Tidewave) do

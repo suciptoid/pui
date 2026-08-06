@@ -5,7 +5,13 @@ defmodule AppWeb.ChartDocsFeatureTest do
     session
     |> visit("/docs/chart")
     |> assert_has(css("h1", text: "Chart"))
-    |> assert_has(css("a[href='/docs/chart']", text: "Chart"))
+    |> assert_has(
+      css(
+        "#sidebar-item-data-display-submenu a[href='/docs/chart']",
+        text: "Chart",
+        visible: true
+      )
+    )
     |> assert_has(css("#chart-base-demo"))
     |> assert_has(css("#chart-bar-demo"))
     |> assert_has(css("#chart-line-demo"))
