@@ -36,7 +36,8 @@ defmodule AppWeb.Live.DemoLive do
     ~H"""
     <.app_layout
       id="demo-app-shell"
-      content_class="bg-muted/20 p-0"
+      class="pui-editorial"
+      content_class="bg-background p-0"
       collapsed={@sidebar_collapsed}
     >
       <.demo_sidebar_persistence />
@@ -193,8 +194,8 @@ defmodule AppWeb.Live.DemoLive do
         position={@flash_position}
       />
 
-      <section class="min-h-full p-4 sm:p-6 lg:p-8">
-        <div class="mx-auto flex max-w-7xl flex-col gap-6">
+      <section class="min-h-full p-5 sm:p-8 lg:p-12">
+        <div class="mx-auto flex max-w-7xl flex-col gap-10">
           <%= case @page.action do %>
             <% :overview -> %>
               <.overview_page page={@page} />
@@ -300,14 +301,14 @@ defmodule AppWeb.Live.DemoLive do
 
   defp metric_card(assigns) do
     ~H"""
-    <div class="rounded-lg border border-border bg-card p-5">
+    <div class="group border-t border-border/70 py-5 transition-colors hover:border-primary">
       <div class="flex items-center justify-between">
         <p class="text-sm font-medium text-muted-foreground">{@label}</p>
         <.icon name={@icon} class="size-4 text-muted-foreground/50" />
       </div>
       <div class="mt-3 flex items-end justify-between gap-2">
         <div>
-          <p class="text-2xl font-semibold tracking-tight text-foreground">{@value}</p>
+          <p class="text-4xl font-black tracking-[-0.06em] text-foreground">{@value}</p>
           <span class="mt-0.5 inline-block text-xs font-medium text-muted-foreground">
             {@trend}
           </span>
@@ -383,10 +384,19 @@ defmodule AppWeb.Live.DemoLive do
       </:action>
     </.page_intro>
 
-    <.surface
-      title="A realistic dashboard surface"
-      description="The content area now spans the full shell width and shows buttons, alerts, list items, tabs, and menus in ordinary application patterns."
-    >
+    <section class="demo-enter-delay grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">Live system</p>
+        <h2 class="mt-3 text-3xl font-black tracking-[-0.045em] text-foreground sm:text-4xl">
+          Built to behave,<br />not just to look right.
+        </h2>
+      </div>
+      <p class="max-w-2xl text-base leading-7 text-muted-foreground lg:justify-self-end">
+        This overview is composed entirely from production PUI primitives—real navigation, charts, menus, tabs, feedback, and responsive shell behavior.
+      </p>
+    </section>
+
+    <section class="demo-enter-delay-2 border-b border-border/70">
       <div class="grid gap-4 md:grid-cols-3">
         <.metric_card
           label="Open tasks"
@@ -414,7 +424,7 @@ defmodule AppWeb.Live.DemoLive do
         />
       </div>
 
-      <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <div class="mt-8 grid gap-10 border-t border-border/70 pt-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(18rem,0.7fr)]">
         <div class="space-y-6">
           <.surface
             title="Delivery trend"
@@ -490,7 +500,7 @@ defmodule AppWeb.Live.DemoLive do
           </div>
         </div>
 
-        <div class="rounded-lg border border-border bg-muted/20 p-4">
+        <div class="border-l border-border/70 pl-6">
           <.tabs id="overview-pattern-tabs" default_value="handoff">
             <:trigger value="handoff">Handoff</:trigger>
             <:trigger value="list-item">List item</:trigger>
@@ -540,7 +550,7 @@ defmodule AppWeb.Live.DemoLive do
           </.tabs>
         </div>
       </div>
-    </.surface>
+    </section>
     """
   end
 

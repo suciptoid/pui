@@ -10,17 +10,20 @@ defmodule AppWeb.Live.DemoPages do
 
   def page_intro(assigns) do
     ~H"""
-    <section class="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
-      <div class="border-b border-border bg-gradient-to-br from-primary/10 via-background to-background p-6 sm:p-8">
+    <section class="demo-enter overflow-hidden border-y border-border/70 bg-background">
+      <div class="relative overflow-hidden py-10 sm:py-14">
+        <div class="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 font-mono text-[8rem] font-black tracking-[-0.12em] text-foreground/[0.035] lg:block">
+          PUI
+        </div>
         <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div class="max-w-3xl">
-            <p class="text-sm font-semibold uppercase tracking-[0.22em] text-primary">
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">
               {@page.eyebrow}
             </p>
-            <h1 class="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            <h1 class="mt-4 text-4xl font-black tracking-[-0.05em] text-foreground sm:text-6xl">
               {@page.title}
             </h1>
-            <p class="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+            <p class="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
               {@page.description}
             </p>
           </div>
@@ -44,10 +47,10 @@ defmodule AppWeb.Live.DemoPages do
   def surface(assigns) do
     ~H"""
     <section class={[
-      "overflow-hidden rounded-lg border border-border bg-background shadow-sm",
+      "demo-surface overflow-hidden border-y border-border/70 bg-background",
       @class
     ]}>
-      <div class="flex flex-col gap-4 border-b border-border px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
+      <div class="flex flex-col gap-4 border-b border-border/70 px-1 py-5 sm:flex-row sm:items-start sm:justify-between">
         <div class="space-y-1">
           <h2 class="text-base font-semibold text-foreground">{@title}</h2>
           <p :if={@description} class="max-w-3xl text-sm leading-6 text-muted-foreground">
@@ -60,7 +63,7 @@ defmodule AppWeb.Live.DemoPages do
           </div>
         <% end %>
       </div>
-      <div class="p-6">
+      <div class="py-7">
         {render_slot(@inner_block)}
       </div>
     </section>

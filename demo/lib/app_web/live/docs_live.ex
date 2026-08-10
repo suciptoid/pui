@@ -337,19 +337,26 @@ defmodule AppWeb.Live.DocsLive do
       flash_position={@flash_position}
       flash_stacked={@flash_stacked}
     >
-      <div :if={@doc} class="space-y-12">
+      <div :if={@doc} class="docs-enter space-y-12">
         <%!-- Page Header --%>
-        <div class="border-b border-border pb-8">
-          <div class="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+        <div class="relative overflow-hidden border-b border-border/70 pb-10 pt-4">
+          <div class="pointer-events-none absolute -right-8 -top-20 select-none font-mono text-[11rem] font-black leading-none tracking-[-0.1em] text-foreground/[0.035] dark:text-foreground/[0.025]">
+            PUI
+          </div>
+          <div class="relative mb-5 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-foreground/55">
             <span>{@doc.group}</span>
             <.icon name="hero-chevron-right-mini" class="size-3.5" />
             <span class="text-foreground font-medium">{@doc.title}</span>
           </div>
-          <h1 class="text-4xl font-bold tracking-tight text-foreground">{@doc.title}</h1>
-          <p class="mt-3 text-lg text-muted-foreground max-w-2xl">{@doc.description}</p>
+          <h1 class="relative max-w-3xl text-5xl font-black tracking-[-0.055em] text-foreground sm:text-6xl">
+            {@doc.title}
+          </h1>
+          <p class="relative mt-5 max-w-2xl text-lg leading-8 text-foreground/70">
+            {@doc.description}
+          </p>
         </div>
 
-        <article class="prose prose-zinc dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-primary hover:prose-a:text-primary/80 prose-pre:rounded-xl prose-pre:border prose-pre:border-border prose-code:before:content-none prose-code:after:content-none">
+        <article class="prose prose-zinc dark:prose-invert max-w-none prose-p:text-foreground/75 prose-li:text-foreground/75 prose-strong:text-foreground prose-headings:text-foreground prose-headings:scroll-mt-24 prose-headings:tracking-[-0.025em] prose-a:font-semibold prose-a:text-foreground prose-a:underline prose-a:decoration-foreground/25 prose-a:underline-offset-4 hover:prose-a:decoration-foreground/70 prose-pre:rounded-2xl prose-pre:border prose-pre:border-border/70 prose-pre:shadow-sm prose-code:before:content-none prose-code:after:content-none">
           {App.Docs.Doc.render(@doc.body, docs_body_assigns(assigns))}
         </article>
       </div>
@@ -375,7 +382,7 @@ defmodule AppWeb.Live.DocsLive do
       stacked={@flash_stacked}
     />
 
-    <.app_layout id="docs-shell" content_class="p-0">
+    <.app_layout id="docs-shell" class="pui-editorial" content_class="p-0 bg-background">
       <:sidebar>
         <%!-- Mobile overlay --%>
         <div
@@ -392,14 +399,11 @@ defmodule AppWeb.Live.DocsLive do
           class="hidden lg:flex fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto"
         >
           <:header>
-            <div class="flex h-16 shrink-0 items-center justify-between border-b border-border px-5">
+            <div class="flex h-20 shrink-0 items-center justify-between border-b border-border/70 px-5">
               <.link navigate={~p"/"} class="flex items-center gap-3 group">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                  <.icon name="hero-cube" class="size-4" />
-                </div>
                 <div class="flex flex-col">
-                  <span class="text-base font-bold text-foreground">PUI</span>
-                  <span class="text-[10px] leading-none text-foreground/45">Documentation</span>
+                  <span class="text-lg font-black tracking-[-0.04em] text-foreground">PUI</span>
+                  <span class="text-[10px] font-medium uppercase tracking-[0.16em] leading-none text-foreground/45">LiveView UI</span>
                 </div>
               </.link>
               <button
@@ -415,7 +419,7 @@ defmodule AppWeb.Live.DocsLive do
             </div>
           </:header>
 
-          <nav class="flex flex-col gap-3 p-3 group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0">
+          <nav class="flex flex-col gap-4 p-3 pt-5 group-data-[collapsed=true]/pui-layout:gap-0 group-data-[collapsed=true]/pui-layout:px-0 group-data-[collapsed=true]/pui-layout:py-0">
             <div :for={{group, docs} <- @docs}>
               <.sidebar_menu_item
                 title={group}
@@ -427,8 +431,9 @@ defmodule AppWeb.Live.DocsLive do
                   <.link
                     patch={~p"/docs/#{d.id}"}
                     class={[
-                      "block rounded-md px-2 py-1.5 text-sm transition-colors",
-                      @doc && @doc.id == d.id && "bg-primary/10 text-primary font-medium",
+                      "group/doc-link relative block rounded-md px-2 py-1.5 text-sm transition-all duration-200",
+                      @doc && @doc.id == d.id &&
+                        "bg-foreground text-background font-semibold shadow-sm",
                       !(@doc && @doc.id == d.id) &&
                         "text-foreground/65 hover:bg-accent hover:text-accent-foreground"
                     ]}
@@ -490,7 +495,7 @@ defmodule AppWeb.Live.DocsLive do
 
       <div class="flex min-h-full">
         <div class="flex-1 min-w-0">
-          <div class="mx-auto max-w-4xl px-4 lg:px-8 py-8 lg:py-12">
+          <div class="mx-auto max-w-4xl px-5 py-10 lg:px-10 lg:py-16">
             {render_slot(@inner_block)}
 
             <footer class="mt-16 pt-8 border-t border-border">
@@ -509,7 +514,7 @@ defmodule AppWeb.Live.DocsLive do
         <%!-- TOC --%>
         <aside
           :if={@doc && @doc.toc != []}
-          class="hidden xl:block w-56 shrink-0 self-start border-l border-border bg-background sticky top-0"
+          class="hidden xl:block w-60 shrink-0 self-start border-l border-border/70 bg-muted/15 sticky top-0"
         >
           <div class="sticky top-0 max-h-screen overflow-y-auto px-5 py-8">
             <h5 class="mb-3 text-xs font-semibold uppercase tracking-wider text-foreground/60">
