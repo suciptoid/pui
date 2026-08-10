@@ -87,6 +87,12 @@ end
   - Slots table if applicable
 - Include examples showing all variants and common use cases
 
+### Markdown-Embedded Components
+
+- Keep every live `<AppWeb...>` component embed in `demo/priv/docs/*.md` on a single physical line, including all attributes and the closing `/>`.
+- Do not wrap an embedded component tag across multiple markdown lines. MDEx/HEEx can parse wrapped tags incorrectly, causing following markdown to disappear or component assigns/IDs to be lost (for example, fallback IDs such as `-option-0`).
+- Multiline component markup is allowed inside fenced code examples; this rule applies to live embedded components only.
+
 
 ## Assets
 
