@@ -66,6 +66,38 @@ Enable filtering by setting `searchable={true}`:
 
 <AppWeb.DocsDemo.select_searchable_demo />
 
+## Server-backed Search
+
+For large option sets, set `search_event`. The select sends a debounced event
+with the query and current selection; the LiveView owns the database query and
+assigns the filtered options back to the component:
+
+```heex
+<.select
+  id="country"
+  name="country_id"
+  label="Country"
+  searchable={true}
+  search_event="search_countries"
+  options={@country_options}
+/>
+```
+
+```elixir
+def handle_event("search_countries", %{"query" => query}, socket) do
+  country_options = Locations.search_countries(query, socket.assigns.selected_country_id)
+  {:noreply, assign(socket, :country_options, country_options)}
+end
+```
+
+The payload also includes `select_id`, `name`, and `value`. Clearing the query
+sends an empty query so the handler can restore its default result set without
+clearing the selected value. Keep the selected option in the returned options
+when its label must remain visible. For a country/city flow, use the selected
+country from LiveView state when querying cities.
+
+<AppWeb.DocsDemo.select_backend_search_demo country_options={@remote_country_options} city_options={@remote_city_options} country_query={@remote_country_query} city_query={@remote_city_query} />
+
 ## Default Value
 
 Pre-select an option using the `value` attribute:
@@ -173,8 +205,12 @@ keep the `PUI.Select` hook contract, the hidden form input, and listbox
 semantics without any visual classes:
 
 ```heex
-<PUI.Select.Primitive.root id="custom" class="relative my-select">
-  <PUI.Select.Primitive.input id="custom-input" name="custom" value={@value} />
+<PUI.Select.Primitive.root
+  id="custom"
+  search_event="search_custom_options"
+  class="relative my-select"
+>
+  <PUI.Select.Primitive.input id="custom-input" name="custom" />
   <PUI.Select.Primitive.trigger id="custom-trigger" listbox_id="custom-listbox" class="my-trigger">
     <PUI.Select.Primitive.value placeholder="Select an item" />
   </PUI.Select.Primitive.trigger>
@@ -183,6 +219,7 @@ semantics without any visual classes:
     trigger_id="custom-trigger"
     class="aria-hidden:hidden block my-listbox"
   >
+    <PUI.Select.Primitive.search id="custom-search" listbox_id="custom-listbox" />
     <PUI.Select.Primitive.item value="a" class="my-option data-[active=true]:bg-accent">Option A</PUI.Select.Primitive.item>
   </PUI.Select.Primitive.content>
 </PUI.Select.Primitive.root>
@@ -204,6 +241,8 @@ current option receives `data-active="true"`. Include a
 | `placeholder` | `string` | `"Select an item"` | Placeholder text |
 | `options` | `list` | `[]` | Options list (strings, tuples, or grouped) |
 | `searchable` | `boolean` | `false` | Enable search/filter |
+| `search_event` | `string` | `nil` | LiveView event for server-backed search |
+| `search_debounce` | `integer` | `300` | Delay before dispatching the search event |
 | `label` | `string` | `nil` | Label text |
 | `field` | `FormField` | `nil` | Phoenix form field |
 | `errors` | `list` | `[]` | Error messages rendered below the select |

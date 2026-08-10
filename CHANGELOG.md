@@ -14,7 +14,8 @@ primitive modules for application-owned markup.
 - Added field-aware Input controls for text inputs, textareas, checkboxes,
   radios, switches, labels, and validation feedback.
 - Added searchable Select controls with custom items, empty-result states,
-  keyboard navigation, hidden form inputs, and field integration.
+  keyboard navigation, hidden form inputs, field integration, and optional
+  LiveView-backed search.
 - Added DatePicker and RangePicker components with constrained dates,
   selectable months, week-start configuration, footer slots, and validation
   feedback.

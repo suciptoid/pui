@@ -1204,6 +1204,44 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  def select_backend_search_demo(assigns) do
+    ~H"""
+    <.demo_section title="Server-backed Search Demo" id="select-backend-search-demo">
+      <p class="max-w-xl text-sm text-muted-foreground">
+        Typing in either select dispatches a debounced LiveView event. This demo
+        uses fixture data; a host application can replace the handler with a
+        database query.
+      </p>
+
+      <div class="grid max-w-2xl gap-4 md:grid-cols-2">
+        <.select
+          id="docs-remote-country"
+          name="country_id"
+          label="Country"
+          value="in"
+          searchable={true}
+          search_event="search_demo_countries"
+          options={@country_options}
+        />
+
+        <.select
+          id="docs-remote-city"
+          name="city_id"
+          label="City"
+          searchable={true}
+          search_event="search_demo_cities"
+          options={@city_options}
+        />
+      </div>
+
+      <div class="space-y-1 text-sm text-muted-foreground">
+        <p id="docs-remote-country-query">Country query: {@country_query}</p>
+        <p id="docs-remote-city-query">City query: {@city_query}</p>
+      </div>
+    </.demo_section>
+    """
+  end
+
   def select_grouped_demo(assigns) do
     ~H"""
     <.demo_section title="Grouped Options Demo" id="select-grouped-demo">

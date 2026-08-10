@@ -34,6 +34,29 @@ defmodule PUI.Select do
 
       <.select id="food" name="food" searchable={true} options={["Option 1", "Option 2"]} />
 
+  ## Server-backed Search
+
+  Set `search_event` to let the owning LiveView query options from the server.
+  The hook sends the query after the configurable debounce, and the LiveView
+  re-renders `options` in response:
+
+      <.select
+        id="country"
+        name="country_id"
+        searchable={true}
+        search_event="search_countries"
+        options={@country_options}
+      />
+
+      def handle_event("search_countries", %{"query" => query}, socket) do
+        {:noreply, assign(socket, :country_options, Countries.search(query))}
+      end
+
+  The event payload also includes `select_id`, `name`, and the current selected
+  `value`. An empty query restores the default options without clearing the
+  selected value. The host should keep the selected option in the returned list
+  when its label must remain visible.
+
   ## With Label
 
       <.select id="food" name="food" label="Select Food">
@@ -94,6 +117,8 @@ defmodule PUI.Select do
   | `placeholder` | `string` | `"Select an item"` | Placeholder text |
   | `options` | `list` | `[]` | List of options (strings, tuples, or groups) |
   | `searchable` | `boolean` | `false` | Enable search/filter functionality |
+  | `search_event` | `string` | `nil` | LiveView event for server-backed search |
+  | `search_debounce` | `integer` | `300` | Delay in milliseconds before a search event is sent |
   | `class` | `string` | `"w-fit"` | Additional CSS classes |
   | `label` | `string` | `nil` | Label text |
   | `field` | `FormField` | `nil` | Phoenix form field struct |
@@ -121,6 +146,8 @@ defmodule PUI.Select do
   attr :placeholder, :string, default: "Select an item"
   attr :options, :list, default: []
   attr :searchable, :boolean, default: false
+  attr :search_event, :string, default: nil
+  attr :search_debounce, :integer, default: 300
 
   attr :class, :string,
     default: "w-full",
@@ -137,6 +164,7 @@ defmodule PUI.Select do
     doc: "a list of error strings to display below the select"
 
   attr :show_errors, :boolean, default: true
+  attr :rest, :global
 
   slot :inner_block
   slot :header
@@ -205,7 +233,11 @@ defmodule PUI.Select do
       value={@value}
       placeholder={@placeholder}
       searchable={@searchable}
+      search_event={@search_event}
+      search_debounce={@search_debounce}
       errors={@errors}
+      show_errors={@show_errors}
+      {@rest}
     >
       <%= for {opt, index} <- Enum.with_index(@options) do %>
         <%= case opt do %>
@@ -240,8 +272,11 @@ defmodule PUI.Select do
     <div
       id={@id}
       data-value={@value}
+      data-search-event={@search_event}
+      data-search-debounce={@search_debounce}
       phx-hook="PUI.Select"
       class="relative"
+      {@rest}
     >
       <input
         id={@input_id}
@@ -300,7 +335,11 @@ defmodule PUI.Select do
           {render_slot(@header)}
         </div>
 
-        <.select_search :if={@searchable} listbox_id={@listbox_id} />
+        <.select_search
+          :if={@searchable}
+          id={if(@listbox_id, do: "#{@listbox_id}-search")}
+          listbox_id={@listbox_id}
+        />
 
         <div data-pui="menu-viewport" class="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
           <div data-pui="menu-items">
@@ -325,13 +364,30 @@ defmodule PUI.Select do
     """
   end
 
+  attr :id, :string, default: nil
   attr :listbox_id, :string, default: nil
+  attr :rest, :global
+
+  @doc """
+  Renders the browser-owned search input used by a searchable select.
+
+  The styled select supplies this part automatically. Use
+  `PUI.Select.Primitive.search/1` when composing a headless select.
+  """
 
   def select_search(assigns) do
     ~H"""
-    <div data-pui="combobox-search" class="shrink-0 flex h-9 items-center gap-2 border-b px-3">
+    <div
+      id={@id}
+      data-pui="combobox-search"
+      phx-update={if @id, do: "ignore"}
+      class="shrink-0 flex h-9 items-center gap-2 border-b px-3"
+      {@rest}
+    >
       <.icon name={:search} class="size-4 shrink-0 opacity-50" />
       <input
+        id={if(@id, do: "#{@id}-input")}
+        data-pui="select-search"
         class="placeholder:text-muted-foreground flex w-full rounded-md bg-transparent py-3 text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50 h-9"
         placeholder="Search item..."
         autocomplete="off"
@@ -339,6 +395,7 @@ defmodule PUI.Select do
         spellcheck="false"
         role="searchbox"
         type="text"
+        aria-controls={@listbox_id}
         value=""
       />
     </div>

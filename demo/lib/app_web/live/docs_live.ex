@@ -10,6 +10,20 @@ defmodule AppWeb.Live.DocsLive do
 
   require Logger
 
+  @remote_country_options [
+    {"in", "India"},
+    {"us", "United States"},
+    {"ca", "Canada"},
+    {"au", "Australia"}
+  ]
+
+  @remote_city_options [
+    {"del", "Delhi"},
+    {"jak", "Jakarta"},
+    {"tor", "Toronto"},
+    {"syd", "Sydney"}
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
     docs = App.Docs.grouped_docs()
@@ -46,7 +60,11 @@ defmodule AppWeb.Live.DocsLive do
        flash_position: "top-center",
        flash_stacked: true,
        ping_state: :idle,
-       bg_orientation: "horizontal"
+       bg_orientation: "horizontal",
+       remote_country_options: @remote_country_options,
+       remote_city_options: @remote_city_options,
+       remote_country_query: "",
+       remote_city_query: ""
      )}
   end
 
@@ -222,6 +240,29 @@ defmodule AppWeb.Live.DocsLive do
   def handle_event("add-new-item", _params, socket) do
     PUI.Flash.send_flash("Add new item clicked!")
     {:noreply, socket}
+  end
+
+  def handle_event("search_demo_countries", params, socket) do
+    query = Map.get(params, "query", "")
+    value = Map.get(params, "value", "")
+
+    {:noreply,
+     socket
+     |> assign(
+       :remote_country_options,
+       remote_search_options(@remote_country_options, query, value)
+     )
+     |> assign(:remote_country_query, query)}
+  end
+
+  def handle_event("search_demo_cities", params, socket) do
+    query = Map.get(params, "query", "")
+    value = Map.get(params, "value", "")
+
+    {:noreply,
+     socket
+     |> assign(:remote_city_options, remote_search_options(@remote_city_options, query, value))
+     |> assign(:remote_city_query, query)}
   end
 
   defp ping_loading_message(assigns) do
@@ -523,6 +564,27 @@ defmodule AppWeb.Live.DocsLive do
   defp blank?(value), do: value in [nil, ""]
   defp invalid_email?(value), do: blank?(value) or not String.contains?(value, "@")
 
+  defp remote_search_options(options, query, selected_value) do
+    normalized_query = String.downcase(String.trim(query))
+
+    matches =
+      if normalized_query == "" do
+        options
+      else
+        Enum.filter(options, fn {_value, label} ->
+          String.contains?(String.downcase(label), normalized_query)
+        end)
+      end
+
+    selected_option = Enum.find(options, fn {value, _label} -> value == selected_value end)
+
+    if selected_option && not Enum.any?(matches, fn option -> option == selected_option end) do
+      [selected_option | matches]
+    else
+      matches
+    end
+  end
+
   defp docs_body_assigns(assigns) do
     Map.take(assigns, [
       :btn_size,
@@ -541,7 +603,11 @@ defmodule AppWeb.Live.DocsLive do
       :ping_state,
       :progress_value,
       :show_dialog,
-      :toast_count
+      :toast_count,
+      :remote_country_options,
+      :remote_city_options,
+      :remote_country_query,
+      :remote_city_query
     ])
   end
 

@@ -33,6 +33,16 @@ defmodule AppWeb.DocsFeatureTest do
     |> assert_has(css("p", text: "Please enter a valid email address."))
   end
 
+  feature "select docs render the backend-search example", %{session: session} do
+    session
+    |> visit("/docs/select")
+    |> assert_has(css("#select-backend-search-demo"))
+    |> assert_has(css("#docs-remote-country-trigger", text: "India"))
+    |> assert_has(css("#docs-remote-country-option-0", visible: false))
+    |> assert_has(css("#docs-remote-city-option-0", visible: false))
+    |> assert_has(css("[id='-option-0']", count: 0, visible: false))
+  end
+
   feature "table docs render styled, custom, and empty table demos", %{session: session} do
     session
     |> visit("/docs/table")

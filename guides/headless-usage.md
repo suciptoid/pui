@@ -7,15 +7,21 @@ and CSS for a hook-managed interaction.
 ```elixir
 import PUI.Select.Primitive
 
-<.root id="assignee" class="relative">
+<.root id="assignee" class="relative" search_event="search_assignees">
+  <.input id="assignee-input" name="assignee" />
   <.trigger id="assignee-trigger" listbox_id="assignee-listbox" class="my-trigger">
     Choose an assignee
   </.trigger>
   <.content id="assignee-listbox" trigger_id="assignee-trigger" class="my-menu">
+    <.search id="assignee-search" listbox_id="assignee-listbox" />
     <.item value="ada" class="my-option data-[active=true]:bg-accent">Ada</.item>
   </.content>
 </.root>
 ```
+
+When `search_event` is present, the hook sends a debounced query to the
+owning LiveView. The handler should query its data source and assign the new
+options; clearing the query sends an empty query and keeps the selected value.
 
 Primitive modules retain IDs, ARIA attributes, LiveView JS commands, and hook
 data contracts. They intentionally add no visual classes, icons, animation, or

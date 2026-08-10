@@ -2648,6 +2648,8 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
   #popupClickHandler;
   #searchInputHandler;
   #searchKeyDownHandler;
+  #remoteSearchTimeout;
+  #lastRemoteSearchQuery;
   #typeaheadBuffer = "";
   #typeaheadTimeout;
   mounted() {
@@ -2683,8 +2685,12 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     this.cacheElements();
     this.rebindEventListeners(previousTrigger, previousPopup, previousSearch);
     this.ensureOptionMetadata();
+    if (this.remoteSearchEvent) {
+      this.resetClientSearchFilter();
+    }
     this.syncValueFromDataset();
     this.restoreExpanded();
+    this.refreshRemoteNoResults();
     this.initFloatingUI();
     this.refreshFloatingUI();
   }
@@ -2694,6 +2700,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     if (this.#clearFloating) {
       this.#clearFloating();
     }
+    this.clearRemoteSearchTimer();
     this.resetTypeahead();
   }
   cacheElements() {
@@ -2706,6 +2713,9 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     );
     this.hiddenInput = this.el.querySelector("input[data-pui='select-value']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
+    this.remoteSearchEvent = this.el.dataset.searchEvent || null;
+    const debounce = Number.parseInt(this.el.dataset.searchDebounce || "300", 10);
+    this.remoteSearchDebounce = Number.isFinite(debounce) ? Math.max(0, debounce) : 300;
     this.popupMinWidth = Number.parseFloat(this.popup?.dataset.popupMinWidth || `${this.popupMinWidth}`) || this.popupMinWidth;
     this.noResults = this.el.querySelector("[data-pui='no-results']");
     this.noResultsKeyword = this.noResults?.querySelector("[data-pui='no-results-keyword']");
@@ -2847,7 +2857,14 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
   }
   handleSearchInput(event) {
     event.stopPropagation();
-    const query2 = event.target.value.toLowerCase();
+    const query2 = event.target.value;
+    if (this.remoteSearchEvent) {
+      this.queueRemoteSearch(query2);
+      return;
+    }
+    this.filterLocalSearch(query2.toLowerCase());
+  }
+  filterLocalSearch(query2) {
     this.currentIndex = -1;
     this.items.forEach((item) => {
       const itemText = (item.dataset.label || item.textContent).trim().toLowerCase();
@@ -2881,6 +2898,33 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     }
     const nextIndex = this.getInitialNavigationIndex(visibleItems);
     this.setCurrentItemByIndex(nextIndex, visibleItems);
+  }
+  queueRemoteSearch(query2) {
+    if (!this.remoteSearchEvent) {
+      return;
+    }
+    this.clearRemoteSearchTimer();
+    this.resetClientSearchFilter();
+    this.#remoteSearchTimeout = window.setTimeout(() => {
+      this.#remoteSearchTimeout = void 0;
+      this.dispatchRemoteSearch(query2);
+    }, this.remoteSearchDebounce);
+  }
+  dispatchRemoteSearch(query2) {
+    if (!this.remoteSearchEvent || this.#lastRemoteSearchQuery === query2) {
+      return;
+    }
+    this.#lastRemoteSearchQuery = query2;
+    this.pushEventTo(this.el, this.remoteSearchEvent, {
+      query: query2,
+      select_id: this.el.id || "",
+      name: this.hiddenInput?.name || "",
+      value: this.hiddenInput?.value || ""
+    });
+  }
+  clearRemoteSearchTimer() {
+    window.clearTimeout(this.#remoteSearchTimeout);
+    this.#remoteSearchTimeout = void 0;
   }
   handleSearchKeyDown(event) {
     switch (event.key) {
@@ -3049,9 +3093,17 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     this.search?.removeAttribute("aria-activedescendant");
   }
   clearSearch() {
+    const hadQuery = this.search?.value || this.#lastRemoteSearchQuery || "";
     if (this.search) {
       this.search.value = "";
     }
+    this.resetClientSearchFilter();
+    this.resetTypeahead();
+    if (this.remoteSearchEvent && hadQuery) {
+      this.queueRemoteSearch("");
+    }
+  }
+  resetClientSearchFilter() {
     this.items.forEach((item) => {
       item.removeAttribute("aria-hidden");
     });
@@ -3062,7 +3114,21 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     if (this.noResults) {
       this.noResults.classList.add("hidden");
     }
-    this.resetTypeahead();
+  }
+  refreshRemoteNoResults() {
+    if (!this.remoteSearchEvent || !this.noResults) {
+      return;
+    }
+    const query2 = this.search?.value || "";
+    const hasVisibleItems = this.getNavigableItems().length > 0;
+    if (query2 && !hasVisibleItems) {
+      this.noResults.classList.remove("hidden");
+      if (this.noResultsKeyword) {
+        this.noResultsKeyword.textContent = query2;
+      }
+    } else {
+      this.noResults.classList.add("hidden");
+    }
   }
   openPopover(options = {}) {
     this.activePlacement = options.placement || this.placement;

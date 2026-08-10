@@ -58,6 +58,24 @@ defmodule PUI.SelectTest do
     assert html =~ "Add food"
   end
 
+  test "renders remote-search metadata and an ignored search wrapper" do
+    html =
+      render_component(&select/1,
+        id: "remote-food",
+        searchable: true,
+        search_event: "search_food",
+        search_debounce: 125,
+        options: [{"apple", "Apple"}]
+      )
+
+    assert html =~ ~s(data-search-event="search_food")
+    assert html =~ ~s(data-search-debounce="125")
+    assert html =~ ~s(id="remote-food-listbox-search")
+    assert html =~ ~s(phx-update="ignore")
+    assert html =~ ~s(id="remote-food-listbox-search-input")
+    assert html =~ ~s(aria-controls="remote-food-listbox")
+  end
+
   test "maps a Phoenix form field into select identifiers, value, and errors" do
     form =
       Phoenix.Component.to_form(

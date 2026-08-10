@@ -52,6 +52,36 @@ defmodule PUI.PrimitiveTest do
     assert html =~ "Apple"
   end
 
+  test "select primitive renders the remote-search contract without styles" do
+    import PUI.Select.Primitive
+    assigns = %{}
+
+    html =
+      rendered_to_string(~H"""
+      <PUI.Select.Primitive.root
+        id="remote-select"
+        search_event="search_options"
+        search_debounce={150}
+      >
+        <PUI.Select.Primitive.input id="remote-select-input" name="option" />
+        <PUI.Select.Primitive.content id="remote-select-listbox" trigger_id="remote-select-trigger">
+          <PUI.Select.Primitive.search
+            id="remote-select-search"
+            listbox_id="remote-select-listbox"
+          />
+          <PUI.Select.Primitive.item value="one">One</PUI.Select.Primitive.item>
+        </PUI.Select.Primitive.content>
+      </PUI.Select.Primitive.root>
+      """)
+
+    assert html =~ ~s(data-search-event="search_options")
+    assert html =~ ~s(data-search-debounce="150")
+    assert html =~ ~s(data-pui="combobox-search")
+    assert html =~ ~s(phx-update="ignore")
+    assert html =~ ~s(role="searchbox")
+    refute html =~ "border-input"
+  end
+
   test "dialog primitive keeps modal semantics without default classes" do
     import PUI.Dialog.Primitive
     assigns = %{}

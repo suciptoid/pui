@@ -30,6 +30,8 @@ export default class Select extends ViewHook {
   #popupClickHandler;
   #searchInputHandler;
   #searchKeyDownHandler;
+  #remoteSearchTimeout;
+  #lastRemoteSearchQuery;
   #typeaheadBuffer = "";
   #typeaheadTimeout;
 
@@ -74,8 +76,12 @@ export default class Select extends ViewHook {
     this.cacheElements();
     this.rebindEventListeners(previousTrigger, previousPopup, previousSearch);
     this.ensureOptionMetadata();
+    if (this.remoteSearchEvent) {
+      this.resetClientSearchFilter();
+    }
     this.syncValueFromDataset();
     this.restoreExpanded();
+    this.refreshRemoteNoResults();
     this.initFloatingUI();
     this.refreshFloatingUI();
   }
@@ -88,6 +94,7 @@ export default class Select extends ViewHook {
       this.#clearFloating();
     }
 
+    this.clearRemoteSearchTimer();
     this.resetTypeahead();
   }
 
@@ -102,6 +109,11 @@ export default class Select extends ViewHook {
     );
     this.hiddenInput = this.el.querySelector("input[data-pui='select-value']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
+    this.remoteSearchEvent = this.el.dataset.searchEvent || null;
+
+    const debounce = Number.parseInt(this.el.dataset.searchDebounce || "300", 10);
+    this.remoteSearchDebounce = Number.isFinite(debounce) ? Math.max(0, debounce) : 300;
+
     this.popupMinWidth =
       Number.parseFloat(this.popup?.dataset.popupMinWidth || `${this.popupMinWidth}`) ||
       this.popupMinWidth;
@@ -275,7 +287,17 @@ export default class Select extends ViewHook {
   handleSearchInput(event) {
     event.stopPropagation();
 
-    const query = event.target.value.toLowerCase();
+    const query = event.target.value;
+
+    if (this.remoteSearchEvent) {
+      this.queueRemoteSearch(query);
+      return;
+    }
+
+    this.filterLocalSearch(query.toLowerCase());
+  }
+
+  filterLocalSearch(query) {
 
     this.currentIndex = -1;
     this.items.forEach((item) => {
@@ -321,6 +343,39 @@ export default class Select extends ViewHook {
 
     const nextIndex = this.getInitialNavigationIndex(visibleItems);
     this.setCurrentItemByIndex(nextIndex, visibleItems);
+  }
+
+  queueRemoteSearch(query) {
+    if (!this.remoteSearchEvent) {
+      return;
+    }
+
+    this.clearRemoteSearchTimer();
+    this.resetClientSearchFilter();
+
+    this.#remoteSearchTimeout = window.setTimeout(() => {
+      this.#remoteSearchTimeout = undefined;
+      this.dispatchRemoteSearch(query);
+    }, this.remoteSearchDebounce);
+  }
+
+  dispatchRemoteSearch(query) {
+    if (!this.remoteSearchEvent || this.#lastRemoteSearchQuery === query) {
+      return;
+    }
+
+    this.#lastRemoteSearchQuery = query;
+    this.pushEventTo(this.el, this.remoteSearchEvent, {
+      query,
+      select_id: this.el.id || "",
+      name: this.hiddenInput?.name || "",
+      value: this.hiddenInput?.value || "",
+    });
+  }
+
+  clearRemoteSearchTimer() {
+    window.clearTimeout(this.#remoteSearchTimeout);
+    this.#remoteSearchTimeout = undefined;
   }
 
   handleSearchKeyDown(event) {
@@ -534,10 +589,21 @@ export default class Select extends ViewHook {
   }
 
   clearSearch() {
+    const hadQuery = this.search?.value || this.#lastRemoteSearchQuery || "";
+
     if (this.search) {
       this.search.value = "";
     }
 
+    this.resetClientSearchFilter();
+    this.resetTypeahead();
+
+    if (this.remoteSearchEvent && hadQuery) {
+      this.queueRemoteSearch("");
+    }
+  }
+
+  resetClientSearchFilter() {
     this.items.forEach((item) => {
       item.removeAttribute("aria-hidden");
     });
@@ -550,8 +616,24 @@ export default class Select extends ViewHook {
     if (this.noResults) {
       this.noResults.classList.add("hidden");
     }
+  }
 
-    this.resetTypeahead();
+  refreshRemoteNoResults() {
+    if (!this.remoteSearchEvent || !this.noResults) {
+      return;
+    }
+
+    const query = this.search?.value || "";
+    const hasVisibleItems = this.getNavigableItems().length > 0;
+
+    if (query && !hasVisibleItems) {
+      this.noResults.classList.remove("hidden");
+      if (this.noResultsKeyword) {
+        this.noResultsKeyword.textContent = query;
+      }
+    } else {
+      this.noResults.classList.add("hidden");
+    }
   }
 
   openPopover(options = {}) {

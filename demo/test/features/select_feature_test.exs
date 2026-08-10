@@ -17,6 +17,63 @@ defmodule AppWeb.SelectFeatureTest do
     |> assert_has(css("#select-value", text: "Selected: beta"))
   end
 
+  feature "searchable selects can request server-filtered country and city options", %{
+    session: session
+  } do
+    session =
+      session
+      |> visit("/__test__/components/select")
+      |> execute_script(
+        "document.querySelector('#remote-country-select').scrollIntoView({block: 'center'})"
+      )
+      |> assert_has(css("#remote-country-select-trigger", text: "India"))
+      |> execute_script(~s|document.querySelector("#remote-country-select-trigger").click()|)
+      |> execute_script("""
+      const input = document.querySelector("#remote-country-select [role='searchbox']");
+      input.value = "can";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      """)
+
+    Process.sleep(600)
+
+    session =
+      session
+      |> assert_has(css("#remote-country-query", text: "Country query: can"))
+      |> assert_has(css("#remote-search-meta", text: "remote-country-select|remote_country|in"))
+      |> assert_has(css("#remote-country-select [role='option']", count: 2))
+      |> assert_has(
+        css("#remote-country-select [role='option'][data-value='ca']", text: "Canada")
+      )
+      |> assert_has(css("#remote-country-select [role='option'][data-value='in']", text: "India"))
+      |> execute_script("""
+      const input = document.querySelector("#remote-country-select [role='searchbox']");
+      input.value = "";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      """)
+
+    Process.sleep(600)
+
+    session =
+      session
+      |> assert_has(css("#remote-country-query"))
+      |> assert_has(css("#remote-country-select [role='option']", count: 4))
+      |> assert_has(css("#remote-country-select-trigger", text: "India"))
+      |> execute_script(~s|document.querySelector("#remote-city-select-trigger").click()|)
+      |> execute_script("""
+      const input = document.querySelector("#remote-city-select [role='searchbox']");
+      input.value = "tor";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      """)
+
+    Process.sleep(600)
+
+    session
+    |> assert_has(css("#remote-city-query", text: "City query: tor"))
+    |> assert_has(css("#remote-search-meta", text: "remote-city-select|remote_city|"))
+    |> assert_has(css("#remote-city-select [role='option']", count: 1))
+    |> assert_has(css("#remote-city-select [role='option'][data-value='tor']", text: "Toronto"))
+  end
+
   feature "select trigger truncates long text before it can overlap the icon", %{
     session: session
   } do

@@ -2,6 +2,20 @@ defmodule AppWeb.Live.ComponentHarness do
   use AppWeb, :live_view
   use PUI
 
+  @remote_country_options [
+    {"in", "India"},
+    {"us", "United States"},
+    {"ca", "Canada"},
+    {"au", "Australia"}
+  ]
+
+  @remote_city_options [
+    {"del", "Delhi"},
+    {"jak", "Jakarta"},
+    {"tor", "Toronto"},
+    {"syd", "Sydney"}
+  ]
+
   alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
@@ -17,6 +31,11 @@ defmodule AppWeb.Live.ComponentHarness do
      |> assign(:selected_date, nil)
      |> assign(:range_start, nil)
      |> assign(:range_end, nil)
+     |> assign(:remote_country_options, @remote_country_options)
+     |> assign(:remote_city_options, @remote_city_options)
+     |> assign(:remote_country_query, "")
+     |> assign(:remote_city_query, "")
+     |> assign(:remote_search_meta, "none")
      |> assign(:active_tab, "overview")
      |> assign(:form, form)
      |> assign(:popover_count, 0)
@@ -55,6 +74,31 @@ defmodule AppWeb.Live.ComponentHarness do
       |> build_harness_form(validate?: true)
 
     {:noreply, socket |> assign(:selected_choice, choice) |> assign(:form, form)}
+  end
+
+  def handle_event("search_countries", params, socket) do
+    query = Map.get(params, "query", "")
+    value = Map.get(params, "value", "")
+
+    {:noreply,
+     socket
+     |> assign(
+       :remote_country_options,
+       remote_search_options(@remote_country_options, query, value)
+     )
+     |> assign(:remote_country_query, query)
+     |> assign(:remote_search_meta, remote_search_meta(params))}
+  end
+
+  def handle_event("search_cities", params, socket) do
+    query = Map.get(params, "query", "")
+    value = Map.get(params, "value", "")
+
+    {:noreply,
+     socket
+     |> assign(:remote_city_options, remote_search_options(@remote_city_options, query, value))
+     |> assign(:remote_city_query, query)
+     |> assign(:remote_search_meta, remote_search_meta(params))}
   end
 
   def handle_event("select_tab", %{"tab" => tab}, socket) do
@@ -170,6 +214,33 @@ defmodule AppWeb.Live.ComponentHarness do
           options={[{"alpha", "Alpha"}, {"beta", "Beta"}, {"gamma", "Gamma"}]}
         />
         <div class="h-40 shrink-0"></div>
+      </div>
+
+      <div id="remote-search-harness" class="space-y-4">
+        <h2 class="text-lg font-semibold">Server-backed search</h2>
+
+        <.select
+          id="remote-country-select"
+          name="remote_country"
+          label="Country"
+          value="in"
+          searchable={true}
+          search_event="search_countries"
+          options={@remote_country_options}
+        />
+
+        <.select
+          id="remote-city-select"
+          name="remote_city"
+          label="City"
+          searchable={true}
+          search_event="search_cities"
+          options={@remote_city_options}
+        />
+
+        <p id="remote-country-query">Country query: {@remote_country_query}</p>
+        <p id="remote-city-query">City query: {@remote_city_query}</p>
+        <p id="remote-search-meta">Search meta: {@remote_search_meta}</p>
       </div>
     </div>
     """
@@ -427,6 +498,32 @@ defmodule AppWeb.Live.ComponentHarness do
       value = "item-#{index}"
       {value, "Item #{index}"}
     end)
+  end
+
+  defp remote_search_options(options, query, selected_value) do
+    normalized_query = String.downcase(String.trim(query))
+
+    matches =
+      if normalized_query == "" do
+        options
+      else
+        Enum.filter(options, fn {_value, label} ->
+          String.contains?(String.downcase(label), normalized_query)
+        end)
+      end
+
+    selected_option = Enum.find(options, fn {value, _label} -> value == selected_value end)
+
+    if selected_option && not Enum.any?(matches, fn option -> option == selected_option end) do
+      [selected_option | matches]
+    else
+      matches
+    end
+  end
+
+  defp remote_search_meta(params) do
+    [Map.get(params, "select_id", ""), Map.get(params, "name", ""), Map.get(params, "value", "")]
+    |> Enum.join("|")
   end
 
   defp blank?(value), do: value in [nil, ""]
