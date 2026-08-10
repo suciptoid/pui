@@ -16,7 +16,7 @@
     "assets/js/*"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "node --test assets/js/*.test.mjs"
   },
   "keywords": [],
   "author": "Sucipto <sucipto@pm.me>",

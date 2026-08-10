@@ -65,8 +65,10 @@ defmodule PUI.CatalogSurfaceTest do
       """)
 
     assert html =~ ~s(id="actions-menu-trigger")
+    assert html =~ ~s(phx-hook="PUI.Popover")
     assert html =~ ~s(role="menu")
     assert html =~ ~s(role="menuitem")
+    assert html =~ ~s(type="button")
     assert html =~ "Save"
   end
 

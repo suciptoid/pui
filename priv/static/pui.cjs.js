@@ -2851,7 +2851,8 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
   }
   handlePopupClick(event) {
     const item = event.target?.closest("[role='option'],[role='menuitem']");
-    if (item && this.popup?.contains(item)) {
+    const itemUnavailable = item?.getAttribute("aria-disabled") === "true" || item?.getAttribute("aria-hidden") === "true" || item?.hidden || item?.style.display === "none";
+    if (item && this.popup?.contains(item) && !itemUnavailable) {
       this.selectItem(item);
     }
   }
@@ -3046,7 +3047,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     const { close = true, focusTrigger = true } = options;
     if (this.hiddenInput) {
       const newValue = itemEl.dataset.value;
-      if (newValue && this.hiddenInput.value !== newValue) {
+      if (newValue !== void 0 && this.hiddenInput.value !== newValue) {
         this.hiddenInput.value = newValue;
         this.hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
       }

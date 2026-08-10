@@ -279,7 +279,13 @@ export default class Select extends ViewHook {
 
   handlePopupClick(event) {
     const item = event.target?.closest("[role='option'],[role='menuitem']");
-    if (item && this.popup?.contains(item)) {
+    const itemUnavailable =
+      item?.getAttribute("aria-disabled") === "true" ||
+      item?.getAttribute("aria-hidden") === "true" ||
+      item?.hidden ||
+      item?.style.display === "none";
+
+    if (item && this.popup?.contains(item) && !itemUnavailable) {
       this.selectItem(item);
     }
   }
@@ -531,7 +537,7 @@ export default class Select extends ViewHook {
 
     if (this.hiddenInput) {
       const newValue = itemEl.dataset.value;
-      if (newValue && this.hiddenInput.value !== newValue) {
+      if (newValue !== undefined && this.hiddenInput.value !== newValue) {
         this.hiddenInput.value = newValue;
         this.hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
       }

@@ -89,7 +89,7 @@ defmodule PUI.MenuButton do
     ~H"""
     <PUI.Popover.base
       id={@id}
-      phx-hook="Popover"
+      phx-hook="PUI.Popover"
       class="relative"
       aria_haspopup="menu"
       aria_controls={"#{@id}-menu"}
@@ -115,7 +115,7 @@ defmodule PUI.MenuButton do
 
   def menu_item(assigns) do
     ~H"""
-    <button role="menuitem" {@rest}>
+    <button type="button" role="menuitem" {@rest}>
       {render_slot(@inner_block)}
     </button>
     """
