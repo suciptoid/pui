@@ -119,7 +119,7 @@ defmodule PUI.Select do
   | `searchable` | `boolean` | `false` | Enable search/filter functionality |
   | `search_event` | `string` | `nil` | LiveView event for server-backed search |
   | `search_debounce` | `integer` | `300` | Delay in milliseconds before a search event is sent |
-  | `class` | `string` | `"w-fit"` | Additional CSS classes |
+  | `class` | `string` | `"w-full"` | Additional CSS classes; use `w-fit` for a width that fits the selected item |
   | `label` | `string` | `nil` | Label text |
   | `field` | `FormField` | `nil` | Phoenix form field struct |
   | `errors` | `list` | `[]` | Error messages shown below the select |
@@ -297,7 +297,7 @@ defmodule PUI.Select do
         class={[
           "border-input data-placeholder:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground",
           "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex min-w-0 items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring [3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+          "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex min-w-0 items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
           @class
         ]}
       >

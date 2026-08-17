@@ -71,7 +71,6 @@ defmodule PUI.Popover do
   | Attribute | Type | Default | Description |
   |-----------|------|---------|-------------|
   | `id` | `string` | required | Unique identifier |
-  | `hook` | `string` | `"Popover"` | Phoenix hook name |
 
   ## Attributes (tooltip/1)
 
@@ -103,7 +102,6 @@ defmodule PUI.Popover do
 
   attr :id, :string, required: true
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
-  attr :hook, :string, default: "Popover"
 
   attr :aria_haspopup, :string,
     default: "listbox",

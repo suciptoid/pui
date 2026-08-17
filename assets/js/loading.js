@@ -1,6 +1,6 @@
 import { ViewHook } from "phoenix_live_view";
 
-State = {
+const State = {
   IDLE: 0,
   STARTING: 1,
 };
@@ -17,7 +17,7 @@ export default class LoadingBar extends ViewHook {
 
   mounted() {
     this.progressEl = this.el.querySelector("#loadingbar-progress");
-    this.delay = parseInt(this.el.dataset.delay || "0") || this.delay;
+    this.delay = this.parseDelay(this.el.dataset.delay);
 
     this.#boundShow = this._show.bind(this);
     this.#boundHide = this._hide.bind(this);
@@ -27,7 +27,12 @@ export default class LoadingBar extends ViewHook {
     window.addEventListener("phx:page-loading-stop", this.#boundHide);
   }
 
-  _show(info) {
+  parseDelay(value) {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : this.delay;
+  }
+
+  _show() {
     this._clear();
 
     this.delayTimer = setTimeout(() => {
@@ -76,9 +81,11 @@ export default class LoadingBar extends ViewHook {
     cancelAnimationFrame(this.raf);
   }
 
-  _hide(info) {
+  _hide() {
     this.state = State.IDLE;
     this._clear();
+
+    cancelAnimationFrame(this.raf);
 
     if (this.progress > 0) {
       this.progress = 100;

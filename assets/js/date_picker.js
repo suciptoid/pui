@@ -525,10 +525,6 @@ export default class DatePicker extends ViewHook {
     });
   }
 
-  log(msg, data) {
-    console.log(`${this.name}: ${msg}`, data);
-  }
-
   refreshExpanded() {
     this.expanded = this.trigger?.getAttribute("aria-expanded") == "true";
   }

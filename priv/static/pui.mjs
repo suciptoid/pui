@@ -1880,9 +1880,6 @@ var Popover = class extends ViewHook {
     this.initFloatingUI();
     this.refreshFloatingUI();
   }
-  log(msg, data) {
-    console.log(`${this.name}: ${msg}`, data);
-  }
   refreshExpanded() {
     this.expanded = this.trigger?.getAttribute("aria-expanded") == "true";
   }
@@ -2406,9 +2403,6 @@ var DatePicker = class extends ViewHook2 {
         this.focusElement(this.popup);
       }
     });
-  }
-  log(msg, data) {
-    console.log(`${this.name}: ${msg}`, data);
   }
   refreshExpanded() {
     this.expanded = this.trigger?.getAttribute("aria-expanded") == "true";
@@ -3353,7 +3347,7 @@ var Select = class extends ViewHook3 {
 
 // js/loading.js
 import { ViewHook as ViewHook4 } from "phoenix_live_view";
-State = {
+var State = {
   IDLE: 0,
   STARTING: 1
 };
@@ -3367,14 +3361,18 @@ var LoadingBar = class extends ViewHook4 {
   #boundHide = null;
   mounted() {
     this.progressEl = this.el.querySelector("#loadingbar-progress");
-    this.delay = parseInt(this.el.dataset.delay || "0") || this.delay;
+    this.delay = this.parseDelay(this.el.dataset.delay);
     this.#boundShow = this._show.bind(this);
     this.#boundHide = this._hide.bind(this);
     this.state = State.IDLE;
     window.addEventListener("phx:page-loading-start", this.#boundShow);
     window.addEventListener("phx:page-loading-stop", this.#boundHide);
   }
-  _show(info) {
+  parseDelay(value) {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : this.delay;
+  }
+  _show() {
     this._clear();
     this.delayTimer = setTimeout(() => {
       if (this.state === State.IDLE) {
@@ -3413,9 +3411,10 @@ var LoadingBar = class extends ViewHook4 {
     this.state = State.IDLE;
     cancelAnimationFrame(this.raf);
   }
-  _hide(info) {
+  _hide() {
     this.state = State.IDLE;
     this._clear();
+    cancelAnimationFrame(this.raf);
     if (this.progress > 0) {
       this.progress = 100;
       this.progressEl.style.width = "100%";

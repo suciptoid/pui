@@ -135,27 +135,7 @@ defmodule PUI.Flash do
 
   use Phoenix.LiveComponent
   import PUI.Icon, only: [icon: 1]
-
-  defmodule Message do
-    defstruct id: nil,
-              icon: nil,
-              message: nil,
-              type: nil,
-              position: nil,
-              preset: false,
-              duration: nil,
-              auto_dismiss: true,
-              dismissable: true,
-              class: "",
-              show_close: true
-
-    def new(message \\ "") do
-      %__MODULE__{
-        id: "fl#{System.unique_integer([:positive])}",
-        message: message
-      }
-    end
-  end
+  alias PUI.Flash.Message
 
   @default_container_id "flash-container"
   @default_position "top-center"

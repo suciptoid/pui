@@ -4,27 +4,27 @@ defmodule PUI.MenuButton do
 
   ## Basic Usage
 
-      <.button id="menu-1">
+      <PUI.MenuButton.button id="menu-1">
         <:button>Open Menu</:button>
         <:popup>
           <.menu_item>Item 1</.menu_item>
           <.menu_item>Item 2</.menu_item>
         </:popup>
-      </.button>
+      </PUI.MenuButton.button>
 
   ## With Custom Styling
 
-      <.button id="menu-2">
+      <PUI.MenuButton.button id="menu-2">
         <:button class="bg-blue-500 text-white">Options</:button>
         <:popup class="p-4 bg-popover rounded-lg shadow-lg">
           <.menu_item phx-click="action-1">Action 1</.menu_item>
           <.menu_item phx-click="action-2">Action 2</.menu_item>
         </:popup>
-      </.button>
+      </PUI.MenuButton.button>
 
   ## Menu Grouping
 
-      <.button id="menu-3">
+      <PUI.MenuButton.button id="menu-3">
         <:button>Settings</:button>
         <:popup>
           <.menu_group>
@@ -38,7 +38,7 @@ defmodule PUI.MenuButton do
             <.menu_item>Display</.menu_item>
           </.menu_group>
         </:popup>
-      </.button>
+      </PUI.MenuButton.button>
 
   ## Attributes (button/1)
 

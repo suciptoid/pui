@@ -243,6 +243,10 @@ defmodule PUI.FlashTest do
     assert message.position == nil
     assert message.preset == false
     assert String.starts_with?(message.id, "fl")
+    # the generated id must be a real interpolation, not a literal string:
+    # two messages built through new/1 always get distinct ids
+    refute message.id == empty_message.id
+    refute message.id =~ "\#{"
   end
 
   test "preset flash icons cover every semantic type and fall back to info" do
