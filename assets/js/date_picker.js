@@ -593,7 +593,6 @@ export default class DatePicker extends ViewHook {
 
     items.forEach((item, itemIndex) => {
       if (itemIndex === index) {
-        item.setAttribute("aria-selected", "true");
         item.setAttribute("tabindex", "0");
         if (this.focus_selected) {
           this.focusElement(item);
@@ -601,7 +600,6 @@ export default class DatePicker extends ViewHook {
         this.scrollItemIntoView(item);
       } else {
         item.setAttribute("tabindex", "-1");
-        item.removeAttribute("aria-selected");
       }
     });
 

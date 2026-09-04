@@ -10,6 +10,7 @@ export default class LoadingBar extends ViewHook {
 
   delay = 300;
   delayTimer = null;
+  resetTimer = null;
   raf = null;
   state = State.IDLE;
   #boundShow = null;
@@ -36,6 +37,7 @@ export default class LoadingBar extends ViewHook {
     this._clear();
 
     this.delayTimer = setTimeout(() => {
+      this.delayTimer = null;
       if (this.state === State.IDLE) {
         this.state = State.STARTING;
         this._start();
@@ -79,6 +81,7 @@ export default class LoadingBar extends ViewHook {
     this.state = State.IDLE;
 
     cancelAnimationFrame(this.raf);
+    this.raf = null;
   }
 
   _hide() {
@@ -86,25 +89,36 @@ export default class LoadingBar extends ViewHook {
     this._clear();
 
     cancelAnimationFrame(this.raf);
+    this.raf = null;
 
     if (this.progress > 0) {
       this.progress = 100;
       this.progressEl.style.width = "100%";
     }
 
-    setTimeout(() => {
+    this.resetTimer = setTimeout(() => {
+      this.resetTimer = null;
       this._reset();
     }, 500);
   }
 
   _clear() {
-    if (this.delayTimer) {
+    if (this.delayTimer !== null) {
       clearTimeout(this.delayTimer);
       this.delayTimer = null;
+    }
+
+    if (this.resetTimer !== null) {
+      clearTimeout(this.resetTimer);
+      this.resetTimer = null;
     }
   }
 
   destroyed() {
+    this._clear();
+    cancelAnimationFrame(this.raf);
+    this.raf = null;
+
     window.removeEventListener("phx:page-loading-start", this.#boundShow);
     window.removeEventListener("phx:page-loading-stop", this.#boundHide);
   }

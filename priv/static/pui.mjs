@@ -2456,7 +2456,6 @@ var DatePicker = class extends ViewHook2 {
     }
     items.forEach((item, itemIndex) => {
       if (itemIndex === index) {
-        item.setAttribute("aria-selected", "true");
         item.setAttribute("tabindex", "0");
         if (this.focus_selected) {
           this.focusElement(item);
@@ -2464,7 +2463,6 @@ var DatePicker = class extends ViewHook2 {
         this.scrollItemIntoView(item);
       } else {
         item.setAttribute("tabindex", "-1");
-        item.removeAttribute("aria-selected");
       }
     });
     this.currentIndex = index;
@@ -3355,6 +3353,7 @@ var LoadingBar = class extends ViewHook4 {
   progress = 0;
   delay = 300;
   delayTimer = null;
+  resetTimer = null;
   raf = null;
   state = State.IDLE;
   #boundShow = null;
@@ -3375,6 +3374,7 @@ var LoadingBar = class extends ViewHook4 {
   _show() {
     this._clear();
     this.delayTimer = setTimeout(() => {
+      this.delayTimer = null;
       if (this.state === State.IDLE) {
         this.state = State.STARTING;
         this._start();
@@ -3410,26 +3410,36 @@ var LoadingBar = class extends ViewHook4 {
     this._clear();
     this.state = State.IDLE;
     cancelAnimationFrame(this.raf);
+    this.raf = null;
   }
   _hide() {
     this.state = State.IDLE;
     this._clear();
     cancelAnimationFrame(this.raf);
+    this.raf = null;
     if (this.progress > 0) {
       this.progress = 100;
       this.progressEl.style.width = "100%";
     }
-    setTimeout(() => {
+    this.resetTimer = setTimeout(() => {
+      this.resetTimer = null;
       this._reset();
     }, 500);
   }
   _clear() {
-    if (this.delayTimer) {
+    if (this.delayTimer !== null) {
       clearTimeout(this.delayTimer);
       this.delayTimer = null;
     }
+    if (this.resetTimer !== null) {
+      clearTimeout(this.resetTimer);
+      this.resetTimer = null;
+    }
   }
   destroyed() {
+    this._clear();
+    cancelAnimationFrame(this.raf);
+    this.raf = null;
     window.removeEventListener("phx:page-loading-start", this.#boundShow);
     window.removeEventListener("phx:page-loading-stop", this.#boundHide);
   }

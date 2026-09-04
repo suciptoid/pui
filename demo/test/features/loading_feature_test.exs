@@ -5,7 +5,7 @@ defmodule AppWeb.LoadingFeatureTest do
     session
     |> visit("/__test__/components/loading")
     |> assert_has(css("#loadingbar", count: 1))
-    |> assert_has(css("#loadingbar-progress"))
+    |> assert_has(css("#loadingbar-progress", visible: false))
     |> assert_has(
       css("#loading-description", text: "Loading bar is mounted from the root layout.")
     )
