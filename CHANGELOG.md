@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.1 - 2026-09-05
+
+- **Dialog**: Fix Escape key listener leakage and DOM mutations on inactive dialogs.
+- **Select**: Add server-backed search (`search_mode={:server}`) and harden option click handling.
+- **DatePicker**: Fix `aria-selected` semantics on calendar days.
+- **LoadingBar**: Harden hook lifecycle to prevent stale progress timers.
+- **MenuButton**: Fix hook namespace and specify `type="button"` on menu items.
+- **Flash**: Extract `PUI.Flash.Message` for message normalization and severity resolution.
+- **Assets & Tooling**: Clean up globals in JS hooks, add bundle test suite, and improve demo docs navigation.
+
 ## v1 Changes
 
 PUI v1 consolidates the stable features delivered throughout the alpha and beta
@@ -14,8 +24,7 @@ primitive modules for application-owned markup.
 - Added field-aware Input controls for text inputs, textareas, checkboxes,
   radios, switches, labels, and validation feedback.
 - Added searchable Select controls with custom items, empty-result states,
-  keyboard navigation, hidden form inputs, field integration, and optional
-  LiveView-backed search.
+  keyboard navigation, hidden form inputs, and field integration.
 - Added DatePicker and RangePicker components with constrained dates,
   selectable months, week-start configuration, footer slots, and validation
   feedback.

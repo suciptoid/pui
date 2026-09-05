@@ -1,6 +1,6 @@
 {
   "name": "pui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "PUI Hooks",
   "module": "./priv/static/pui.mjs",
   "main": "./priv/static/pui.cjs.js",

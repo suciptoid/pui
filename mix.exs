@@ -4,7 +4,7 @@ defmodule PUI.MixProject do
   def project do
     [
       app: :pui,
-      version: "1.0.0",
+      version: "1.0.1",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -51,8 +51,7 @@ defmodule PUI.MixProject do
       links: %{"GitHub" => "https://github.com/suciptoid/pui"},
       maintainers: ["Sucipto"],
       files: ~w(
-        assets/js assets/css lib priv skills mix.exs package.json README.md LICENSE.md CHANGELOG.md
-        CONTEXT.md docs/adr docs/domain-model.md guides
+        assets/js assets/css lib priv skills mix.exs package.json README.md LICENSE.md CHANGELOG.md guides
       )
     ]
   end
