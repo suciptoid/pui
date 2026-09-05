@@ -162,7 +162,7 @@ defmodule PUI.Dialog do
   | Attribute | Type | Default | Description |
   |-----------|------|---------|-------------|
   | `id` | `string` | required | Unique identifier for the dialog |
-  | `show` | `boolean` | `false` | Control visibility from server |
+  | `show` | `boolean` | `nil` | Control visibility from server |
   | `alert` | `boolean` | `false` | Prevent backdrop click dismiss |
   | `size` | `string` | `"md"` | Max width: `"sm"`, `"md"`, `"lg"`, `"xl"`. Set to `""` for custom sizing via `class` |
   | `title` | `string` | `nil` | Optional built-in title for the default dialog header |
@@ -255,7 +255,7 @@ defmodule PUI.Dialog do
   attr :id, :string, required: true
   attr :on_cancel, JS, default: %JS{}
   attr :alert, :boolean, default: false
-  attr :show, :boolean, default: false, doc: "Control dialog visibility from server"
+  attr :show, :boolean, default: nil, doc: "Control dialog visibility from server"
   attr :size, :string, default: "md"
   attr :title, :string, default: nil
   attr :show_close, :boolean, default: true
@@ -278,27 +278,71 @@ defmodule PUI.Dialog do
         _ -> ""
       end
 
-    on_cancel = assigns[:on_cancel]
+    server_controlled? = not is_nil(assigns[:show])
+    open? = assigns[:show] == true
+    on_cancel = assigns[:on_cancel] || %JS{}
 
     cancel_action =
-      if assigns[:show] do
+      if server_controlled? do
         on_cancel
       else
         on_cancel
         |> JS.exec("phx-remove", to: "##{assigns.id}")
       end
 
+    window_keydown =
+      if open? do
+        JS.exec("data-cancel", to: "##{assigns.id}")
+      else
+        nil
+      end
+
+    window_key =
+      if open? do
+        "escape"
+      else
+        nil
+      end
+
+    remove_action =
+      if server_controlled? do
+        nil
+      else
+        hide_dialog(assigns.id)
+      end
+
+    content_keydown =
+      if server_controlled? do
+        nil
+      else
+        JS.exec("data-cancel", to: "##{assigns.id}")
+      end
+
+    content_key =
+      if server_controlled? do
+        nil
+      else
+        "escape"
+      end
+
     assigns =
       assigns
       |> assign(:size_class, size_class)
+      |> assign(:server_controlled?, server_controlled?)
+      |> assign(:open?, open?)
       |> assign(:cancel_action, cancel_action)
+      |> assign(:window_keydown, window_keydown)
+      |> assign(:window_key, window_key)
+      |> assign(:remove_action, remove_action)
+      |> assign(:content_keydown, content_keydown)
+      |> assign(:content_key, content_key)
 
     ~H"""
     <div
       id={@id}
-      phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
-      phx-key="escape"
-      phx-remove={hide_dialog(@id)}
+      phx-window-keydown={@window_keydown}
+      phx-key={@window_key}
+      phx-remove={@remove_action}
       data-cancel={@cancel_action}
     >
       {render_slot(@trigger, %{
@@ -306,15 +350,17 @@ defmodule PUI.Dialog do
       })}
       <.backdrop
         id={"#{@id}-backdrop"}
-        hidden={not @show}
+        hidden={not @open?}
         phx-click={if @alert, do: nil, else: JS.exec("data-cancel", to: "##{@id}")}
       />
 
       <%= if @content != [] do %>
         {render_slot(
           @content,
-          {%{id: "#{@id}-content", hidden: not @show},
-           %{hide: JS.exec("data-cancel", to: "##{@id}"), show: show_dialog(@id)}}
+          {
+            content_attrs(@id, @open?, @server_controlled?),
+            %{hide: JS.exec("data-cancel", to: "##{@id}"), show: show_dialog(@id)}
+          }
         )}
       <% end %>
 
@@ -324,12 +370,14 @@ defmodule PUI.Dialog do
         aria-modal="true"
         class={[@size_class, @class] |> Enum.reject(&(&1 == "")) |> Enum.join(" ")}
         id={"#{@id}-content"}
-        hidden={not @show}
+        hidden={not @open?}
         title={@title}
         show_close={@show_close}
         hide={JS.exec("data-cancel", to: "##{@id}")}
         tabindex="-1"
         {@rest}
+        phx-keydown={@content_keydown}
+        phx-key={@content_key}
       >
         {render_slot(@inner_block, %{
           hide: JS.exec("data-cancel", to: "##{@id}"),
@@ -346,17 +394,36 @@ defmodule PUI.Dialog do
     """
   end
 
+  defp content_attrs(id, open?, server_controlled?) do
+    attrs = %{id: "#{id}-content", hidden: not open?}
+
+    if server_controlled? do
+      attrs
+    else
+      Map.merge(attrs, %{
+        "phx-keydown": JS.exec("data-cancel", to: "##{id}"),
+        "phx-key": "escape"
+      })
+    end
+  end
+
   def hide_dialog(id) do
     JS.set_attribute({"hidden", true}, to: "##{id}-backdrop")
     |> JS.set_attribute({"hidden", true}, to: "##{id}-content")
+    |> JS.remove_attribute("phx-window-keydown", to: "##{id}")
+    |> JS.remove_attribute("phx-key", to: "##{id}")
     |> JS.remove_class("overflow-hidden", to: "body")
     |> JS.pop_focus()
   end
 
   def show_dialog(id) do
+    cancel_cmd = Jason.encode!(JS.exec("data-cancel", to: "##{id}").ops)
+
     JS.push_focus()
     |> JS.remove_attribute("hidden", to: "##{id}-backdrop")
     |> JS.remove_attribute("hidden", to: "##{id}-content")
+    |> JS.set_attribute({"phx-window-keydown", cancel_cmd}, to: "##{id}")
+    |> JS.set_attribute({"phx-key", "escape"}, to: "##{id}")
     |> JS.add_class("overflow-hidden", to: "body")
     |> JS.focus_first(to: "##{id}-content")
   end

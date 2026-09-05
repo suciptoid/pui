@@ -92,4 +92,27 @@ defmodule AppWeb.DialogFeatureTest do
       end
     )
   end
+
+  feature "closing a dialog with Escape does not corrupt inactive dialog", %{session: session} do
+    session
+    |> visit("/__test__/components/dialog")
+    # Verify both dialogs are initially hidden
+    |> assert_has(css("#server-dialog-content[hidden]", visible: false))
+    |> assert_has(css("#second-server-dialog-content[hidden]", visible: false))
+    # Open first dialog
+    |> click(button("Open Dialog"))
+    |> assert_has(css("#server-dialog-content:not([hidden])", visible: true))
+    # Close first dialog with Escape key
+    |> send_keys([:escape])
+    |> assert_has(css("#server-dialog-content[hidden]", visible: false))
+    # Open second dialog - should be fully visible and NOT corrupted with client hidden attribute
+    |> click(button("Open Second Dialog"))
+    |> assert_has(css("#second-server-dialog-content:not([hidden])", visible: true))
+    # Close second dialog with Escape key
+    |> send_keys([:escape])
+    |> assert_has(css("#second-server-dialog-content[hidden]", visible: false))
+    # Re-open first dialog - should be fully visible
+    |> click(button("Open Dialog"))
+    |> assert_has(css("#server-dialog-content:not([hidden])", visible: true))
+  end
 end

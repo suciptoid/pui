@@ -27,6 +27,7 @@ defmodule AppWeb.Live.ComponentHarness do
      |> assign(:click_count, 0)
      |> assign(:dropdown_action, "none")
      |> assign(:dialog_open?, false)
+     |> assign(:second_dialog_open?, false)
      |> assign(:selected_choice, "beta")
      |> assign(:selected_date, nil)
      |> assign(:range_start, nil)
@@ -62,6 +63,14 @@ defmodule AppWeb.Live.ComponentHarness do
 
   def handle_event("close_dialog", _params, socket) do
     {:noreply, assign(socket, :dialog_open?, false)}
+  end
+
+  def handle_event("open_second_dialog", _params, socket) do
+    {:noreply, assign(socket, :second_dialog_open?, true)}
+  end
+
+  def handle_event("close_second_dialog", _params, socket) do
+    {:noreply, assign(socket, :second_dialog_open?, false)}
   end
 
   def handle_event("select_changed", %{"demo" => params}, socket) do
@@ -358,6 +367,30 @@ defmodule AppWeb.Live.ComponentHarness do
           <div class="flex justify-end">
             <.button id="server-dialog-close" variant="secondary" phx-click="close_dialog">
               Close Dialog
+            </.button>
+          </div>
+        </:footer>
+      </.dialog>
+
+      <.button id="second-dialog-open" phx-click="open_second_dialog">Open Second Dialog</.button>
+      <.dialog
+        id="second-server-dialog"
+        aria-label="Second dialog"
+        show={@second_dialog_open?}
+        on_cancel={JS.push("close_second_dialog")}
+        title="Second dialog"
+      >
+        <div id="second-server-dialog-body" class="space-y-4">
+          <p>Second dialog content</p>
+        </div>
+        <:footer>
+          <div class="flex justify-end">
+            <.button
+              id="second-server-dialog-close"
+              variant="secondary"
+              phx-click="close_second_dialog"
+            >
+              Close Second Dialog
             </.button>
           </div>
         </:footer>
