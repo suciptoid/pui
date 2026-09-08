@@ -28,6 +28,7 @@ import PUI.Button
 ## Variants
 
 Buttons come in several visual styles to communicate different levels of emphasis and intent.
+Default and destructive actions have restrained surface depth, while secondary and outline actions use a lighter touch. Ghost and link buttons remain flat.
 
 | Variant | Usage |
 |---------|-------|
@@ -80,8 +81,12 @@ Buttons can act as navigation links using Phoenix's built-in attributes:
 ## Disabled State
 
 ```heex
-<.button disabled>Disabled</.button>
-<.button variant="destructive" disabled>Can't Delete</.button>
+<.button variant="default" disabled>Default</.button>
+<.button variant="secondary" disabled>Secondary</.button>
+<.button variant="outline" disabled>Outline</.button>
+<.button variant="destructive" disabled>Destructive</.button>
+<.button variant="ghost" disabled>Ghost</.button>
+<.button variant="link" disabled>Link</.button>
 ```
 
 <AppWeb.DocsDemo.button_disabled_demo />

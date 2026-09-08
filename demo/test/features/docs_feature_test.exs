@@ -6,6 +6,7 @@ defmodule AppWeb.DocsFeatureTest do
     |> visit("/docs/button")
     |> assert_has(css("article", text: "Interactive Playground"))
     |> assert_has(css("article", text: "Rendered Variants"))
+    |> assert_has(css("#button-variants-demo button[class*='!bg-blue-700']", text: "Blue 700"))
     |> assert_has(css("article", text: "Rendered Sizes"))
   end
 

@@ -211,6 +211,7 @@ defmodule AppWeb.DocsDemo do
         <.button variant="secondary">Secondary</.button>
         <.button variant="destructive">Destructive</.button>
         <.button variant="outline">Outline</.button>
+        <.button class="!bg-blue-700 text-white">Blue 700</.button>
         <.button variant="ghost">Ghost</.button>
         <.button variant="link">Link</.button>
       </div>
@@ -237,9 +238,12 @@ defmodule AppWeb.DocsDemo do
     ~H"""
     <.demo_section title="Disabled Buttons" id="button-disabled-demo">
       <div class="flex flex-wrap items-center gap-3">
-        <.button disabled>Disabled</.button>
-        <.button variant="secondary" disabled>Disabled</.button>
-        <.button variant="outline" disabled>Disabled</.button>
+        <.button variant="default" disabled>Default</.button>
+        <.button variant="secondary" disabled>Secondary</.button>
+        <.button variant="outline" disabled>Outline</.button>
+        <.button variant="destructive" disabled>Destructive</.button>
+        <.button variant="ghost" disabled>Ghost</.button>
+        <.button variant="link" disabled>Link</.button>
       </div>
     </.demo_section>
     """
