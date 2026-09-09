@@ -5,7 +5,8 @@ defmodule AppWeb.FeatureCase do
     quote do
       use Wallaby.Feature
 
-      @sessions [[window_size: [width: 1280, height: 800]]]
+      # Wallaby's default Chrome capabilities already set a 1280x800 viewport;
+      # resizing after session creation makes Chromium CI sessions invalid.
 
       @endpoint AppWeb.Endpoint
 

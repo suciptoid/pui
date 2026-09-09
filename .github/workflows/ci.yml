@@ -90,4 +90,4 @@ jobs:
           APP_TEST_PORT: "4402"
           CHROMEDRIVER_PATH: /usr/bin/chromedriver
           GOOGLE_CHROME_BINARY: /usr/bin/chromium
-        run: mix test
+        run: mix test --max-cases 1
