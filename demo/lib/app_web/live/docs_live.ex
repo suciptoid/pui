@@ -399,12 +399,9 @@ defmodule AppWeb.Live.DocsLive do
           class="hidden lg:flex fixed lg:relative inset-y-0 left-0 z-50 lg:z-auto"
         >
           <:header>
-            <div class="flex h-20 shrink-0 items-center justify-between border-b border-border/70 px-5">
+            <div class="flex h-16 shrink-0 items-center justify-between border-b border-border/70 px-5">
               <.link navigate={~p"/"} class="flex items-center gap-3 group">
-                <div class="flex flex-col">
-                  <span class="text-lg font-black tracking-[-0.04em] text-foreground">PUI</span>
-                  <span class="text-[10px] font-medium uppercase tracking-[0.16em] leading-none text-foreground/45">LiveView UI</span>
-                </div>
+                <span class="text-lg font-black tracking-[-0.04em] text-foreground">PUI</span>
               </.link>
               <button
                 type="button"
@@ -498,16 +495,7 @@ defmodule AppWeb.Live.DocsLive do
           <div class="mx-auto max-w-4xl px-5 py-10 lg:px-10 lg:py-16">
             {render_slot(@inner_block)}
 
-            <footer class="mt-16 pt-8 border-t border-border">
-              <div class="flex items-center justify-between text-sm text-muted-foreground">
-                <p>
-                  © 2026 PUI. Built with <span class="text-red-500">♥</span> and Phoenix LiveView.
-                </p>
-                <.link navigate={~p"/"} class="transition-colors hover:text-foreground">
-                  Back to home →
-                </.link>
-              </div>
-            </footer>
+
           </div>
         </div>
 

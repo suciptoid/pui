@@ -108,3 +108,74 @@
     .landing-workspace,
     .landing-workspace:hover { transform: none; }
 }
+
+/* macOS Window Demo Container: Light for Preview, Dark for Code */
+.demo-window {
+    border-color: var(--color-border);
+    transition: border-color 150ms ease;
+}
+
+.demo-window[data-value="code"] {
+    border-color: #27272a !important; /* zinc-800 */
+}
+
+.demo-window .demo-window-header {
+    background-color: color-mix(in oklab, var(--color-muted) 50%, transparent);
+    border-bottom-color: var(--color-border);
+    transition: background-color 150ms ease, border-bottom-color 150ms ease;
+}
+
+.demo-window[data-value="code"] .demo-window-header {
+    background-color: #18181b !important; /* zinc-900 */
+    border-bottom-color: #27272a !important; /* zinc-800 */
+}
+
+.demo-window .demo-window-title {
+    color: var(--color-foreground);
+    transition: color 150ms ease;
+}
+
+.demo-window[data-value="code"] .demo-window-title {
+    color: #d4d4d8 !important; /* zinc-300 */
+}
+
+.demo-window .demo-tab-list {
+    background-color: var(--color-muted);
+    color: var(--color-muted-foreground);
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.demo-window[data-value="code"] .demo-tab-list {
+    background-color: rgba(39, 39, 42, 0.9) !important; /* zinc-800 */
+    color: #a1a1aa !important; /* zinc-400 */
+}
+
+.demo-window .demo-tab-trigger {
+    color: var(--color-muted-foreground);
+    transition: all 150ms ease;
+}
+
+.demo-window .demo-tab-trigger:hover {
+    color: var(--color-foreground);
+}
+
+.demo-window .demo-tab-trigger[data-state="active"] {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.demo-window[data-value="code"] .demo-tab-trigger {
+    color: #a1a1aa !important; /* zinc-400 */
+}
+
+.demo-window[data-value="code"] .demo-tab-trigger:hover {
+    color: #e4e4e7 !important; /* zinc-200 */
+}
+
+.demo-window[data-value="code"] .demo-tab-trigger[data-state="active"] {
+    background-color: #3f3f46 !important; /* zinc-700 */
+    color: #f4f4f5 !important; /* zinc-100 */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.25) !important;
+}
+

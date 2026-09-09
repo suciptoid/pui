@@ -27,9 +27,9 @@ defmodule AppWeb.DocsDemo do
       </h2>
 
       <%!-- Playground --%>
-      <div class="rounded-xl border border-border bg-background shadow-sm">
-        <div class="rounded-t-xl bg-muted/30 px-5 py-3 border-b border-border">
-          <h3 class="text-sm font-medium text-foreground">Playground</h3>
+      <div class="not-prose rounded-xl border border-border bg-background shadow-sm">
+        <div class="rounded-t-xl bg-muted/30 px-4 py-1.5 border-b border-border">
+          <h3 class="m-0 text-sm font-semibold text-foreground leading-none">Playground</h3>
         </div>
         <div class="rounded-b-xl p-6 flex flex-col gap-6 overflow-visible">
           <div class="flex flex-wrap items-center gap-3">
@@ -139,15 +139,21 @@ defmodule AppWeb.DocsDemo do
   end
 
   def button_playground_demo(assigns) do
+    code =
+      if assigns[:btn_size] == "icon" do
+        ~s|<.button variant="#{assigns[:btn_variant]}" size="#{assigns[:btn_size]}">\n  <.icon name="hero-bell" class="size-4" />\n</.button>|
+      else
+        ~s|<.button variant="#{assigns[:btn_variant]}" size="#{assigns[:btn_size]}">Button</.button>|
+      end
+
+    assigns = assign(assigns, :code, code)
+
     ~H"""
     <section class="space-y-4">
       <h3 class="text-lg font-semibold text-foreground">Interactive Playground</h3>
 
-      <div class="rounded-xl border border-border bg-background shadow-sm">
-        <div class="rounded-t-xl bg-muted/30 px-5 py-3 border-b border-border">
-          <h4 class="text-sm font-medium text-foreground">Playground</h4>
-        </div>
-        <div class="rounded-b-xl p-6 flex flex-col gap-6 overflow-visible">
+      <.demo_section title="Playground" id="button-playground-demo" code={@code}>
+        <div class="flex flex-col gap-6 overflow-visible">
           <div class="flex flex-wrap items-center gap-3">
             <span class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Variant
@@ -198,7 +204,7 @@ defmodule AppWeb.DocsDemo do
             </.button>
           </div>
         </div>
-      </div>
+      </.demo_section>
     </section>
     """
   end
@@ -2141,8 +2147,22 @@ defmodule AppWeb.DocsDemo do
   end
 
   def getting_started_quick_demo(assigns) do
+    assigns =
+      assign_new(assigns, :code, fn ->
+        """
+        <div class="flex flex-wrap items-center gap-3">
+          <.button>Primary Button</.button>
+          <.button variant="secondary">Secondary</.button>
+          <.button variant="outline">Outline</.button>
+        </div>
+        <div class="mt-4 max-w-sm">
+          <.input id="quick-input" name="quick" label="Sample Input" placeholder="Type here..." />
+        </div>\
+        """
+      end)
+
     ~H"""
-    <.demo_section title="Quick Example" id="getting-started-quick-demo">
+    <.demo_section title="Quick Example" id="getting-started-quick-demo" code={@code}>
       <div class="flex flex-wrap items-center gap-3">
         <.button>Primary Button</.button>
         <.button variant="secondary">Secondary</.button>
@@ -2872,9 +2892,23 @@ defmodule AppWeb.DocsDemo do
   end
 
   def getting_started_demo(assigns) do
+    assigns =
+      assign_new(assigns, :code, fn ->
+        """
+        <div class="flex flex-wrap items-center gap-3">
+          <.button>Primary Button</.button>
+          <.button variant="secondary">Secondary</.button>
+          <.button variant="outline">Outline</.button>
+        </div>
+        <div class="mt-4 max-w-sm">
+          <.input id="quick-input" name="quick" label="Sample Input" placeholder="Type here..." />
+        </div>\
+        """
+      end)
+
     ~H"""
     <section class="space-y-8">
-      <.demo_section title="Quick Example" id="quick-example">
+      <.demo_section title="Quick Example" id="quick-example" code={@code}>
         <div class="flex flex-wrap items-center gap-3">
           <.button>Primary Button</.button>
           <.button variant="secondary">Secondary</.button>
@@ -3044,17 +3078,21 @@ defmodule AppWeb.DocsDemo do
   def empty_demo(assigns) do
     ~H"""
     <section id="empty-demo" class="space-y-6">
-      <.empty id="empty-projects-demo">
-        <:icon><PUI.Icon.icon name={:search} class="size-6" /></:icon>
-        <:title>No projects found</:title>
-        <:description>Try a different search or create your first project.</:description>
-        <:actions><.button>Create project</.button></:actions>
-      </.empty>
+      <.demo_section title="Empty Projects" id="empty-projects-demo">
+        <.empty id="empty-projects">
+          <:icon><PUI.Icon.icon name={:search} class="size-6" /></:icon>
+          <:title>No projects found</:title>
+          <:description>Try a different search or create your first project.</:description>
+          <:actions><.button>Create project</.button></:actions>
+        </.empty>
+      </.demo_section>
 
-      <.empty id="empty-notifications-demo" class="py-6">
-        <:title>No new notifications</:title>
-        <:description>You are all caught up.</:description>
-      </.empty>
+      <.demo_section title="Empty Notifications" id="empty-notifications-demo">
+        <.empty id="empty-notifications" class="py-6">
+          <:title>No new notifications</:title>
+          <:description>You are all caught up.</:description>
+        </.empty>
+      </.demo_section>
     </section>
     """
   end
@@ -3131,21 +3169,164 @@ defmodule AppWeb.DocsDemo do
     """
   end
 
+  @external_resource __ENV__.file
+  @demo_snippets (
+    case File.read(__ENV__.file) do
+      {:ok, content} ->
+        regex = ~r/<\.demo_section\s+[^>]*id="([^"]+)"[^>]*>(.*?)<\/\.demo_section>/s
+
+        Regex.scan(regex, content)
+        |> Map.new(fn [_, id, code] ->
+          lines = String.split(code, "\n")
+          non_empty = Enum.filter(lines, &(String.trim(&1) != ""))
+
+          min_indent =
+            case non_empty do
+              [] ->
+                0
+
+              _ ->
+                non_empty
+                |> Enum.map(fn line -> Regex.run(~r/^\s*/, line) |> hd() |> String.length() end)
+                |> Enum.min()
+            end
+
+          clean =
+            lines
+            |> Enum.map(fn line ->
+              if String.length(line) >= min_indent,
+                do: String.slice(line, min_indent..-1//1),
+                else: String.trim_leading(line)
+            end)
+            |> Enum.join("\n")
+            |> String.trim()
+
+          {id, clean}
+        end)
+
+      _ ->
+        %{}
+    end
+  )
+
+  @doc """
+  Renders a documentation demo card with compact py-2 title header and
+  Preview / Code tab switcher.
+  """
   attr :title, :string, required: true
   attr :id, :string, required: true
+  attr :code, :string, default: nil
   slot :inner_block, required: true
 
-  defp demo_section(assigns) do
+  def demo_section(assigns) do
+    display_code = resolve_code(assigns)
+    assigns = assign(assigns, :display_code, display_code)
+
     ~H"""
-    <div class="rounded-xl border border-border bg-background shadow-sm overflow-visible" id={@id}>
-      <div class="rounded-t-xl bg-muted/30 px-5 py-3 border-b border-border">
-        <h3 class="text-sm font-medium text-foreground">{@title}</h3>
-      </div>
-      <div class="rounded-b-xl p-6 bg-background overflow-visible">
-        {render_slot(@inner_block)}
-      </div>
+    <div class="not-prose" id={@id}>
+      <PUI.Tabs.Primitive.root
+        id={"#{@id}-tabs"}
+        class="demo-window group rounded-xl border border-border bg-background shadow-sm overflow-visible"
+        data-value="preview"
+        data-default-value="preview"
+      >
+        <div class="demo-window-header flex items-center justify-between rounded-t-xl bg-muted/40 px-4 py-1 border-b border-border">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="flex items-center gap-1.5 shrink-0" aria-hidden="true">
+              <span class="size-3 rounded-full bg-[#ff5f56] border border-black/15"></span>
+              <span class="size-3 rounded-full bg-[#febc2e] border border-black/15"></span>
+              <span class="size-3 rounded-full bg-[#28c840] border border-black/15"></span>
+            </div>
+            <h3 class="demo-window-title m-0 truncate text-xs font-semibold tracking-tight leading-none">{@title}</h3>
+          </div>
+          <PUI.Tabs.Primitive.list class="demo-tab-list inline-flex h-6 items-center justify-center rounded-md bg-muted p-0.5 text-muted-foreground shrink-0">
+            <PUI.Tabs.Primitive.trigger
+              id={"#{@id}-tab-preview"}
+              value="preview"
+              selected={true}
+              class="demo-tab-trigger inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium transition-all outline-none cursor-pointer"
+            >
+              <.icon name="hero-eye" class="size-3" /> Preview
+            </PUI.Tabs.Primitive.trigger>
+            <PUI.Tabs.Primitive.trigger
+              id={"#{@id}-tab-code"}
+              value="code"
+              selected={false}
+              class="demo-tab-trigger inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded px-2 py-0.5 text-xs font-medium transition-all outline-none cursor-pointer"
+            >
+              <.icon name="hero-code-bracket" class="size-3" /> Code
+            </PUI.Tabs.Primitive.trigger>
+          </PUI.Tabs.Primitive.list>
+        </div>
+
+        <PUI.Tabs.Primitive.panel
+          id={"#{@id}-panel-preview"}
+          value="preview"
+          selected={true}
+          class="p-6 bg-background rounded-b-xl overflow-visible"
+        >
+          {render_slot(@inner_block)}
+        </PUI.Tabs.Primitive.panel>
+
+        <PUI.Tabs.Primitive.panel
+          id={"#{@id}-panel-code"}
+          value="code"
+          selected={false}
+          class="relative rounded-b-xl bg-zinc-950 text-zinc-100 overflow-hidden"
+        >
+          <div class="flex items-center justify-between border-b border-zinc-800/80 bg-zinc-900/60 px-4 py-1.5 text-xs text-zinc-400">
+            <span class="font-mono text-xs text-zinc-400">heex</span>
+            <button
+              type="button"
+              phx-hook="CopyCode"
+              id={"#{@id}-copy-btn"}
+              data-code={@display_code}
+              class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100 cursor-pointer"
+              aria-label="Copy code"
+            >
+              <.icon name="hero-clipboard-document" class="size-3.5" />
+              <span>Copy</span>
+            </button>
+          </div>
+          <pre class="!m-0 !border-0 !border-none !rounded-none !bg-transparent !shadow-none p-4 font-mono text-xs leading-relaxed text-zinc-100 overflow-x-auto select-all"><code class="!border-0 !bg-transparent font-mono text-xs text-zinc-100">{@display_code}</code></pre>
+        </PUI.Tabs.Primitive.panel>
+      </PUI.Tabs.Primitive.root>
     </div>
     """
+  end
+
+  defdelegate demo_card(assigns), to: __MODULE__, as: :demo_section
+
+  defp resolve_code(assigns) do
+    cond do
+      is_binary(assigns[:code]) and assigns.code != "" ->
+        String.trim(assigns.code)
+
+      is_binary(Map.get(@demo_snippets, assigns.id)) ->
+        Map.get(@demo_snippets, assigns.id)
+
+      true ->
+        extract_code(assigns[:inner_block], assigns)
+    end
+  end
+
+  defp extract_code(inner_block, assigns) do
+    case inner_block do
+      [%{inner_block: fun} | _] when is_function(fun, 2) ->
+        rendered = fun.(nil, assigns)
+
+        Phoenix.HTML.Safe.to_iodata(rendered)
+        |> IO.iodata_to_binary()
+        |> String.trim()
+
+      [%{inner_block: %Phoenix.LiveView.Rendered{} = rendered} | _] ->
+        Phoenix.HTML.Safe.to_iodata(rendered)
+        |> IO.iodata_to_binary()
+        |> String.trim()
+
+      _ ->
+        ""
+    end
   end
 
   defp chart_base_config do
