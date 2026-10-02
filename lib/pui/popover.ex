@@ -104,7 +104,7 @@ defmodule PUI.Popover do
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
 
   attr :aria_haspopup, :string,
-    default: "listbox",
+    default: "dialog",
     doc: "Value for the trigger's aria-haspopup attribute"
 
   attr :aria_controls, :string,
@@ -113,7 +113,7 @@ defmodule PUI.Popover do
 
   attr :popup_id, :string,
     default: nil,
-    doc: "DOM id of the popup element. Defaults to `<id>-listbox`."
+    doc: "DOM id of the popup element. Defaults to `<id>-popup`."
 
   slot :trigger, doc: "Trigger for the popover" do
     attr :class, :string, doc: "Trigger class"
@@ -129,7 +129,7 @@ defmodule PUI.Popover do
     doc: "Inner block / children for the popover, can be used for non <button> custom trigger "
 
   def base(assigns) do
-    popup_id = assigns[:popup_id] || "#{assigns.id}-listbox"
+    popup_id = assigns[:popup_id] || "#{assigns.id}-popup"
     aria_controls = assigns[:aria_controls] || popup_id
     assigns = assigns |> assign(:popup_id, popup_id) |> assign(:aria_controls, aria_controls)
 
@@ -155,7 +155,7 @@ defmodule PUI.Popover do
       <div
         :for={p <- @popup}
         id={@popup_id}
-        role={Map.get(p, :role, "listbox")}
+        role={Map.get(p, :role, "dialog")}
         aria-hidden="true"
         class={Map.get(p, :class, "")}
       >

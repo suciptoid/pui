@@ -31,9 +31,9 @@ defmodule PUI.PopoverTest do
         </.base>
         """)
 
-      assert html =~ ~s(aria-haspopup="listbox")
-      assert html =~ ~s(aria-controls="test-listbox")
-      assert html =~ ~s(role="listbox")
+      assert html =~ ~s(aria-haspopup="dialog")
+      assert html =~ ~s(aria-controls="test-popup")
+      assert html =~ ~s(role="dialog")
     end
   end
 
