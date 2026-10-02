@@ -32,7 +32,7 @@ defmodule PUI.EntryPointTest do
       """)
 
     assert html =~ ~s(id="entry-popover")
-    assert html =~ ~s(aria-controls="entry-popover-listbox")
+    assert html =~ ~s(aria-controls="entry-popover-popup")
     assert html =~ "Open"
     assert html =~ "Content"
   end
