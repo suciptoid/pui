@@ -16,7 +16,8 @@ defmodule AppWeb.Live.DemoLive do
      |> assign(:page_title, "App Layout Demo")
      |> assign(:flash_position, "top-right")
      |> assign(:sidebar_collapsed, session["demo_sidebar_collapsed"] == true)
-     |> assign(:toast_count, 0)}
+     |> assign(:toast_count, 0)
+     |> assign(:workspace_count, 0)}
   end
 
   @impl true
@@ -198,7 +199,7 @@ defmodule AppWeb.Live.DemoLive do
         <div class="mx-auto flex max-w-7xl flex-col gap-10">
           <%= case @page.action do %>
             <% :overview -> %>
-              <.overview_page page={@page} />
+              <.overview_page page={@page} workspace_count={@workspace_count} />
             <% :activity -> %>
               <.activity_page page={@page} />
             <% :forms -> %>
@@ -292,6 +293,12 @@ defmodule AppWeb.Live.DemoLive do
     {:noreply, assign(socket, toast_count: count)}
   end
 
+  @impl true
+  def handle_event("new_workspace", _params, socket) do
+    count = Map.get(socket.assigns, :workspace_count, 0) + 1
+    {:noreply, assign(socket, :workspace_count, count)}
+  end
+
   attr :label, :string, required: true
   attr :value, :string, required: true
   attr :trend, :string, required: true
@@ -365,13 +372,17 @@ defmodule AppWeb.Live.DemoLive do
   end
 
   attr :page, :map, required: true
+  attr :workspace_count, :integer, default: 0
 
   defp overview_page(assigns) do
     ~H"""
     <.page_intro page={@page}>
       <:action>
-        <.button>
+        <.button phx-click="new_workspace">
           <.icon name="hero-plus" class="size-4" /> New workspace
+          <span :if={@workspace_count > 0} class="ml-1 rounded-full bg-background/20 px-1.5 text-xs">
+            {@workspace_count}
+          </span>
         </.button>
       </:action>
       <:action>
