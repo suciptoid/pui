@@ -692,6 +692,27 @@ defmodule AppWeb.Live.DemoPages do
         </.alert>
       </div>
     </.surface>
+
+    <.surface
+      title="Dismissible"
+      description="Alerts don't dismiss themselves — wrap one with a close button and hide it via JS or LiveView state."
+    >
+      <div class="space-y-4">
+        <.alert id="dismissible-alert-demo">
+          <:icon><.icon name="hero-information-circle" class="size-5" /></:icon>
+          <:title>Dismiss me</:title>
+          <:description>Click the X to hide this alert. In a LiveView, toggle an assign instead.</:description>
+          <button
+            type="button"
+            aria-label="Dismiss alert"
+            phx-click={JS.hide(to: "#dismissible-alert-demo")}
+            class="absolute right-3 top-3 rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+          >
+            <.icon name="hero-x-mark" class="size-4" />
+          </button>
+        </.alert>
+      </div>
+    </.surface>
     """
   end
 
