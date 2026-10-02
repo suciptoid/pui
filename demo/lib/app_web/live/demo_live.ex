@@ -21,14 +21,22 @@ defmodule AppWeb.Live.DemoLive do
 
   @impl true
   def handle_params(params, _uri, socket) do
-    page = page_config(Map.get(params, "params_name", "overview"))
+    params_name = Map.get(params, "params_name", "overview")
 
-    {:noreply,
-     socket
-     |> assign(:pages, navigation_pages())
-     |> assign(:component_pages, component_pages())
-     |> assign(:page, page)
-     |> assign(:page_title, "#{page.title} - App Layout Demo")}
+    case normalize_page_action(params_name) do
+      nil ->
+        raise AppWeb.PageNotFoundError, "No demo page for #{inspect(params_name)}"
+
+      action ->
+        page = page_config(action)
+
+        {:noreply,
+         socket
+         |> assign(:pages, navigation_pages())
+         |> assign(:component_pages, component_pages())
+         |> assign(:page, page)
+         |> assign(:page_title, "#{page.title} - App Layout Demo")}
+    end
   end
 
   @impl true
@@ -1620,7 +1628,7 @@ defmodule AppWeb.Live.DemoLive do
             ],
        do: action
 
-  defp normalize_page_action(_), do: :overview
+  defp normalize_page_action(_), do: nil
 
   defp page_path(:overview), do: ~p"/demo/overview"
   defp page_path(:activity), do: ~p"/demo/activity"
