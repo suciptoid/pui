@@ -6,7 +6,8 @@ defmodule AppWeb.Live.LandingLive do
   @impl true
   def mount(_params, _session, socket) do
     seo = AppWeb.Seo.landing_meta()
-    {:ok, assign(socket, page_title: seo.title, seo: seo)}
+    version = Application.spec(:pui, :vsn) |> to_string()
+    {:ok, assign(socket, page_title: seo.title, seo: seo, pui_version: version)}
   end
 
   @impl true
@@ -37,7 +38,7 @@ defmodule AppWeb.Live.LandingLive do
             <p class="text-xs font-bold uppercase tracking-[0.22em] text-foreground/55">
               Phoenix LiveView UI toolkit
             </p>
-            <p class="font-mono text-xs text-foreground/45">v1.0.0</p>
+            <p class="font-mono text-xs text-foreground/45">v{@pui_version}</p>
           </div>
 
           <div class="landing-enter-delay-2 relative z-10 my-16 max-w-6xl">
