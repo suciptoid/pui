@@ -28,6 +28,7 @@ export default class Select extends ViewHook {
   #triggerKeyDownHandler;
   #containerKeyDownHandler;
   #popupClickHandler;
+  #clearClickHandler;
   #searchInputHandler;
   #searchKeyDownHandler;
   #remoteSearchTimeout;
@@ -48,6 +49,7 @@ export default class Select extends ViewHook {
     this.#triggerKeyDownHandler = this.handleTriggerKeyDown.bind(this);
     this.#containerKeyDownHandler = this.handleContainerKeyDown.bind(this);
     this.#popupClickHandler = this.handlePopupClick.bind(this);
+    this.#clearClickHandler = this.handleClearClick.bind(this);
     this.#searchInputHandler = this.handleSearchInput.bind(this);
     this.#searchKeyDownHandler = this.handleSearchKeyDown.bind(this);
 
@@ -66,6 +68,7 @@ export default class Select extends ViewHook {
     this.initFloatingUI();
     this.ensureOptionMetadata();
     this.selectDefaultValue();
+    this.updateClearButton();
   }
 
   updated() {
@@ -109,6 +112,7 @@ export default class Select extends ViewHook {
     );
     this.hiddenInput = this.el.querySelector("input[data-pui='select-value']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
+    this.clearButton = this.el.querySelector("[data-pui='clear']");
     this.remoteSearchEvent = this.el.dataset.searchEvent || null;
 
     const debounce = Number.parseInt(this.el.dataset.searchDebounce || "300", 10);
@@ -127,6 +131,7 @@ export default class Select extends ViewHook {
     this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
     this.popup?.addEventListener("click", this.#popupClickHandler);
     this.search?.addEventListener("keydown", this.#searchKeyDownHandler);
+    this.clearButton?.addEventListener("click", this.#clearClickHandler);
   }
 
   unbindEventListeners(trigger, popup, search) {
@@ -136,6 +141,7 @@ export default class Select extends ViewHook {
     popup?.removeEventListener("click", this.#popupClickHandler);
     search?.removeEventListener("keydown", this.#searchKeyDownHandler);
     search?.removeEventListener("input", this.#searchInputHandler);
+    this.clearButton?.removeEventListener("click", this.#clearClickHandler);
   }
 
   rebindEventListeners(previousTrigger, previousPopup, previousSearch) {
@@ -288,6 +294,38 @@ export default class Select extends ViewHook {
     if (item && this.popup?.contains(item) && !itemUnavailable) {
       this.selectItem(item);
     }
+  }
+
+  handleClearClick(event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    // Clear the hidden input value
+    if (this.hiddenInput) {
+      this.hiddenInput.value = "";
+      this.hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+      this.hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    // Deselect all items
+    this.items.forEach((item) => {
+      item.setAttribute("aria-selected", "false");
+      item.setAttribute("tabindex", "-1");
+    });
+    this.currentIndex = -1;
+
+    // Reset the label to placeholder
+    this.updatePlaceholder();
+    this.updateClearButton();
+
+    // Close the popover if open
+    this.closePopover();
+  }
+
+  updateClearButton() {
+    if (!this.clearButton) return;
+    const hasValue = !!(this.hiddenInput?.value);
+    this.clearButton.classList.toggle("hidden", !hasValue);
   }
 
   handleSearchInput(event) {
@@ -545,6 +583,7 @@ export default class Select extends ViewHook {
 
     this.setSelectedItem(itemEl);
     this.updatePlaceholder();
+    this.updateClearButton();
 
     if (close) {
       this.closePopover();

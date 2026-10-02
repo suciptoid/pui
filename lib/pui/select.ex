@@ -119,6 +119,7 @@ defmodule PUI.Select do
   | `searchable` | `boolean` | `false` | Enable search/filter functionality |
   | `search_event` | `string` | `nil` | LiveView event for server-backed search |
   | `search_debounce` | `integer` | `300` | Delay in milliseconds before a search event is sent |
+  | `clearable` | `boolean` | `false` | Show a clear button to reset the selection |
   | `class` | `string` | `"w-full"` | Additional CSS classes; use `w-fit` for a width that fits the selected item |
   | `label` | `string` | `nil` | Label text |
   | `field` | `FormField` | `nil` | Phoenix form field struct |
@@ -148,6 +149,7 @@ defmodule PUI.Select do
   attr :searchable, :boolean, default: false
   attr :search_event, :string, default: nil
   attr :search_debounce, :integer, default: 300
+  attr :clearable, :boolean, default: false
 
   attr :class, :string,
     default: "w-full",
@@ -235,6 +237,7 @@ defmodule PUI.Select do
       searchable={@searchable}
       search_event={@search_event}
       search_debounce={@search_debounce}
+      clearable={@clearable}
       errors={@errors}
       show_errors={@show_errors}
       {@rest}
@@ -310,6 +313,18 @@ defmodule PUI.Select do
         >
           {@placeholder}
         </span>
+        <button
+          :if={@clearable}
+          type="button"
+          data-pui="clear"
+          aria-label="Clear selection"
+          class="hidden shrink-0 rounded p-0.5 text-muted-foreground hover:bg-accent hover:text-foreground"
+          tabindex="-1"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3.5">
+            <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM4.97 4.97a.75.75 0 0 1 1.06 0L8 6.94l1.97-1.97a.75.75 0 1 1 1.06 1.06L9.06 8l1.97 1.97a.75.75 0 1 1-1.06 1.06L8 9.06 6.03 11.03a.75.75 0 0 1-1.06-1.06L6.94 8 4.97 6.03a.75.75 0 0 1 0-1.06Z" />
+          </svg>
+        </button>
         <.select_icon class="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </button>
 

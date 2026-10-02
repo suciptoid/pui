@@ -2638,6 +2638,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
   #triggerKeyDownHandler;
   #containerKeyDownHandler;
   #popupClickHandler;
+  #clearClickHandler;
   #searchInputHandler;
   #searchKeyDownHandler;
   #remoteSearchTimeout;
@@ -2655,6 +2656,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     this.#triggerKeyDownHandler = this.handleTriggerKeyDown.bind(this);
     this.#containerKeyDownHandler = this.handleContainerKeyDown.bind(this);
     this.#popupClickHandler = this.handlePopupClick.bind(this);
+    this.#clearClickHandler = this.handleClearClick.bind(this);
     this.#searchInputHandler = this.handleSearchInput.bind(this);
     this.#searchKeyDownHandler = this.handleSearchKeyDown.bind(this);
     this.bindEventListeners();
@@ -2669,6 +2671,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     this.initFloatingUI();
     this.ensureOptionMetadata();
     this.selectDefaultValue();
+    this.updateClearButton();
   }
   updated() {
     const previousTrigger = this.trigger;
@@ -2705,6 +2708,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     );
     this.hiddenInput = this.el.querySelector("input[data-pui='select-value']");
     this.label = this.el.querySelector("[data-pui='selected-label']");
+    this.clearButton = this.el.querySelector("[data-pui='clear']");
     this.remoteSearchEvent = this.el.dataset.searchEvent || null;
     const debounce = Number.parseInt(this.el.dataset.searchDebounce || "300", 10);
     this.remoteSearchDebounce = Number.isFinite(debounce) ? Math.max(0, debounce) : 300;
@@ -2718,6 +2722,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     this.trigger?.addEventListener("keydown", this.#triggerKeyDownHandler);
     this.popup?.addEventListener("click", this.#popupClickHandler);
     this.search?.addEventListener("keydown", this.#searchKeyDownHandler);
+    this.clearButton?.addEventListener("click", this.#clearClickHandler);
   }
   unbindEventListeners(trigger, popup, search) {
     this.el.removeEventListener("keydown", this.#containerKeyDownHandler);
@@ -2726,6 +2731,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     popup?.removeEventListener("click", this.#popupClickHandler);
     search?.removeEventListener("keydown", this.#searchKeyDownHandler);
     search?.removeEventListener("input", this.#searchInputHandler);
+    this.clearButton?.removeEventListener("click", this.#clearClickHandler);
   }
   rebindEventListeners(previousTrigger, previousPopup, previousSearch) {
     if (previousTrigger === this.trigger && previousPopup === this.popup && previousSearch === this.search) {
@@ -2847,6 +2853,28 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     if (item && this.popup?.contains(item) && !itemUnavailable) {
       this.selectItem(item);
     }
+  }
+  handleClearClick(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    if (this.hiddenInput) {
+      this.hiddenInput.value = "";
+      this.hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+      this.hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    this.items.forEach((item) => {
+      item.setAttribute("aria-selected", "false");
+      item.setAttribute("tabindex", "-1");
+    });
+    this.currentIndex = -1;
+    this.updatePlaceholder();
+    this.updateClearButton();
+    this.closePopover();
+  }
+  updateClearButton() {
+    if (!this.clearButton) return;
+    const hasValue = !!this.hiddenInput?.value;
+    this.clearButton.classList.toggle("hidden", !hasValue);
   }
   handleSearchInput(event) {
     event.stopPropagation();
@@ -3046,6 +3074,7 @@ var Select = class extends import_phoenix_live_view3.ViewHook {
     }
     this.setSelectedItem(itemEl);
     this.updatePlaceholder();
+    this.updateClearButton();
     if (close) {
       this.closePopover();
     } else if (focusTrigger) {
