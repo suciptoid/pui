@@ -461,7 +461,7 @@ defmodule AppWeb.Live.DemoLive do
                 Use PUI inputs for basic data capture, then pair them with alerts and buttons for guided submission flows.
               </:detail>
               <:action>
-                <.menu_button variant="ghost" class="h-8 w-8 px-0">
+                <.menu_button variant="ghost" class="h-8 w-8 px-0" aria-label="Row actions">
                   <.icon name="hero-ellipsis-horizontal" class="size-4" />
                   <:item>Open form</:item>
                   <:item>Duplicate flow</:item>
@@ -479,7 +479,7 @@ defmodule AppWeb.Live.DemoLive do
                 Menu buttons, hover states, and status chips sit directly inside each list row so the examples feel like actual product UI.
               </:detail>
               <:action>
-                <.menu_button variant="ghost" class="h-8 w-8 px-0">
+                <.menu_button variant="ghost" class="h-8 w-8 px-0" aria-label="Row actions">
                   <.icon name="hero-ellipsis-horizontal" class="size-4" />
                   <:item>Assign reviewer</:item>
                   <:item>Archive row</:item>
@@ -662,14 +662,14 @@ defmodule AppWeb.Live.DemoLive do
           </:detail>
           <:action>
             <.tooltip id="activity-row-tooltip-1" placement="top">
-              <.button variant="ghost" size="icon">
+              <.button variant="ghost" size="icon" aria-label="Preview comment thread">
                 <.icon name="hero-eye" class="size-4" />
               </.button>
               <:tooltip>Preview comment thread</:tooltip>
             </.tooltip>
           </:action>
           <:action>
-            <.menu_button variant="ghost" class="h-8 w-8 px-0">
+            <.menu_button variant="ghost" class="h-8 w-8 px-0" aria-label="Row actions">
               <.icon name="hero-ellipsis-horizontal" class="size-4" />
               <:item>Open thread</:item>
               <:item>Assign owner</:item>
@@ -689,7 +689,7 @@ defmodule AppWeb.Live.DemoLive do
           </:detail>
           <:action>
             <.tooltip id="activity-row-tooltip-2" placement="top">
-              <.button variant="ghost" size="icon">
+              <.button variant="ghost" size="icon" aria-label="Open decision log">
                 <.icon name="hero-document-text" class="size-4" />
               </.button>
               <:tooltip>Open decision log</:tooltip>
@@ -707,7 +707,7 @@ defmodule AppWeb.Live.DemoLive do
             Buttons, menu items, and tooltip triggers can all sit on the same row when spacing stays tight and consistent.
           </:detail>
           <:action>
-            <.menu_button variant="ghost" class="h-8 w-8 px-0">
+            <.menu_button variant="ghost" class="h-8 w-8 px-0" aria-label="Row actions">
               <.icon name="hero-ellipsis-horizontal" class="size-4" />
               <:item>Edit note</:item>
               <:item>Pin update</:item>
