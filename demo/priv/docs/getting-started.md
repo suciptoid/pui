@@ -75,12 +75,12 @@ PUI provides components in several categories:
 
 | Category | Components |
 |----------|-----------|
-| **Forms** | Input, Select, Date Picker, Checkbox, Radio, Switch, Textarea |
-| **Actions** | Button, Dropdown, Menu |
+| **Forms** | Input, Textarea, Select, Date Picker, Checkbox, Radio, Switch |
+| **Actions** | Button, Button Group, Dropdown, Menu Button |
 | **Overlays** | Dialog, Popover, Tooltip |
-| **Feedback** | Alert, Toast/Flash, Loading |
-| **Layout** | Card, Container, Header |
-| **Data Display** | Badge, Progress, Table |
+| **Feedback** | Alert, Flash, Loading, Skeleton, Progress |
+| **Layout** | Card, Container, Layout, Separator, Tabs, Accordion |
+| **Data Display** | Badge, Table, Chart, Avatar, Empty, Pagination, Breadcrumb |
 
 <AppWeb.DocsDemo.getting_started_quick_demo />
 
