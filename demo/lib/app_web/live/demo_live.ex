@@ -292,6 +292,16 @@ defmodule AppWeb.Live.DemoLive do
     {:noreply, assign(socket, toast_count: count)}
   end
 
+  @impl true
+  def handle_event("preview_summary", params, socket) do
+    name = params["project_name"] |> to_string() |> String.trim()
+    summary = if name == "", do: "untitled request", else: "“#{name}”"
+
+    PUI.Flash.send_flash("Summary previewed for #{summary} — values kept, no page reload.")
+
+    {:noreply, socket}
+  end
+
   attr :label, :string, required: true
   attr :value, :string, required: true
   attr :trend, :string, required: true
@@ -796,6 +806,7 @@ defmodule AppWeb.Live.DemoLive do
 
   defp forms_page(assigns) do
     ~H"""
+    <PUI.Flash.flash_group flash={%{}} live={true} position="top-right" />
     <.page_intro page={@page}>
       <:action>
         <.button>
@@ -812,21 +823,28 @@ defmodule AppWeb.Live.DemoLive do
       description="The examples below mix inputs, textarea, select, radio, checkbox, switch, alerts, and action buttons inside one believable request flow."
     >
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-        <form class="space-y-1">
+        <form id="request-form" class="space-y-1" phx-submit="preview_summary">
           <div class="grid gap-4 md:grid-cols-2">
-            <.input id="layout-project-name" label="Project name" placeholder="Command center" />
-            <.input id="layout-owner" label="Owner" placeholder="Maya Chen" />
+            <.input
+              id="layout-project-name"
+              name="project_name"
+              label="Project name"
+              placeholder="Command center"
+            />
+            <.input id="layout-owner" name="owner" label="Owner" placeholder="Maya Chen" />
           </div>
 
           <div class="grid gap-4 md:grid-cols-2">
             <.input
               id="layout-owner-email"
+              name="owner_email"
               type="email"
               label="Owner email"
               placeholder="maya@acme.test"
             />
             <.select
               id="layout-project-stage"
+              name="stage"
               label="Stage"
               options={["Discovery", "Build", "Launch"]}
             />
@@ -834,6 +852,7 @@ defmodule AppWeb.Live.DemoLive do
 
           <.textarea
             id="layout-brief"
+            name="brief"
             label="Brief"
             rows="5"
             placeholder="Describe what the team needs from this workspace."
@@ -864,6 +883,7 @@ defmodule AppWeb.Live.DemoLive do
           <div class="pt-3">
             <.select
               id="layout-squad"
+              name="squad"
               label="Squad"
               searchable={true}
               options={[
