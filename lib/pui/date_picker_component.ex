@@ -660,7 +660,7 @@ defmodule PUI.DatePickerComponent do
   defp day_range_aria_label(%{in_range?: true} = day),
     do: "In selected range, #{format_day_aria_date(day.value)}"
 
-  defp day_range_aria_label(_day), do: nil
+  defp day_range_aria_label(day), do: format_day_aria_date(day.value)
 
   defp format_day_aria_date(value) do
     value
