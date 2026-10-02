@@ -356,6 +356,7 @@ export class ChartHook extends ViewHook {
       return [
         {
           ...baseX,
+          splits: () => this.categoricalSplits(payload.categories.length),
           values: (_self, values) =>
             values.map((value) => this.lookupLabel(payload.categories, value)),
         },
@@ -367,6 +368,7 @@ export class ChartHook extends ViewHook {
       return [
         {
           ...baseX,
+          splits: () => this.categoricalSplits(payload.labels.length),
           values: (_self, values) =>
             values.map((value) => this.lookupLabel(payload.labels, value)),
         },
@@ -375,6 +377,13 @@ export class ChartHook extends ViewHook {
     }
 
     return [baseX, baseY];
+  }
+
+  categoricalSplits(count) {
+    // Categorical charts use integer x positions (0..n-1). Pinning the tick
+    // splits to those positions keeps uPlot from auto-generating fractional
+    // ticks that Math.round would collapse into duplicated labels.
+    return Array.from({ length: count }, (_, index) => index);
   }
 
   buildSeries(payload, preset) {

@@ -8836,6 +8836,7 @@ var ChartHook = class extends ViewHook8 {
       return [
         {
           ...baseX,
+          splits: () => this.categoricalSplits(payload.categories.length),
           values: (_self, values) => values.map((value) => this.lookupLabel(payload.categories, value))
         },
         baseY
@@ -8845,12 +8846,16 @@ var ChartHook = class extends ViewHook8 {
       return [
         {
           ...baseX,
+          splits: () => this.categoricalSplits(payload.labels.length),
           values: (_self, values) => values.map((value) => this.lookupLabel(payload.labels, value))
         },
         baseY
       ];
     }
     return [baseX, baseY];
+  }
+  categoricalSplits(count) {
+    return Array.from({ length: count }, (_2, index) => index);
   }
   buildSeries(payload, preset) {
     return payload.series.map((series, index) => {
