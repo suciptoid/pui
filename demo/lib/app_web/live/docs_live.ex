@@ -69,6 +69,10 @@ defmodule AppWeb.Live.DocsLive do
   end
 
   @impl true
+  def handle_params(%{"slug" => "flash-toast"}, _uri, socket) do
+    {:noreply, push_navigate(socket, to: "/docs/flash")}
+  end
+
   def handle_params(%{"slug" => slug}, _uri, socket) do
     doc = App.Docs.get_doc!(slug)
     seo = AppWeb.Seo.doc_meta(doc)
@@ -494,8 +498,6 @@ defmodule AppWeb.Live.DocsLive do
         <div class="flex-1 min-w-0">
           <div class="mx-auto max-w-4xl px-5 py-10 lg:px-10 lg:py-16">
             {render_slot(@inner_block)}
-
-
           </div>
         </div>
 
