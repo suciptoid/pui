@@ -1459,6 +1459,40 @@ defmodule AppWeb.Live.DemoPages do
         </div>
       </div>
     </.surface>
+
+    <.surface
+      title="Spinner"
+      description="Inline loading indicator for buttons and small content areas."
+    >
+      <div class="flex items-center gap-6">
+        <div
+          class="size-6 animate-spin rounded-full border-2 border-muted border-t-foreground"
+          role="status"
+          aria-label="Loading"
+        />
+        <.button disabled>
+          <span class="size-4 animate-spin rounded-full border-2 border-background/30 border-t-background" />
+          Saving...
+        </.button>
+      </div>
+    </.surface>
+
+    <.surface
+      title="Skeleton"
+      description="Placeholder content while data loads."
+    >
+      <div class="space-y-4">
+        <.skeleton class="h-4 w-3/4" />
+        <.skeleton class="h-4 w-1/2" />
+        <div class="flex items-center gap-3">
+          <.skeleton class="size-10 rounded-full" />
+          <div class="space-y-2">
+            <.skeleton class="h-3 w-32" />
+            <.skeleton class="h-3 w-24" />
+          </div>
+        </div>
+      </div>
+    </.surface>
     """
   end
 end
