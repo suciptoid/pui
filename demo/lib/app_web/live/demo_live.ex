@@ -16,7 +16,8 @@ defmodule AppWeb.Live.DemoLive do
      |> assign(:page_title, "App Layout Demo")
      |> assign(:flash_position, "top-right")
      |> assign(:sidebar_collapsed, session["demo_sidebar_collapsed"] == true)
-     |> assign(:toast_count, 0)}
+     |> assign(:toast_count, 0)
+     |> assign(:activity_feedback, nil)}
   end
 
   @impl true
@@ -200,7 +201,7 @@ defmodule AppWeb.Live.DemoLive do
             <% :overview -> %>
               <.overview_page page={@page} />
             <% :activity -> %>
-              <.activity_page page={@page} />
+              <.activity_page page={@page} activity_feedback={@activity_feedback} />
             <% :forms -> %>
               <.forms_page page={@page} />
             <% :components -> %>
@@ -290,6 +291,21 @@ defmodule AppWeb.Live.DemoLive do
     count = socket.assigns.toast_count + 1
     PUI.Flash.send_flash("Toast notification ##{count}!")
     {:noreply, assign(socket, toast_count: count)}
+  end
+
+  @impl true
+  def handle_event("preview_thread", _params, socket) do
+    {:noreply, assign(socket, :activity_feedback, "Comment thread preview opened.")}
+  end
+
+  @impl true
+  def handle_event("open_decision_log", _params, socket) do
+    {:noreply, assign(socket, :activity_feedback, "Decision log opened.")}
+  end
+
+  @impl true
+  def handle_event("refresh_activity", _params, socket) do
+    {:noreply, assign(socket, :activity_feedback, "Activity feed refreshed.")}
   end
 
   attr :label, :string, required: true
@@ -617,9 +633,16 @@ defmodule AppWeb.Live.DemoLive do
   end
 
   attr :page, :map, required: true
+  attr :activity_feedback, :string, default: nil
 
   defp activity_page(assigns) do
     ~H"""
+    <p
+      :if={@activity_feedback}
+      class="mb-4 rounded-lg border border-border bg-muted/50 px-4 py-2 text-sm text-foreground"
+    >
+      {@activity_feedback}
+    </p>
     <.page_intro page={@page}>
       <:action>
         <.menu_button variant="outline">
@@ -630,7 +653,7 @@ defmodule AppWeb.Live.DemoLive do
         </.menu_button>
       </:action>
       <:action>
-        <.button variant="secondary">
+        <.button variant="secondary" phx-click="refresh_activity">
           <.icon name="hero-arrow-path" class="size-4" /> Refresh
         </.button>
       </:action>
@@ -662,7 +685,12 @@ defmodule AppWeb.Live.DemoLive do
           </:detail>
           <:action>
             <.tooltip id="activity-row-tooltip-1" placement="top">
-              <.button variant="ghost" size="icon">
+              <.button
+                variant="ghost"
+                size="icon"
+                phx-click="preview_thread"
+                aria-label="Preview comment thread"
+              >
                 <.icon name="hero-eye" class="size-4" />
               </.button>
               <:tooltip>Preview comment thread</:tooltip>
@@ -689,7 +717,12 @@ defmodule AppWeb.Live.DemoLive do
           </:detail>
           <:action>
             <.tooltip id="activity-row-tooltip-2" placement="top">
-              <.button variant="ghost" size="icon">
+              <.button
+                variant="ghost"
+                size="icon"
+                phx-click="open_decision_log"
+                aria-label="Open decision log"
+              >
                 <.icon name="hero-document-text" class="size-4" />
               </.button>
               <:tooltip>Open decision log</:tooltip>
